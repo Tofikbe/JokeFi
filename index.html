@@ -2,301 +2,243 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoinRise Exchange</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoinRise - Demo Exchange</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #fff;
-    }
-    header {
-      background: #0a84ff;
-      color: white;
-      padding: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      font-size: 20px;
-      margin: 0;
-    }
-    header button {
-      background: white;
-      color: #0a84ff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    nav {
-      display: flex;
-      justify-content: space-around;
-      background: #161b22;
-      padding: 10px;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-    nav button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .screen {
-      display: none;
-      padding: 15px;
-      margin-bottom: 60px;
-    }
-    .active { display: block; }
-    .token-list div {
-      background: #1f2937;
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .trade-box {
-      background: #1f2937;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 10px 0;
-    }
-    .trade-box input {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: none;
-    }
-    .btn {
-      background: #0a84ff;
-      color: white;
-      padding: 8px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 48%;
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-    }
-    .asset-item {
-      background: #1f2937;
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    #chart {
-      width: 100%;
-      height: 300px;
-      background: #111;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-    .popup {
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #1f2937;
-      padding: 20px;
-      border-radius: 10px;
-      display: none;
-    }
+    body { margin:0; font-family:Arial, sans-serif; background:#0d1117; color:#fff; }
+    header { background:#161b22; padding:10px; text-align:center; font-size:20px; font-weight:bold; }
+    nav { display:flex; justify-content:space-around; background:#161b22; padding:10px 0; }
+    nav button { background:none; border:none; color:#fff; font-size:16px; }
+    .active { color:#00c2ff; font-weight:bold; }
+    .page { display:none; padding:15px; }
+    .show { display:block; }
+    .token-card { display:flex; justify-content:space-between; background:#1c2128; padding:10px; margin:5px 0; border-radius:8px; }
+    .buy-sell { margin:15px 0; }
+    button { padding:8px 12px; border:none; border-radius:6px; background:#00c2ff; color:#000; font-weight:bold; }
+    input { padding:6px; border-radius:6px; border:1px solid #555; width:90%; margin:5px 0; }
+    #chart { width:100%; height:200px; background:#111; margin-top:10px; }
+    .success { color:#00ff88; font-size:14px; margin-top:5px; }
+    .error { color:#ff4d4d; font-size:14px; margin-top:5px; }
   </style>
 </head>
 <body>
+  <header>CoinRise - Demo Exchange</header>
+  <nav>
+    <button onclick="showPage('market')" id="nav-market" class="active">Market</button>
+    <button onclick="showPage('trade')" id="nav-trade">Trade</button>
+    <button onclick="showPage('assets')" id="nav-assets">Assets</button>
+    <button onclick="showPage('profile')" id="nav-profile">Profile</button>
+  </nav>
 
-<header>
-  <h1>CoinRise</h1>
-  <button id="profileBtn">Profile</button>
-</header>
+  <!-- Login Page -->
+  <div id="login" class="page show">
+    <h2>Login / Signup</h2>
+    <input id="username" placeholder="Enter username" />
+    <input id="password" type="password" placeholder="Enter password" />
+    <button onclick="signup()">Signup</button>
+    <button onclick="login()">Login</button>
+    <div id="login-msg"></div>
+  </div>
 
-<!-- Screens -->
-<div id="market" class="screen active">
-  <h2>Markets</h2>
-  <div class="token-list" id="tokenList"></div>
-</div>
+  <!-- Market Page -->
+  <div id="market" class="page">
+    <h2>Market</h2>
+    <div id="token-list"></div>
+  </div>
 
-<div id="trade" class="screen">
-  <h2>Trade</h2>
-  <select id="tradeToken"></select>
-  <div id="chart"></div>
-  <div class="trade-box">
-    <input type="number" id="tradeAmount" placeholder="Enter Amount"/>
-    <div class="row">
-      <button class="btn" onclick="buyToken()">Buy</button>
-      <button class="btn" onclick="sellToken()">Sell</button>
+  <!-- Trade Page -->
+  <div id="trade" class="page">
+    <h2>Trade</h2>
+    <select id="token-select"></select>
+    <div id="chart"></div>
+    <div class="buy-sell">
+      <input id="trade-amount" type="number" placeholder="Amount (USDT)" />
+      <button onclick="buyToken()">Buy</button>
+      <button onclick="sellToken()">Sell</button>
+      <div id="trade-msg"></div>
     </div>
   </div>
-</div>
 
-<div id="assets" class="screen">
-  <h2>My Assets</h2>
-  <div id="assetList"></div>
-</div>
+  <!-- Assets Page -->
+  <div id="assets" class="page">
+    <h2>My Assets</h2>
+    <div id="balance"></div>
+    <div id="holdings"></div>
+  </div>
 
-<div id="profile" class="screen">
-  <h2>Profile</h2>
-  <p id="profileInfo"></p>
-  <button onclick="logout()">Logout</button>
-</div>
+  <!-- Profile Page -->
+  <div id="profile" class="page">
+    <h2>Profile</h2>
+    <div id="user-info"></div>
+    <button onclick="logout()">Logout</button>
+  </div>
 
-<!-- Bottom Navigation -->
-<nav>
-  <button onclick="showScreen('market')">Markets</button>
-  <button onclick="showScreen('trade')">Trade</button>
-  <button onclick="showScreen('assets')">Assets</button>
-  <button onclick="showScreen('profile')">Profile</button>
-</nav>
+  <script>
+    // Fake Tokens
+    const tokens = [
+      { symbol: "KING", price: 100 },
+      { symbol: "GIVNIX", price: 50 },
+      { symbol: "BGMI", price: 10 },
+      { symbol: "PUBG", price: 5 }
+    ];
 
-<!-- Popup -->
-<div class="popup" id="popup"></div>
+    let user = null;
+    let chartData = [];
 
-<script>
-  // Fake Tokens
-  const tokens = [
-    {symbol: "KING", price: 10},
-    {symbol: "GIVNIX", price: 5},
-    {symbol: "BGMI", price: 2},
-    {symbol: "PUBG", price: 1},
-  ];
-
-  let user = JSON.parse(localStorage.getItem("coinrise_user")) || null;
-  let holdings = JSON.parse(localStorage.getItem("coinrise_holdings")) || {};
-
-  // Initialize
-  if (!user) {
-    user = {name: "Guest", balance: 1000};
-    holdings = {};
-    localStorage.setItem("coinrise_user", JSON.stringify(user));
-    localStorage.setItem("coinrise_holdings", JSON.stringify(holdings));
-  }
-
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    if(id==="market") renderMarket();
-    if(id==="assets") renderAssets();
-    if(id==="profile") renderProfile();
-    if(id==="trade") renderTrade();
-  }
-
-  function renderMarket(){
-    const list = document.getElementById("tokenList");
-    list.innerHTML="";
-    tokens.forEach(t=>{
-      // Random pump/dump
-      t.price = (t.price * (0.95 + Math.random()*0.1)).toFixed(2);
-      const div = document.createElement("div");
-      div.innerHTML = `<b>${t.symbol}</b> <span>$${t.price}</span>`;
-      list.appendChild(div);
-    });
-  }
-
-  function renderTrade(){
-    const select = document.getElementById("tradeToken");
-    select.innerHTML="";
-    tokens.forEach(t=>{
-      const opt=document.createElement("option");
-      opt.value=t.symbol; opt.textContent=t.symbol;
-      select.appendChild(opt);
-    });
-    drawChart();
-  }
-
-  function renderAssets(){
-    const list = document.getElementById("assetList");
-    list.innerHTML=`<div class='asset-item'>USDT Balance: $${user.balance.toFixed(2)}</div>`;
-    Object.keys(holdings).forEach(sym=>{
-      list.innerHTML+=`<div class='asset-item'>${sym}: ${holdings[sym]}</div>`;
-    });
-  }
-
-  function renderProfile(){
-    document.getElementById("profileInfo").innerHTML = 
-      `Name: ${user.name}<br>Balance: $${user.balance.toFixed(2)}`;
-  }
-
-  function buyToken(){
-    const sym=document.getElementById("tradeToken").value;
-    const amt=parseFloat(document.getElementById("tradeAmount").value);
-    const price=tokens.find(t=>t.symbol===sym).price;
-    if(user.balance>=amt*price){
-      user.balance-=amt*price;
-      holdings[sym]=(holdings[sym]||0)+amt;
-      saveData();
-      popup(`Buy Successful: ${amt} ${sym}`);
-    } else {
-      popup("Not enough balance");
+    // Navigation
+    function showPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
+      document.getElementById(page).classList.add('show');
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById("nav-" + page).classList.add('active');
+      if(page === "market") renderMarket();
+      if(page === "trade") renderTrade();
+      if(page === "assets") renderAssets();
+      if(page === "profile") renderProfile();
     }
-  }
 
-  function sellToken(){
-    const sym=document.getElementById("tradeToken").value;
-    const amt=parseFloat(document.getElementById("tradeAmount").value);
-    if((holdings[sym]||0)>=amt){
-      const price=tokens.find(t=>t.symbol===sym).price;
-      user.balance+=amt*price;
-      holdings[sym]-=amt;
-      saveData();
-      popup(`Sell Successful: ${amt} ${sym}`);
-    } else {
-      popup("Not enough tokens");
+    // Signup
+    function signup() {
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+      if(localStorage.getItem("user-" + u)) {
+        document.getElementById("login-msg").innerHTML = "<p class='error'>User exists</p>";
+      } else {
+        const newUser = { username:u, password:p, balance:1000, holdings:{} };
+        localStorage.setItem("user-" + u, JSON.stringify(newUser));
+        document.getElementById("login-msg").innerHTML = "<p class='success'>Signup successful</p>";
+      }
     }
-  }
 
-  function saveData(){
-    localStorage.setItem("coinrise_user", JSON.stringify(user));
-    localStorage.setItem("coinrise_holdings", JSON.stringify(holdings));
-  }
-
-  function logout(){
-    localStorage.clear();
-    location.reload();
-  }
-
-  function popup(msg){
-    const p=document.getElementById("popup");
-    p.innerText=msg;
-    p.style.display="block";
-    setTimeout(()=>p.style.display="none",1500);
-  }
-
-  // Simple Fake Chart
-  function drawChart(){
-    const canvas=document.createElement("canvas");
-    canvas.width=document.getElementById("chart").clientWidth;
-    canvas.height=300;
-    const ctx=canvas.getContext("2d");
-    ctx.fillStyle="black";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.strokeStyle="lime";
-    ctx.beginPath();
-    for(let i=0;i<50;i++){
-      const y=150+Math.sin(i/3)*50+Math.random()*20;
-      const x=i*6;
-      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    // Login
+    function login() {
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+      const data = localStorage.getItem("user-" + u);
+      if(!data) return document.getElementById("login-msg").innerHTML = "<p class='error'>No user found</p>";
+      const obj = JSON.parse(data);
+      if(obj.password !== p) return document.getElementById("login-msg").innerHTML = "<p class='error'>Wrong password</p>";
+      user = obj;
+      localStorage.setItem("current-user", u);
+      document.getElementById("login").classList.remove('show');
+      showPage('market');
     }
-    ctx.stroke();
-    document.getElementById("chart").innerHTML="";
-    document.getElementById("chart").appendChild(canvas);
-  }
 
-  // Auto update market
-  setInterval(renderMarket,4000);
+    // Logout
+    function logout() {
+      user = null;
+      localStorage.removeItem("current-user");
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
+      document.getElementById("login").classList.add('show');
+    }
 
-  renderMarket();
-</script>
+    // Render Market
+    function renderMarket() {
+      let html = "";
+      tokens.forEach(t => {
+        html += `<div class='token-card'><b>${t.symbol}</b><span>$${t.price.toFixed(2)}</span></div>`;
+      });
+      document.getElementById("token-list").innerHTML = html;
+    }
 
+    // Render Trade
+    function renderTrade() {
+      let sel = document.getElementById("token-select");
+      sel.innerHTML = "";
+      tokens.forEach(t => {
+        sel.innerHTML += `<option value="${t.symbol}">${t.symbol}</option>`;
+      });
+      drawChart();
+    }
+
+    // Draw fake chart
+    function drawChart() {
+      let canvas = document.getElementById("chart");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.strokeStyle = "#00c2ff";
+      ctx.beginPath();
+      if(chartData.length === 0) {
+        chartData = Array.from({length:20},()=>Math.random()*100);
+      }
+      chartData.forEach((val,i) => {
+        let x = i*(canvas.width/20);
+        let y = canvas.height - (val/100*canvas.height);
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+    }
+
+    // Buy
+    function buyToken() {
+      let amt = parseFloat(document.getElementById("trade-amount").value);
+      let token = document.getElementById("token-select").value;
+      let t = tokens.find(x=>x.symbol===token);
+      if(amt>user.balance) return document.getElementById("trade-msg").innerHTML = "<p class='error'>Not enough balance</p>";
+      let qty = amt/t.price;
+      user.balance -= amt;
+      if(!user.holdings[token]) user.holdings[token]=0;
+      user.holdings[token]+=qty;
+      saveUser();
+      document.getElementById("trade-msg").innerHTML = "<p class='success'>Buy successful</p>";
+      renderAssets();
+    }
+
+    // Sell
+    function sellToken() {
+      let amt = parseFloat(document.getElementById("trade-amount").value);
+      let token = document.getElementById("token-select").value;
+      let t = tokens.find(x=>x.symbol===token);
+      let qty = amt/t.price;
+      if(!user.holdings[token] || user.holdings[token]<qty) return document.getElementById("trade-msg").innerHTML = "<p class='error'>Not enough holdings</p>";
+      user.holdings[token]-=qty;
+      user.balance+=amt;
+      saveUser();
+      document.getElementById("trade-msg").innerHTML = "<p class='success'>Sell successful</p>";
+      renderAssets();
+    }
+
+    // Save user to localStorage
+    function saveUser() {
+      localStorage.setItem("user-"+user.username, JSON.stringify(user));
+    }
+
+    // Render Assets
+    function renderAssets() {
+      if(!user) return;
+      document.getElementById("balance").innerHTML = "<b>Balance:</b> $"+user.balance.toFixed(2);
+      let h = "";
+      for(let k in user.holdings) {
+        h += `<p>${k}: ${user.holdings[k].toFixed(4)}</p>`;
+      }
+      document.getElementById("holdings").innerHTML = h;
+    }
+
+    // Render Profile
+    function renderProfile() {
+      if(!user) return;
+      document.getElementById("user-info").innerHTML = `<p><b>User:</b> ${user.username}</p>`;
+    }
+
+    // Random pump/dump
+    setInterval(()=>{
+      tokens.forEach(t=>{
+        let change = (Math.random()-0.5)*5;
+        t.price = Math.max(0.1, t.price + change);
+      });
+      renderMarket();
+      drawChart();
+    },3000);
+
+    // Auto login if session
+    window.onload=()=>{
+      let cu = localStorage.getItem("current-user");
+      if(cu) {
+        user = JSON.parse(localStorage.getItem("user-"+cu));
+        document.getElementById("login").classList.remove('show');
+        showPage('market');
+      }
+    }
+  </script>
 </body>
 </html>
