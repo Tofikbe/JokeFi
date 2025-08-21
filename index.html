@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CoinRise - Advanced Demo Exchange</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>CoinRise - Professional Crypto Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.0/dist/chartjs-chart-financial.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,66 +15,72 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #0d1117 0%, #1c2526 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a2332 100%);
             color: #ffffff;
             min-height: 100vh;
             line-height: 1.6;
         }
 
         header {
-            background: #161b22;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: #1a2332;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
         header h1 {
-            font-size: 28px;
-            margin: 0;
-            background: linear-gradient(to right, #00c2ff, #00ff88);
+            font-size: 24px;
+            background: linear-gradient(to right, #00c4ff, #00ff88);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         nav {
+            background: #1f2a44;
+            padding: 10px 0;
             display: flex;
             justify-content: center;
-            background: #1c2128;
-            padding: 15px 0;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            gap: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         nav button {
             background: none;
             border: none;
-            color: #fff;
+            color: #ffffff;
             font-size: 16px;
             padding: 10px 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 0 10px;
         }
 
         nav button:hover {
-            color: #00c2ff;
+            color: #00c4ff;
             transform: translateY(-2px);
         }
 
-        .active {
-            color: #00c2ff;
+        nav button.active {
+            color: #00c4ff;
+            border-bottom: 2px solid #00c4ff;
             font-weight: bold;
-            border-bottom: 2px solid #00c2ff;
         }
 
         .page {
             display: none;
             padding: 20px;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             animation: fadeIn 0.5s ease-in;
         }
@@ -83,10 +90,9 @@
         }
 
         .token-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1c2128;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            background: #1f2a44;
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
@@ -95,21 +101,24 @@
 
         .token-card:hover {
             transform: translateX(5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         .buy-sell {
-            margin: 20px 0;
-            background: #1c2128;
+            background: #1f2a44;
             padding: 20px;
             border-radius: 8px;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         button {
             padding: 10px 20px;
             border: none;
             border-radius: 6px;
-            background: #00c2ff;
+            background: #00c4ff;
             color: #000;
             font-weight: bold;
             cursor: pointer;
@@ -123,8 +132,8 @@
         input, select {
             padding: 10px;
             border-radius: 6px;
-            border: 1px solid #555;
-            background: #2c313a;
+            border: 1px solid #444;
+            background: #2c3a57;
             color: #fff;
             width: 100%;
             margin: 10px 0;
@@ -132,10 +141,35 @@
         }
 
         .chart-container {
-            background: #1c2128;
+            background: #1f2a44;
             padding: 20px;
             border-radius: 8px;
-            margin-top: 20px;
+            margin: 20px 0;
+        }
+
+        .order-book {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .order-book table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-book th, .order-book td {
+            padding: 8px;
+            text-align: right;
+        }
+
+        .order-book .buy {
+            color: #00ff88;
+        }
+
+        .order-book .sell {
+            color: #ff4d4d;
         }
 
         .success {
@@ -166,22 +200,39 @@
         }
 
         .modal-content {
-            background: #1c2128;
+            background: #1f2a44;
             padding: 30px;
             border-radius: 8px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
         }
 
         .transaction-history {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
-            margin-top: 20px;
+            margin: 20px 0;
+            background: #1f2a44;
+            padding: 15px;
+            border-radius: 8px;
         }
 
         .transaction-item {
             padding: 10px;
             border-bottom: 1px solid #333;
+        }
+
+        .timeframe-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .timeframe-selector button {
+            background: #2c3a57;
+        }
+
+        .timeframe-selector button.active {
+            background: #00c4ff;
         }
 
         @keyframes fadeIn {
@@ -195,27 +246,35 @@
                 align-items: center;
             }
 
-            nav button {
-                margin: 5px 0;
+            .buy-sell {
+                grid-template-columns: 1fr;
+            }
+
+            .order-book {
+                grid-template-columns: 1fr;
             }
 
             .token-card {
-                flex-direction: column;
-                align-items: flex-start;
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>CoinRise - Advanced Demo Exchange</h1>
+        <h1>CoinRise - Professional Crypto Exchange</h1>
+        <div class="user-status">
+            <span id="user-status"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
     </header>
     <nav>
-        <button onclick="showPage('market')" id="nav-market" class="active">Market</button>
+        <button onclick="showPage('dashboard')" id="nav-dashboard" class="active">Dashboard</button>
+        <button onclick="showPage('market')" id="nav-market">Market</button>
         <button onclick="showPage('trade')" id="nav-trade">Trade</button>
-        <button
-
- onclick="showPage('assets')" id="nav-assets">Assets</button>
+        <button onclick="showPage('assets')" id="nav-assets">Assets</button>
+        <button onclick="showPage('wallet')" id="nav-wallet">Wallet</button>
         <button onclick="showPage('profile')" id="nav-profile">Profile</button>
         <button onclick="showPage('settings')" id="nav-settings">Settings</button>
     </nav>
@@ -223,12 +282,22 @@
     <!-- Login Page -->
     <div id="login" class="page show">
         <h2>Login / Signup</h2>
-        <input id="username" placeholder="Enter username" required />
-        <input id="password" type="password" placeholder="Enter password" required />
-        <input id="email" type="email" placeholder="Enter email" />
+        <input id="username" placeholder="Username (3-20 characters)" required />
+        <input id="password" type="password" placeholder="Password (min 8 characters)" required />
+        <input id="email" type="email" placeholder="Email" required />
         <button onclick="signup()">Signup</button>
         <button onclick="login()">Login</button>
         <div id="login-msg"></div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page">
+        <h2>Dashboard</h2>
+        <div class="chart-container">
+            <canvas id="market-overview-chart"></canvas>
+        </div>
+        <div id="portfolio-summary"></div>
+        <div id="market-news"></div>
     </div>
 
     <!-- Market Page -->
@@ -240,20 +309,48 @@
     <!-- Trade Page -->
     <div id="trade" class="page">
         <h2>Trade Center</h2>
+        <div class="timeframe-selector">
+            <button onclick="setTimeframe('1m')" id="tf-1m">1m</button>
+            <button onclick="setTimeframe('5m')" id="tf-5m">5m</button>
+            <button onclick="setTimeframe('15m')" id="tf-15m">15m</button>
+            <button onclick="setTimeframe('1h')" id="tf-1h">1h</button>
+        </div>
         <select id="token-select"></select>
         <div class="chart-container">
             <canvas id="price-chart"></canvas>
         </div>
         <div class="buy-sell">
-            <input id="trade-amount" type="number" placeholder="Amount (USDT)" min="0" step="0.01" />
-            <select id="trade-type">
-                <option value="market">Market Order</option>
-                <option value="limit">Limit Order</option>
-            </select>
-            <input id="limit-price" type="number" placeholder="Limit Price (optional)" min="0" step="0.01" />
-            <button onclick="buyToken()">Buy</button>
-            <button onclick="sellToken()">Sell</button>
+            <div>
+                <h3>Buy</h3>
+                <input id="buy-amount" type="number" placeholder="Amount ($KUSD)" min="0" step="0.01" />
+                <select id="buy-type">
+                    <option value="market">Market Order</option>
+                    <option value="limit">Limit Order</option>
+                </select>
+                <input id="buy-limit-price" type="number" placeholder="Limit Price" min="0" step="0.01" />
+                <button onclick="buyToken()">Buy</button>
+            </div>
+            <div>
+                <h3>Sell</h3>
+                <input id="sell-amount" type="number" placeholder="Amount ($KUSD)" min="0" step="0.01" />
+                <select id="sell-type">
+                    <option value="market">Market Order</option>
+                    <option value="limit">Limit Order</option>
+                </select>
+                <input id="sell-limit-price" type="number" placeholder="Limit Price" min="0" step="0.01" />
+                <button onclick="sellToken()">Sell</button>
+            </div>
             <div id="trade-msg"></div>
+        </div>
+        <div class="order-book">
+            <div>
+                <h3>Buy Orders</h3>
+                <table id="buy-orders"></table>
+            </div>
+            <div>
+                <h3>Sell Orders</h3>
+                <table id="sell-orders"></table>
+            </div>
         </div>
         <div class="transaction-history" id="transaction-history"></div>
     </div>
@@ -262,10 +359,28 @@
     <div id="assets" class="page">
         <h2>My Portfolio</h2>
         <div id="balance"></div>
+        <div id="kusd-balance"></div>
         <div id="portfolio-value"></div>
         <div id="holdings"></div>
         <div class="chart-container">
             <canvas id="portfolio-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Wallet Page -->
+    <div id="wallet" class="page">
+        <h2>Wallet Management</h2>
+        <div>
+            <h3>Purchase $KUSD</h3>
+            <input id="kusd-amount" type="number" placeholder="Amount to Purchase" min="0" step="0.01" />
+            <button onclick="purchaseKUSD()">Purchase $KUSD</button>
+            <div id="kusd-msg"></div>
+        </div>
+        <div>
+            <h3>Withdraw $KUSD</h3>
+            <input id="withdraw-amount" type="number" placeholder="Amount to Withdraw" min="0" step="0.01" />
+            <button onclick="withdrawKUSD()">Withdraw $KUSD</button>
+            <div id="withdraw-msg"></div>
         </div>
     </div>
 
@@ -288,17 +403,23 @@
             </select>
         </div>
         <div>
-            <label>Currency:</label>
+            <label>Currency Display:</label>
             <select id="currency-select">
-                <option value="USDT">USDT</option>
+                <option value="KUSD">$KUSD</option>
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
             </select>
         </div>
+        <div>
+            <label>Notifications:</label>
+            <input type="checkbox" id="notifications" />
+            <label for="notifications">Enable Price Alerts</label>
+        </div>
         <button onclick="saveSettings()">Save Settings</button>
+        <div id="settings-msg"></div>
     </div>
 
-    <!-- Modal for Change Password -->
+    <!-- Change Password Modal -->
     <div id="change-password-modal" class="modal">
         <div class="modal-content">
             <h2>Change Password</h2>
@@ -306,27 +427,31 @@
             <input id="new-password" type="password" placeholder="New Password" />
             <input id="confirm-password" type="password" placeholder="Confirm New Password" />
             <button onclick="changePassword()">Update Password</button>
-            <button onclick="closeModal('change-password-modal')">Cancel</button>
+            <button onclick="closeModal('change-password-modal')">Cancel ❌</button>
             <div id="password-msg"></div>
         </div>
     </div>
 
     <script>
-        // Extended token list
+        // Token data with $KUSD as stablecoin
         const tokens = [
-            { symbol: "KING", price: 100, change: 0, volume: 10000, marketCap: 1000000 },
-            { symbol: "GIVNIX", price: 50, change: 0, volume: 8000, marketCap: 500000 },
-            { symbol: "BGMI", price: 10, change: 0, volume: 5000, marketCap: 100000 },
-            { symbol: "PUBG", price: 5, change: 0, volume: 3000, marketCap: 50000 },
-            { symbol: "CRYPTO", price: 75, change: 0, volume: 6000, marketCap: 750000 },
-            { symbol: "RISE", price: 25, change: 0, volume: 4000, marketCap: 250000 }
+            { symbol: "KING", price: 100, change: 0, volume: 10000, marketCap: 1000000, orderBook: { buys: [], sells: [] } },
+            { symbol: "GIVNIX", price: 50, change: 0, volume: 8000, marketCap: 500000, orderBook: { buys: [], sells: [] } },
+            { symbol: "BGMI", price: 10, change: 0, volume: 5000, marketCap: 100000, orderBook: { buys: [], sells: [] } },
+            { symbol: "PUBG", price: 5, change: 0, volume: 3000, marketCap: 50000, orderBook: { buys: [], sells: [] } },
+            { symbol: "CRYPTO", price: 75, change: 0, volume: 6000, marketCap: 750000, orderBook: { buys: [], sells: [] } },
+            { symbol: "RISE", price: 25, change: 0, volume: 4000, marketCap: 250000, orderBook: { buys: [], sells: [] } },
+            { symbol: "KUSD", price: 1, change: 0, volume: 100000, marketCap: 10000000, orderBook: { buys: [], sells: [] } }
         ];
 
         let user = null;
         let priceChart = null;
         let portfolioChart = null;
+        let marketChart = null;
         let transactions = [];
-        let settings = { theme: 'dark', currency: 'USDT' };
+        let settings = { theme: 'dark', currency: 'KUSD', notifications: false };
+        let currentTimeframe = '1h';
+        let chartData = {};
 
         // Navigation
         function showPage(page) {
@@ -336,39 +461,40 @@
             document.getElementById(`nav-${page}`).classList.add('active');
             
             switch(page) {
-                case 'market':
-                    renderMarket();
-                    break;
-                case 'trade':
-                    renderTrade();
-                    break;
-                case 'assets':
-                    renderAssets();
-                    break;
-                case 'profile':
-                    renderProfile();
-                    break;
-                case 'settings':
-                    renderSettings();
-                    break;
+                case 'dashboard': renderDashboard(); break;
+                case 'market': renderMarket(); break;
+                case 'trade': renderTrade(); break;
+                case 'assets': renderAssets(); break;
+                case 'wallet': renderWallet(); break;
+                case 'profile': renderProfile(); break;
+                case 'settings': renderSettings(); break;
             }
+            updateUserStatus();
         }
 
-        // Input validation
+        // Input Validation
         function validateInput(input, type) {
             if (!input) return false;
             switch(type) {
-                case 'username':
-                    return /^[a-zA-Z0-9]{3,20}$/.test(input);
-                case 'password':
-                    return input.length >= 8;
-                case 'email':
-                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
-                case 'amount':
-                    return !isNaN(input) && input > 0;
-                default:
-                    return true;
+                case 'username': return /^[a-zA-Z0-9]{3,20}$/.test(input);
+                case 'password': return input.length >= 8;
+                case 'email': return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+                case 'amount': return !isNaN(input) && input > 0;
+                default: return true;
             }
+        }
+
+        // Show Message
+        function showMessage(elementId, type, message) {
+            document.getElementById(elementId).innerHTML = `<p class="${type}">${message}</p>`;
+            setTimeout(() => document.getElementById(elementId).innerHTML = '', 5000);
+        }
+
+        // Update User Status
+        function updateUserStatus() {
+            document.getElementById('user-status').innerHTML = user ? 
+                `Welcome, ${user.username} | $KUSD: ${user.kusdBalance?.toFixed(2) || 0}` : 
+                'Please login';
         }
 
         // Signup
@@ -388,19 +514,21 @@
             }
 
             if (localStorage.getItem(`user-${username}`)) {
-                showMessage('login-msg', 'error', 'Username already exists');
-            } else {
-                const newUser = {
-                    username,
-                    password,
-                    email,
-                    balance: 1000,
-                    holdings: {},
-                    transactions: []
-                };
-                localStorage.setItem(`user-${username}`, JSON.stringify(newUser));
-                showMessage('login-msg', 'success', 'Signup successful! Please login.');
+                return showMessage('login-msg', 'error', 'Username already exists');
             }
+
+            const newUser = {
+                username,
+                password,
+                email,
+                balance: 1000,
+                kusdBalance: 1000,
+                holdings: {},
+                transactions: [],
+                createdAt: Date.now()
+            };
+            localStorage.setItem(`user-${username}`, JSON.stringify(newUser));
+            showMessage('login-msg', 'success', 'Signup successful! Please login.');
         }
 
         // Login
@@ -422,7 +550,7 @@
             transactions = userData.transactions || [];
             localStorage.setItem("current-user", username);
             document.getElementById("login").classList.remove('show');
-            showPage('market');
+            showPage('dashboard');
         }
 
         // Logout
@@ -432,30 +560,96 @@
             localStorage.removeItem("current-user");
             document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
             document.getElementById("login").classList.add('show');
+            updateUserStatus();
         }
 
-        // Show message
-        function showMessage(elementId, type, message) {
-            document.getElementById(elementId).innerHTML = `<p class="${type}">${message}</p>`;
-            setTimeout(() => {
-                document.getElementById(elementId).innerHTML = '';
-            }, 3000);
+        // Render Dashboard
+        function renderDashboard() {
+            let summary = `
+                <h3>Portfolio Summary</h3>
+                <p><b>Total Value:</b> $${calculatePortfolioValue().toFixed(2)}</p>
+                <p><b>$KUSD Balance:</b> $${user.kusdBalance?.toFixed(2) || 0}</p>
+            `;
+            document.getElementById("portfolio-summary").innerHTML = summary;
+
+            // Fake market news
+            document.getElementById("market-news").innerHTML = `
+                <h3>Market News</h3>
+                <p>KING token surges 15% after new partnership announcement!</p>
+                <p>GIVNIX introduces new staking program with 10% APY.</p>
+            `;
+
+            updateMarketChart();
+        }
+
+        // Calculate Portfolio Value
+        function calculatePortfolioValue() {
+            let total = user.kusdBalance || 0;
+            Object.entries(user.holdings).forEach(([token, quantity]) => {
+                const tokenData = tokens.find(t => t.symbol === token);
+                if (tokenData) total += quantity * tokenData.price;
+            });
+            return total;
+        }
+
+        // Update Market Chart
+        function updateMarketChart() {
+            if (!marketChart) {
+                marketChart = new Chart(document.getElementById("market-overview-chart"), {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 20}, (_, i) => i),
+                        datasets: tokens.filter(t => t.symbol !== 'KUSD').map(token => ({
+                            label: token.symbol,
+                            data: Array.from({length: 20}, () => token.price + (Math.random() - 0.5) * 10),
+                            borderColor: getRandomColor(),
+                            tension: 0.4,
+                            fill: false
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: false, grid: { borderColor: '#444' }, ticks: { color: '#fff' } },
+                            x: { grid: { borderColor: '#444' }, ticks: { color: '#fff' } }
+                        },
+                        plugins: { legend: { labels: { color: '#fff' } } }
+                    }
+                });
+            } else {
+                marketChart.data.datasets.forEach(dataset => {
+                    dataset.data.shift();
+                    const token = tokens.find(t => t.symbol === dataset.label);
+                    dataset.data.push(token.price + (Math.random() - 0.5) * 10);
+                });
+                marketChart.update();
+            }
+        }
+
+        // Get Random Color
+        function getRandomColor() {
+            const colors = ['#00ff88', '#00c4ff', '#ff4d4d', '#ffeb3b', '#e91e63', '#4caf50'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
 
         // Render Market
         function renderMarket() {
             let html = '';
-            tokens.forEach(token => {
+            tokens.filter(t => t.symbol !== 'KUSD').forEach(token => {
                 const changeClass = token.change >= 0 ? 'success' : 'error';
                 html += `
                     <div class="token-card">
                         <div>
-                            <b>${token.symbol}</b>
+                            <b>${token.symbol}/KUSD</b>
                             <p>$${token.price.toFixed(2)}</p>
                         </div>
                         <div>
                             <span class="${changeClass}">${token.change.toFixed(2)}%</span>
-                            <p>Vol: ${token.volume}</p>
+                        </div>
+                        <div>
+                            <p>Vol: ${token.volume.toLocaleString()}</p>
+                        </div>
+                        <div>
                             <p>MCap: $${token.marketCap.toLocaleString()}</p>
                         </div>
                     </div>`;
@@ -466,9 +660,26 @@
         // Render Trade
         function renderTrade() {
             const sel = document.getElementById("token-select");
-            sel.innerHTML = tokens.map(t => `<option value="${t.symbol}">${t.symbol}</option>`).join('');
+            sel.innerHTML = tokens.filter(t => t.symbol !== 'KUSD').map(t => `<option value="${t.symbol}">${t.symbol}/KUSD</option>`).join('');
             updatePriceChart();
+            renderOrderBook();
             renderTransactionHistory();
+            updateTimeframeButtons();
+        }
+
+        // Set Timeframe
+        function setTimeframe(tf) {
+            currentTimeframe = tf;
+            updateTimeframeButtons();
+            updatePriceChart();
+        }
+
+        // Update Timeframe Buttons
+        function updateTimeframeButtons() {
+            document.querySelectorAll('.timeframe-selector button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.id === `tf-${currentTimeframe}`) btn.classList.add('active');
+            });
         }
 
         // Update Price Chart
@@ -476,42 +687,87 @@
             const token = document.getElementById("token-select").value;
             const selectedToken = tokens.find(t => t.symbol === token);
             
+            if (!chartData[token]) {
+                chartData[token] = Array.from({length: 20}, () => ({
+                    t: Date.now(),
+                    o: selectedToken.price + (Math.random() - 0.5) * 5,
+                    h: selectedToken.price + Math.random() * 10,
+                    l: selectedToken.price - Math.random() * 10,
+                    c: selectedToken.price + (Math.random() - 0.5) * 5
+                }));
+            }
+
             if (!priceChart) {
                 priceChart = new Chart(document.getElementById("price-chart"), {
-                    type: 'line',
+                    type: 'candlestick',
                     data: {
-                        labels: Array.from({length: 20}, (_, i) => i),
                         datasets: [{
-                            label: `${token} Price`,
-                            data: Array.from({length: 20}, () => selectedToken.price + (Math.random() - 0.5) * 10),
-                            borderColor: '#00ff88',
-                            tension: 0.4,
-                            fill: false
+                            label: `${token}/KUSD`,
+                            data: chartData[token]
                         }]
                     },
                     options: {
                         responsive: true,
                         scales: {
-                            y: {
-                                beginAtZero: false,
-                                grid: { borderColor: '#555' },
-                                ticks: { color: '#fff' }
-                            },
-                            x: {
-                                grid: { borderColor: '#555' },
-                                ticks: { color: '#fff' }
-                            }
+                            x: { type: 'time', time: { unit: timeframeUnit() }, ticks: { color: '#fff' } },
+                            y: { beginAtZero: false, ticks: { color: '#fff' }, grid: { borderColor: '#444' } }
                         },
-                        plugins: {
-                            legend: { labels: { color: '#fff' } }
-                        }
+                        plugins: { legend: { labels: { color: '#fff' } } }
                     }
                 });
             } else {
-                priceChart.data.datasets[0].data.shift();
-                priceChart.data.datasets[0].data.push(selectedToken.price + (Math.random() - 0.5) * 10);
+                chartData[token].shift();
+                chartData[token].push({
+                    t: Date.now(),
+                    o: selectedToken.price + (Math.random() - 0.5) * 5,
+                    h: selectedToken.price + Math.random() * 10,
+                    l: selectedToken.price - Math.random() * 10,
+                    c: selectedToken.price + (Math.random() - 0.5) * 5
+                });
+                priceChart.data.datasets[0].data = chartData[token];
                 priceChart.update();
             }
+        }
+
+        // Timeframe Unit
+        function timeframeUnit() {
+            switch(currentTimeframe) {
+                case '1m': return 'minute';
+                case '5m': return 'minute';
+                case '15m': return 'minute';
+                case '1h': return 'hour';
+                default: return 'hour';
+            }
+        }
+
+        // Render Order Book
+        function renderOrderBook() {
+            const token = document.getElementById("token-select").value;
+            const selectedToken = tokens.find(t => t.symbol === token);
+            
+            // Simulate order book
+            selectedToken.orderBook.buys = Array.from({length: 5}, () => ({
+                price: selectedToken.price - Math.random() * 2,
+                quantity: Math.random() * 100
+            })).sort((a, b) => b.price - a.price);
+            
+            selectedToken.orderBook.sells = Array.from({length: 5}, () => ({
+                price: selectedToken.price + Math.random() * 2,
+                quantity: Math.random() * 100
+            })).sort((a, b) => a.price - b.price);
+
+            let buyHtml = '<tr><th>Price ($KUSD)</th><th>Quantity</th></tr>';
+            selectedToken.orderBook.buys.forEach(order => {
+                buyHtml += `<tr class="buy"><td>${order.price.toFixed(2)}</td><td>${order.quantity.toFixed(4)}</td></tr>`;
+            });
+
+            let sellHtml = '<tr><th>Price ($KUSD)</th><th>Quantity</th></tr>';
+            selectedToken.orderBook.sells.forEach(order => {
+                sellHtml += `<tr class="sell"><td>${order.price.toFixed(2)}</td><td>${order.quantity.toFixed(4)}</td></tr>`;
+            });
+
+            document.getElementById("buy-orders").innerHTML = buyHtml;
+            document.getElementById("sell-orders").innerHTML = sellHtml;
         }
 
         // Render Transaction History
@@ -520,7 +776,7 @@
             transactions.forEach(t => {
                 html += `
                     <div class="transaction-item">
-                        <p><b>${t.type}</b> ${t.token}: ${t.quantity.toFixed(4)} @ $${t.price.toFixed(2)}</p>
+                        <p><b>${t.type}</b> ${t.token}/KUSD: ${t.quantity.toFixed(4)} @ $${t.price.toFixed(2)}</p>
                         <p>${new Date(t.timestamp).toLocaleString()}</p>
                     </div>`;
             });
@@ -530,11 +786,11 @@
         // Buy Token
         function buyToken() {
             if (!user) return showMessage('trade-msg', 'error', 'Please login first');
-            
-            const amount = parseFloat(document.getElementById("trade-amount").value);
+
+            const amount = parseFloat(document.getElementById("buy-amount").value);
             const token = document.getElementById("token-select").value;
-            const tradeType = document.getElementById("trade-type").value;
-            const limitPrice = parseFloat(document.getElementById("limit-price").value) || null;
+            const tradeType = document.getElementById("buy-type").value;
+            const limitPrice = parseFloat(document.getElementById("buy-limit-price").value) || null;
             const selectedToken = tokens.find(t => t.symbol === token);
 
             if (!validateInput(amount, 'amount')) {
@@ -545,13 +801,14 @@
                 return showMessage('trade-msg', 'error', 'Limit price required for limit order');
             }
 
-            const price = tradeType === 'limit' ? limitPrice : selectedToken.price;
-            if (amount > user.balance) {
-                return showMessage('trade-msg', 'error', 'Insufficient balance');
+            if (amount > user.kusdBalance) {
+                return showMessage('trade-msg', 'error', 'Insufficient $KUSD balance');
             }
 
+            const price = tradeType === 'limit' ? limitPrice : selectedToken.price;
             const quantity = amount / price;
-            user.balance -= amount;
+
+            user.kusdBalance -= amount;
             user.holdings[token] = (user.holdings[token] || 0) + quantity;
             
             transactions.push({
@@ -562,20 +819,24 @@
                 timestamp: Date.now()
             });
 
+            // Update order book
+            selectedToken.orderBook.buys.push({ price, quantity });
+            selectedToken.orderBook.buys.sort((a, b) => b.price - a.price);
+
             saveUser();
-            showMessage('trade-msg', 'success', 'Buy order successful');
+            showMessage('trade-msg', 'success', `Bought ${quantity.toFixed(4)} ${token} for ${amount.toFixed(2)} $KUSD`);
+            renderTrade();
             renderAssets();
-            renderTransactionHistory();
         }
 
         // Sell Token
         function sellToken() {
             if (!user) return showMessage('trade-msg', 'error', 'Please login first');
 
-            const amount = parseFloat(document.getElementById("trade-amount").value);
+            const amount = parseFloat(document.getElementById("sell-amount").value);
             const token = document.getElementById("token-select").value;
-            const tradeType = document.getElementById("trade-type").value;
-            const limitPrice = parseFloat(document.getElementById("limit-price").value) || null;
+            const tradeType = document.getElementById("sell-type").value;
+            const limitPrice = parseFloat(document.getElementById("sell-limit-price").value) || null;
             const selectedToken = tokens.find(t => t.symbol === token);
 
             if (!validateInput(amount, 'amount')) {
@@ -590,7 +851,7 @@
             }
 
             user.holdings[token] -= quantity;
-            user.balance += amount;
+            user.kusdBalance += amount;
             
             transactions.push({
                 type: 'Sell',
@@ -600,10 +861,56 @@
                 timestamp: Date.now()
             });
 
+            // Update order book
+            selectedToken.orderBook.sells.push({ price, quantity });
+            selectedToken.orderBook.sells.sort((a, b) => a.price - b.price);
+
             saveUser();
-            showMessage('trade-msg', 'success', 'Sell order successful');
+            showMessage('trade-msg', 'success', `Sold ${quantity.toFixed(4)} ${token} for ${amount.toFixed(2)} $KUSD`);
+            renderTrade();
             renderAssets();
-            renderTransactionHistory();
+        }
+
+        // Purchase $KUSD
+        function purchaseKUSD() {
+            if (!user) return showMessage('kusd-msg', 'error', 'Please login first');
+
+            const amount = parseFloat(document.getElementById("kusd-amount").value);
+            if (!validateInput(amount, 'amount')) {
+                return showMessage('kusd-msg', 'error', 'Invalid amount');
+            }
+
+            if (amount > user.balance) {
+                return showMessage('kusd-msg', 'error', 'Insufficient balance');
+            }
+
+            user.balance -= amount;
+            user.kusdBalance = (user.kusdBalance || 0) + amount;
+            saveUser();
+            showMessage('kusd-msg', 'success', `Purchased ${amount.toFixed(2)} $KUSD`);
+            renderWallet();
+            updateUserStatus();
+        }
+
+        // Withdraw $KUSD
+        function withdrawKUSD() {
+            if (!user) return showMessage('withdraw-msg', 'error', 'Please login first');
+
+            const amount = parseFloat(document.getElementById("withdraw-amount").value);
+            if (!validateInput(amount, 'amount')) {
+                return showMessage('withdraw-msg', 'error', 'Invalid amount');
+            }
+
+            if (amount > user.kusdBalance) {
+                return showMessage('withdraw-msg', 'error', 'Insufficient $KUSD balance');
+            }
+
+            user.kusdBalance -= amount;
+            user.balance += amount;
+            saveUser();
+            showMessage('withdraw-msg', 'success', `Withdrew ${amount.toFixed(2)} $KUSD`);
+            renderWallet();
+            updateUserStatus();
         }
 
         // Save User
@@ -616,14 +923,9 @@
         function renderAssets() {
             if (!user) return;
 
-            let totalValue = user.balance;
-            Object.entries(user.holdings).forEach(([token, quantity]) => {
-                const tokenData = tokens.find(t => t.symbol === token);
-                totalValue += quantity * tokenData.price;
-            });
-
-            document.getElementById("balance").innerHTML = `<p><b>Balance:</b> $${user.balance.toFixed(2)}</p>`;
-            document.getElementById("portfolio-value").innerHTML = `<p><b>Total Portfolio Value:</b> $${totalValue.toFixed(2)}</p>`;
+            document.getElementById("balance").innerHTML = `<p><b>USD Balance:</b> $${user.balance.toFixed(2)}</p>`;
+            document.getElementById("kusd-balance").innerHTML = `<p><b>$KUSD Balance:</b> $${user.kusdBalance?.toFixed(2) || 0}</p>`;
+            document.getElementById("portfolio-value").innerHTML = `<p><b>Total Portfolio Value:</b> $${calculatePortfolioValue().toFixed(2)}</p>`;
 
             let html = '<h3>Holdings</h3>';
             for (let [token, quantity] of Object.entries(user.holdings)) {
@@ -631,8 +933,10 @@
                 const value = quantity * tokenData.price;
                 html += `
                     <div class="token-card">
-                        <p><b>${token}</b>: ${quantity.toFixed(4)}</p>
+                        <p><b>${token}/KUSD</b></p>
+                        <p>${quantity.toFixed(4)}</p>
                         <p>Value: $${value.toFixed(2)}</p>
+                        <p>Price: $${tokenData.price.toFixed(2)}</p>
                     </div>`;
             }
             document.getElementById("holdings").innerHTML = html;
@@ -654,14 +958,12 @@
                         labels: Object.keys(user.holdings),
                         datasets: [{
                             data,
-                            backgroundColor: ['#00ff88', '#00c2ff', '#ff4d4d', '#ffeb3b', '#e91e63', '#4caf50']
+                            backgroundColor: ['#00ff88', '#00c4ff', '#ff4d4d', '#ffeb3b', '#e91e63', '#4caf50']
                         }]
                     },
                     options: {
                         responsive: true,
-                        plugins: {
-                            legend: { labels: { color: '#fff' } }
-                        }
+                        plugins: { legend: { labels: { color: '#fff' } } }
                     }
                 });
             } else {
@@ -670,13 +972,19 @@
             }
         }
 
+        // Render Wallet
+        function renderWallet() {
+            document.getElementById("kusd-balance").innerHTML = `<p><b>$KUSD Balance:</b> $${user.kusdBalance?.toFixed(2) || 0}</p>`;
+        }
+
         // Render Profile
         function renderProfile() {
             if (!user) return;
             document.getElementById("user-info").innerHTML = `
                 <p><b>Username:</b> ${user.username}</p>
                 <p><b>Email:</b> ${user.email}</p>
-                <p><b>Account Created:</b> ${new Date(user.createdAt || Date.now()).toLocaleDateString()}</p>
+                <p><b>Account Created:</b> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                <p><b>Total Trades:</b> ${transactions.length}</p>
             `;
         }
 
@@ -684,28 +992,30 @@
         function renderSettings() {
             document.getElementById("theme-select").value = settings.theme;
             document.getElementById("currency-select").value = settings.currency;
+            document.getElementById("notifications").checked = settings.notifications;
         }
 
         // Save Settings
         function saveSettings() {
             settings.theme = document.getElementById("theme-select").value;
             settings.currency = document.getElementById("currency-select").value;
+            settings.notifications = document.getElementById("notifications").checked;
             applySettings();
-            showMessage('settings', 'success', 'Settings saved');
+            showMessage('settings-msg', 'success', 'Settings saved');
         }
 
         // Apply Settings
         function applySettings() {
             if (settings.theme === 'light') {
                 document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)';
-                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content').forEach(el => {
+                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content, .order-book').forEach(el => {
                     el.style.background = '#ffffff';
                     el.style.color = '#000000';
                 });
             } else {
-                document.body.style.background = 'linear-gradient(135deg, #0d1117 0%, #1c2526 100%)';
-                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content').forEach(el => {
-                    el.style.background = '#1c2128';
+                document.body.style.background = 'linear-gradient(135deg, #0a0e17 0%, #1a2332 100%)';
+                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content, .order-book').forEach(el => {
+                    el.style.background = '#1f2a44';
                     el.style.color = '#ffffff';
                 });
             }
@@ -747,6 +1057,7 @@
         // Market Simulation
         setInterval(() => {
             tokens.forEach(token => {
+                if (token.symbol === 'KUSD') return; // Stablecoin price remains $1
                 const change = (Math.random() - 0.5) * 10;
                 token.price = Math.max(0.1, token.price + change);
                 token.change = ((token.price - 100) / 100 * 100).toFixed(2);
@@ -755,10 +1066,13 @@
             });
             renderMarket();
             if (document.getElementById('trade').classList.contains('show')) {
-                updatePriceChart();
+                renderTrade();
             }
             if (document.getElementById('assets').classList.contains('show')) {
                 renderAssets();
+            }
+            if (document.getElementById('dashboard').classList.contains('show')) {
+                renderDashboard();
             }
         }, 3000);
 
@@ -769,9 +1083,10 @@
                 user = JSON.parse(localStorage.getItem(`user-${currentUser}`));
                 transactions = user.transactions || [];
                 document.getElementById("login").classList.remove('show');
-                showPage('market');
+                showPage('dashboard');
             }
             applySettings();
+            updateUserStatus();
         };
     </script>
 </body>
