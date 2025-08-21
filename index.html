@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake Trading Exchange</title>
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#0d1117; color:#fff; }
+    .hidden { display:none; }
+    .center { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; }
+    input, button { padding:10px; margin:5px; border:none; border-radius:5px; }
+    input { width:200px; }
+    button { background:#2563eb; color:white; cursor:pointer; }
+    button:hover { background:#1d4ed8; }
+
+    /* Navbar */
+    .navbar { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; background:#161b22; padding:10px 0; }
+    .navbar button { background:none; color:#fff; font-size:14px; }
+
+    /* Sections */
+    .section { display:none; padding:20px; }
+    .active { display:block; }
+
+    /* Market Table */
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { padding:10px; border-bottom:1px solid #333; text-align:left; }
+
+    /* Chart */
+    #chart { width:100%; height:200px; background:#111; display:flex; align-items:end; }
+    .bar { width:10px; margin:0 2px; background:#22c55e; }
+
+    /* Card */
+    .card { background:#161b22; padding:15px; border-radius:10px; margin:10px 0; }
+  </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen" class="center">
+  <h2>Login</h2>
+  <input type="text" placeholder="Email">
+  <input type="password" placeholder="Password">
+  <button onclick="openApp()">Login</button>
+  <button onclick="alert('Signup Successful (Fake)')">Signup</button>
+  <button onclick="alert('Password reset link sent (Fake)')">Forgot Password</button>
+</div>
+
+<!-- App Screen -->
+<div id="app-screen" class="hidden">
+  <!-- Sections -->
+  <div id="home" class="section active">
+    <h2>🏠 Home</h2>
+    <div class="card">Welcome to Fake Exchange (Bitget Style)</div>
+    <div id="chart"></div>
+  </div>
+
+  <div id="market" class="section">
+    <h2>📊 Market</h2>
+    <table>
+      <tr><th>Token</th><th>Price</th><th>Supply</th></tr>
+      <tr onclick="showAbout('$KING')"><td>$KING</td><td>$25</td><td>1B</td></tr>
+      <tr onclick="showAbout('$GIVNIX')"><td>$GIVNIX</td><td>$5</td><td>1B</td></tr>
+      <tr onclick="showAbout('$BGMI')"><td>$BGMI</td><td>$60</td><td>1B</td></tr>
+      <tr onclick="showAbout('$PUBG')"><td>$PUBG</td><td>$100</td><td>1B</td></tr>
+    </table>
+    <div id="about" class="card"></div>
+  </div>
+
+  <div id="trade" class="section">
+    <h2>💹 Trade</h2>
+    <div class="card">Select token and place fake trade.</div>
+    <button onclick="alert('Fake Buy Order Placed')">Buy</button>
+    <button onclick="alert('Fake Sell Order Placed')">Sell</button>
+  </div>
+
+  <div id="assets" class="section">
+    <h2>💼 Assets</h2>
+    <div class="card">Total Balance: $10,000 (Fake)</div>
+    <div class="card">$KING: 100</div>
+    <div class="card">$GIVNIX: 200</div>
+    <div class="card">$BGMI: 50</div>
+    <div class="card">$PUBG: 10</div>
+  </div>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('market')">Market</button>
+    <button onclick="showSection('trade')">Trade</button>
+    <button onclick="showSection('assets')">Assets</button>
+  </div>
+</div>
+
+<script>
+  function openApp(){
+    document.getElementById("login-screen").classList.add("hidden");
+    document.getElementById("app-screen").classList.remove("hidden");
+    fakeChart();
+  }
+
+  function showSection(id){
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function showAbout(token){
+    let text = "";
+    if(token === "$KING") text = "The KING of all tokens. Fake but powerful.";
+    if(token === "$GIVNIX") text = "GIVNIX is a fake DeFi token for testing.";
+    if(token === "$BGMI") text = "BGMI token inspired by gaming hype.";
+    if(token === "$PUBG") text = "PUBG token built for gamers. 100% fake.";
+    document.getElementById("about").innerHTML = "<b>About " + token + ":</b><br>" + text;
+  }
+
+  // Fake Candlestick/Bar Chart
+  function fakeChart(){
+    const chart = document.getElementById("chart");
+    for(let i=0;i<30;i++){
+      const bar = document.createElement("div");
+      bar.className="bar";
+      bar.style.height = (Math.random()*200) + "px";
+      bar.style.background = Math.random()>0.5 ? "#22c55e" : "#ef4444";
+      chart.appendChild(bar);
+    }
+  }
+</script>
+
+</body>
+</html>
