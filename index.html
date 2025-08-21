@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CoinRise - Professional Crypto Exchange</title>
+    <title>CoinRise - Ultimate Crypto Exchange</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.0/dist/chartjs-chart-financial.min.js"></script>
@@ -24,7 +24,7 @@
 
         header {
             background: #1a2332;
-            padding: 15px 20px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -35,7 +35,7 @@
         }
 
         header h1 {
-            font-size: 24px;
+            font-size: 26px;
             background: linear-gradient(to right, #00c4ff, #00ff88);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -44,7 +44,8 @@
         .user-status {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            font-size: 14px;
         }
 
         nav {
@@ -52,7 +53,7 @@
             padding: 10px 0;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
@@ -91,17 +92,49 @@
 
         .token-card {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
             background: #1f2a44;
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
             transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
         .token-card:hover {
             transform: translateX(5px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .token-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 10px 0;
+            background: #1f2a44;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .token-list button {
+            background: #2c3a57;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .token-list button.active {
+            background: #00c4ff;
+            color: #000;
+        }
+
+        .token-list button:hover {
+            background: #00a1d6;
         }
 
         .buy-sell {
@@ -233,6 +266,20 @@
 
         .timeframe-selector button.active {
             background: #00c4ff;
+            color: #000;
+        }
+
+        .market-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .market-stats div {
+            background: #1f2a44;
+            padding: 10px;
+            border-radius: 6px;
         }
 
         @keyframes fadeIn {
@@ -246,11 +293,7 @@
                 align-items: center;
             }
 
-            .buy-sell {
-                grid-template-columns: 1fr;
-            }
-
-            .order-book {
+            .buy-sell, .order-book, .market-stats {
                 grid-template-columns: 1fr;
             }
 
@@ -258,12 +301,16 @@
                 grid-template-columns: 1fr;
                 gap: 10px;
             }
+
+            .token-list {
+                flex-wrap: nowrap;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>CoinRise - Professional Crypto Exchange</h1>
+        <h1>CoinRise - Ultimate Crypto Exchange</h1>
         <div class="user-status">
             <span id="user-status"></span>
             <button onclick="logout()">Logout</button>
@@ -309,13 +356,14 @@
     <!-- Trade Page -->
     <div id="trade" class="page">
         <h2>Trade Center</h2>
+        <div class="token-list" id="token-list-nav"></div>
+        <div class="market-stats" id="market-stats"></div>
         <div class="timeframe-selector">
             <button onclick="setTimeframe('1m')" id="tf-1m">1m</button>
             <button onclick="setTimeframe('5m')" id="tf-5m">5m</button>
             <button onclick="setTimeframe('15m')" id="tf-15m">15m</button>
-            <button onclick="setTimeframe('1h')" id="tf-1h">1h</button>
+            <button onclick="setTimeframe('1h')" id="tf-1h" class="active">1h</button>
         </div>
-        <select id="token-select"></select>
         <div class="chart-container">
             <canvas id="price-chart"></canvas>
         </div>
@@ -327,7 +375,7 @@
                     <option value="market">Market Order</option>
                     <option value="limit">Limit Order</option>
                 </select>
-                <input id="buy-limit-price" type="number" placeholder="Limit Price" min="0" step="0.01" />
+                <input id="buy-limit-price" type="number" placeholder="Limit Price ($KUSD)" min="0" step="0.01" />
                 <button onclick="buyToken()">Buy</button>
             </div>
             <div>
@@ -337,7 +385,7 @@
                     <option value="market">Market Order</option>
                     <option value="limit">Limit Order</option>
                 </select>
-                <input id="sell-limit-price" type="number" placeholder="Limit Price" min="0" step="0.01" />
+                <input id="sell-limit-price" type="number" placeholder="Limit Price ($KUSD)" min="0" step="0.01" />
                 <button onclick="sellToken()">Sell</button>
             </div>
             <div id="trade-msg"></div>
@@ -372,13 +420,13 @@
         <h2>Wallet Management</h2>
         <div>
             <h3>Purchase $KUSD</h3>
-            <input id="kusd-amount" type="number" placeholder="Amount to Purchase" min="0" step="0.01" />
+            <input id="kusd-amount" type="number" placeholder="Amount to Purchase ($)" min="0" step="0.01" />
             <button onclick="purchaseKUSD()">Purchase $KUSD</button>
             <div id="kusd-msg"></div>
         </div>
         <div>
             <h3>Withdraw $KUSD</h3>
-            <input id="withdraw-amount" type="number" placeholder="Amount to Withdraw" min="0" step="0.01" />
+            <input id="withdraw-amount" type="number" placeholder="Amount to Withdraw ($KUSD)" min="0" step="0.01" />
             <button onclick="withdrawKUSD()">Withdraw $KUSD</button>
             <div id="withdraw-msg"></div>
         </div>
@@ -435,13 +483,13 @@
     <script>
         // Token data with $KUSD as stablecoin
         const tokens = [
-            { symbol: "KING", price: 100, change: 0, volume: 10000, marketCap: 1000000, orderBook: { buys: [], sells: [] } },
-            { symbol: "GIVNIX", price: 50, change: 0, volume: 8000, marketCap: 500000, orderBook: { buys: [], sells: [] } },
-            { symbol: "BGMI", price: 10, change: 0, volume: 5000, marketCap: 100000, orderBook: { buys: [], sells: [] } },
-            { symbol: "PUBG", price: 5, change: 0, volume: 3000, marketCap: 50000, orderBook: { buys: [], sells: [] } },
-            { symbol: "CRYPTO", price: 75, change: 0, volume: 6000, marketCap: 750000, orderBook: { buys: [], sells: [] } },
-            { symbol: "RISE", price: 25, change: 0, volume: 4000, marketCap: 250000, orderBook: { buys: [], sells: [] } },
-            { symbol: "KUSD", price: 1, change: 0, volume: 100000, marketCap: 10000000, orderBook: { buys: [], sells: [] } }
+            { symbol: "KING", price: 100, change: 0, volume: 10000, marketCap: 1000000, high24h: 110, low24h: 90, liquidity: 500000, orderBook: { buys: [], sells: [] }, chartData: [] },
+            { symbol: "GIVNIX", price: 50, change: 0, volume: 8000, marketCap: 500000, high24h: 55, low24h: 45, liquidity: 300000, orderBook: { buys: [], sells: [] }, chartData: [] },
+            { symbol: "BGMI", price: 10, change: 0, volume: 5000, marketCap: 100000, high24h: 12, low24h: 8, liquidity: 100000, orderBook: { buys: [], sells: [] }, chartData: [] },
+            { symbol: "PUBG", price: 5, change: 0, volume: 3000, marketCap: 50000, high24h: 6, low24h: 4, liquidity: 50000, orderBook: { buys: [], sells: [] }, chartData: [] },
+            { symbol: "CRYPTO", price: 75, change: 0, volume: 6000, marketCap: 750000, high24h: 80, low24h: 70, liquidity: 400000, orderBook: { buys: [], sells: [] }, chartData: [] },
+            { symbol: "RISE", price: 25, change: 0, volume: 4000, marketCap: 250000, high24h: 28, low24h: 22, liquidity: 200000, orderBook: { buys: [], sells: [] }, chartData: [] },
+            { symbol: "KUSD", price: 1, change: 0, volume: 100000, marketCap: 10000000, high24h: 1, low24h: 1, liquidity: 10000000, orderBook: { buys: [], sells: [] }, chartData: [] }
         ];
 
         let user = null;
@@ -451,7 +499,7 @@
         let transactions = [];
         let settings = { theme: 'dark', currency: 'KUSD', notifications: false };
         let currentTimeframe = '1h';
-        let chartData = {};
+        let currentToken = 'KING';
 
         // Navigation
         function showPage(page) {
@@ -572,11 +620,11 @@
             `;
             document.getElementById("portfolio-summary").innerHTML = summary;
 
-            // Fake market news
             document.getElementById("market-news").innerHTML = `
                 <h3>Market News</h3>
-                <p>KING token surges 15% after new partnership announcement!</p>
-                <p>GIVNIX introduces new staking program with 10% APY.</p>
+                <p>KING token surges 15% after new partnership!</p>
+                <p>GIVNIX introduces staking with 10% APY.</p>
+                <p>CRYPTO launches new DeFi protocol.</p>
             `;
 
             updateMarketChart();
@@ -638,7 +686,7 @@
             tokens.filter(t => t.symbol !== 'KUSD').forEach(token => {
                 const changeClass = token.change >= 0 ? 'success' : 'error';
                 html += `
-                    <div class="token-card">
+                    <div class="token-card" onclick="selectToken('${token.symbol}')">
                         <div>
                             <b>${token.symbol}/KUSD</b>
                             <p>$${token.price.toFixed(2)}</p>
@@ -650,17 +698,41 @@
                             <p>Vol: ${token.volume.toLocaleString()}</p>
                         </div>
                         <div>
-                            <p>MCap: $${token.marketCap.toLocaleString()}</p>
+                            <p>24h High: $${token.high24h.toFixed(2)}</p>
+                            <p>24h Low: $${token.low24h.toFixed(2)}</p>
+                        </div>
+                        <div>
+                            <p>Liquidity: $${token.liquidity.toLocaleString()}</p>
                         </div>
                     </div>`;
             });
             document.getElementById("token-list").innerHTML = html;
         }
 
+        // Select Token
+        function selectToken(symbol) {
+            currentToken = symbol;
+            showPage('trade');
+        }
+
         // Render Trade
         function renderTrade() {
-            const sel = document.getElementById("token-select");
-            sel.innerHTML = tokens.filter(t => t.symbol !== 'KUSD').map(t => `<option value="${t.symbol}">${t.symbol}/KUSD</option>`).join('');
+            // Render token navigation
+            let tokenNav = '';
+            tokens.filter(t => t.symbol !== 'KUSD').forEach(token => {
+                tokenNav += `<button onclick="selectToken('${token.symbol}')" class="${currentToken === token.symbol ? 'active' : ''}">${token.symbol}/KUSD</button>`;
+            });
+            document.getElementById("token-list-nav").innerHTML = tokenNav;
+
+            // Render market stats
+            const token = tokens.find(t => t.symbol === currentToken);
+            document.getElementById("market-stats").innerHTML = `
+                <div><p><b>Price:</b> $${token.price.toFixed(2)}</p></div>
+                <div><p><b>24h Change:</b> <span class="${token.change >= 0 ? 'success' : 'error'}">${token.change.toFixed(2)}%</span></p></div>
+                <div><p><b>24h High/Low:</b> $${token.high24h.toFixed(2)} / $${token.low24h.toFixed(2)}</p></div>
+                <div><p><b>Liquidity:</b> $${token.liquidity.toLocaleString()}</p></div>
+            `;
+
             updatePriceChart();
             renderOrderBook();
             renderTransactionHistory();
@@ -684,49 +756,39 @@
 
         // Update Price Chart
         function updatePriceChart() {
-            const token = document.getElementById("token-select").value;
-            const selectedToken = tokens.find(t => t.symbol === token);
+            const token = tokens.find(t => t.symbol === currentToken);
             
-            if (!chartData[token]) {
-                chartData[token] = Array.from({length: 20}, () => ({
+            if (!token.chartData.length) {
+                token.chartData = Array.from({length: 20}, () => ({
                     t: Date.now(),
-                    o: selectedToken.price + (Math.random() - 0.5) * 5,
-                    h: selectedToken.price + Math.random() * 10,
-                    l: selectedToken.price - Math.random() * 10,
-                    c: selectedToken.price + (Math.random() - 0.5) * 5
+                    o: token.price + (Math.random() - 0.5) * 5,
+                    h: token.price + Math.random() * 10,
+                    l: token.price - Math.random() * 10,
+                    c: token.price + (Math.random() - 0.5) * 5
                 }));
             }
 
-            if (!priceChart) {
-                priceChart = new Chart(document.getElementById("price-chart"), {
-                    type: 'candlestick',
-                    data: {
-                        datasets: [{
-                            label: `${token}/KUSD`,
-                            data: chartData[token]
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { type: 'time', time: { unit: timeframeUnit() }, ticks: { color: '#fff' } },
-                            y: { beginAtZero: false, ticks: { color: '#fff' }, grid: { borderColor: '#444' } }
-                        },
-                        plugins: { legend: { labels: { color: '#fff' } } }
-                    }
-                });
-            } else {
-                chartData[token].shift();
-                chartData[token].push({
-                    t: Date.now(),
-                    o: selectedToken.price + (Math.random() - 0.5) * 5,
-                    h: selectedToken.price + Math.random() * 10,
-                    l: selectedToken.price - Math.random() * 10,
-                    c: selectedToken.price + (Math.random() - 0.5) * 5
-                });
-                priceChart.data.datasets[0].data = chartData[token];
-                priceChart.update();
+            if (priceChart) {
+                priceChart.destroy();
             }
+
+            priceChart = new Chart(document.getElementById("price-chart"), {
+                type: 'candlestick',
+                data: {
+                    datasets: [{
+                        label: `${currentToken}/KUSD`,
+                        data: token.chartData
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { type: 'time', time: { unit: timeframeUnit() }, ticks: { color: '#fff' } },
+                        y: { beginAtZero: false, ticks: { color: '#fff' }, grid: { borderColor: '#444' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
         }
 
         // Timeframe Unit
@@ -742,27 +804,26 @@
 
         // Render Order Book
         function renderOrderBook() {
-            const token = document.getElementById("token-select").value;
-            const selectedToken = tokens.find(t => t.symbol === token);
+            const token = tokens.find(t => t.symbol === currentToken);
             
             // Simulate order book
-            selectedToken.orderBook.buys = Array.from({length: 5}, () => ({
-                price: selectedToken.price - Math.random() * 2,
+            token.orderBook.buys = Array.from({length: 8}, () => ({
+                price: token.price - Math.random() * 3,
                 quantity: Math.random() * 100
             })).sort((a, b) => b.price - a.price);
             
-            selectedToken.orderBook.sells = Array.from({length: 5}, () => ({
-                price: selectedToken.price + Math.random() * 2,
+            token.orderBook.sells = Array.from({length: 8}, () => ({
+                price: token.price + Math.random() * 3,
                 quantity: Math.random() * 100
             })).sort((a, b) => a.price - b.price);
 
             let buyHtml = '<tr><th>Price ($KUSD)</th><th>Quantity</th></tr>';
-            selectedToken.orderBook.buys.forEach(order => {
+            token.orderBook.buys.forEach(order => {
                 buyHtml += `<tr class="buy"><td>${order.price.toFixed(2)}</td><td>${order.quantity.toFixed(4)}</td></tr>`;
             });
 
             let sellHtml = '<tr><th>Price ($KUSD)</th><th>Quantity</th></tr>';
-            selectedToken.orderBook.sells.forEach(order => {
+            token.orderBook.sells.forEach(order => {
                 sellHtml += `<tr class="sell"><td>${order.price.toFixed(2)}</td><td>${order.quantity.toFixed(4)}</td></tr>`;
             });
 
@@ -788,10 +849,9 @@
             if (!user) return showMessage('trade-msg', 'error', 'Please login first');
 
             const amount = parseFloat(document.getElementById("buy-amount").value);
-            const token = document.getElementById("token-select").value;
             const tradeType = document.getElementById("buy-type").value;
             const limitPrice = parseFloat(document.getElementById("buy-limit-price").value) || null;
-            const selectedToken = tokens.find(t => t.symbol === token);
+            const token = tokens.find(t => t.symbol === currentToken);
 
             if (!validateInput(amount, 'amount')) {
                 return showMessage('trade-msg', 'error', 'Invalid amount');
@@ -805,26 +865,25 @@
                 return showMessage('trade-msg', 'error', 'Insufficient $KUSD balance');
             }
 
-            const price = tradeType === 'limit' ? limitPrice : selectedToken.price;
+            const price = tradeType === 'limit' ? limitPrice : token.price;
             const quantity = amount / price;
 
             user.kusdBalance -= amount;
-            user.holdings[token] = (user.holdings[token] || 0) + quantity;
+            user.holdings[currentToken] = (user.holdings[currentToken] || 0) + quantity;
             
             transactions.push({
                 type: 'Buy',
-                token,
+                token: currentToken,
                 quantity,
                 price,
                 timestamp: Date.now()
             });
 
-            // Update order book
-            selectedToken.orderBook.buys.push({ price, quantity });
-            selectedToken.orderBook.buys.sort((a, b) => b.price - a.price);
+            token.orderBook.buys.push({ price, quantity });
+            token.orderBook.buys.sort((a, b) => b.price - a.price);
 
             saveUser();
-            showMessage('trade-msg', 'success', `Bought ${quantity.toFixed(4)} ${token} for ${amount.toFixed(2)} $KUSD`);
+            showMessage('trade-msg', 'success', `Bought ${quantity.toFixed(4)} ${currentToken} for ${amount.toFixed(2)} $KUSD`);
             renderTrade();
             renderAssets();
         }
@@ -834,39 +893,37 @@
             if (!user) return showMessage('trade-msg', 'error', 'Please login first');
 
             const amount = parseFloat(document.getElementById("sell-amount").value);
-            const token = document.getElementById("token-select").value;
             const tradeType = document.getElementById("sell-type").value;
             const limitPrice = parseFloat(document.getElementById("sell-limit-price").value) || null;
-            const selectedToken = tokens.find(t => t.symbol === token);
+            const token = tokens.find(t => t.symbol === currentToken);
 
             if (!validateInput(amount, 'amount')) {
                 return showMessage('trade-msg', 'error', 'Invalid amount');
             }
 
-            const price = tradeType === 'limit' ? limitPrice : selectedToken.price;
+            const price = tradeType === 'limit' ? limitPrice : token.price;
             const quantity = amount / price;
 
-            if (!user.holdings[token] || user.holdings[token] < quantity) {
+            if (!user.holdings[currentToken] || user.holdings[currentToken] < quantity) {
                 return showMessage('trade-msg', 'error', 'Insufficient holdings');
             }
 
-            user.holdings[token] -= quantity;
+            user.holdings[currentToken] -= quantity;
             user.kusdBalance += amount;
             
             transactions.push({
                 type: 'Sell',
-                token,
+                token: currentToken,
                 quantity,
                 price,
                 timestamp: Date.now()
             });
 
-            // Update order book
-            selectedToken.orderBook.sells.push({ price, quantity });
-            selectedToken.orderBook.sells.sort((a, b) => a.price - b.price);
+            token.orderBook.sells.push({ price, quantity });
+            token.orderBook.sells.sort((a, b) => a.price - b.price);
 
             saveUser();
-            showMessage('trade-msg', 'success', `Sold ${quantity.toFixed(4)} ${token} for ${amount.toFixed(2)} $KUSD`);
+            showMessage('trade-msg', 'success', `Sold ${quantity.toFixed(4)} ${currentToken} for ${amount.toFixed(2)} $KUSD`);
             renderTrade();
             renderAssets();
         }
@@ -937,6 +994,7 @@
                         <p>${quantity.toFixed(4)}</p>
                         <p>Value: $${value.toFixed(2)}</p>
                         <p>Price: $${tokenData.price.toFixed(2)}</p>
+                        <p>24h: <span class="${tokenData.change >= 0 ? 'success' : 'error'}">${tokenData.change.toFixed(2)}%</span></p>
                     </div>`;
             }
             document.getElementById("holdings").innerHTML = html;
@@ -1008,13 +1066,13 @@
         function applySettings() {
             if (settings.theme === 'light') {
                 document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)';
-                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content, .order-book').forEach(el => {
+                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content, .order-book, .token-list').forEach(el => {
                     el.style.background = '#ffffff';
                     el.style.color = '#000000';
                 });
             } else {
                 document.body.style.background = 'linear-gradient(135deg, #0a0e17 0%, #1a2332 100%)';
-                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content, .order-book').forEach(el => {
+                document.querySelectorAll('.page, .token-card, .buy-sell, .modal-content, .order-book, .token-list').forEach(el => {
                     el.style.background = '#1f2a44';
                     el.style.color = '#ffffff';
                 });
@@ -1054,17 +1112,32 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        // Market Simulation
+        // Market Simulation (Per-Second Update)
         setInterval(() => {
             tokens.forEach(token => {
                 if (token.symbol === 'KUSD') return; // Stablecoin price remains $1
-                const change = (Math.random() - 0.5) * 10;
+                const change = (Math.random() - 0.5) * 5;
                 token.price = Math.max(0.1, token.price + change);
                 token.change = ((token.price - 100) / 100 * 100).toFixed(2);
                 token.volume = Math.max(1000, token.volume + (Math.random() - 0.5) * 1000);
                 token.marketCap = token.price * 10000;
+                token.high24h = Math.max(token.high24h, token.price);
+                token.low24h = Math.min(token.low24h, token.price);
+                
+                // Update chart data
+                token.chartData.shift();
+                token.chartData.push({
+                    t: Date.now(),
+                    o: token.price + (Math.random() - 0.5) * 5,
+                    h: token.price + Math.random() * 10,
+                    l: token.price - Math.random() * 10,
+                    c: token.price + (Math.random() - 0.5) * 5
+                });
             });
-            renderMarket();
+
+            if (document.getElementById('market').classList.contains('show')) {
+                renderMarket();
+            }
             if (document.getElementById('trade').classList.contains('show')) {
                 renderTrade();
             }
@@ -1074,7 +1147,7 @@
             if (document.getElementById('dashboard').classList.contains('show')) {
                 renderDashboard();
             }
-        }, 3000);
+        }, 1000); // Update every second
 
         // Auto Login
         window.onload = () => {
