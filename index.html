@@ -1,460 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JokeFi Wallet</title>
-    <style>
-        /* General */
-        body {
-            margin: 0;
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0e0e1f 0%, #1a1a2e 100%);
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            max-width: 450px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #1a1a2e;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(90deg, #4CAF50, #00c6ff);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        /* Topbar */
-        .topbar {
-            background: linear-gradient(90deg, #4CAF50, #00c6ff);
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-        .topbar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shine 3s infinite;
-        }
-        @keyframes shine {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-
-        /* Wallet Card */
-        .wallet-card {
-            background: #25253a;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-        .wallet-card:hover {
-            transform: translateY(-5px);
-        }
-        .wallet-card p {
-            margin: 8px 0;
-            font-size: 14px;
-            word-break: break-word;
-        }
-        .connection-status {
-            font-size: 12px;
-            color: #4CAF50;
-            margin-top: 10px;
-        }
-
-        /* Buttons */
-        button {
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #4CAF50, #00c6ff);
-            color: #fff;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            margin: 10px 0;
-            width: 100%;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Inputs */
-        input, select {
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            background: #2c2c44;
-            color: #fff;
-            font-size: 14px;
-            margin: 5px 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .phrase-inputs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        .phrase-inputs input {
-            text-align: center;
-        }
-
-        /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-content {
-            background: #25253a;
-            padding: 25px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            animation: slideIn 0.3s ease;
-        }
-        .warning {
-            color: #ff4d4d;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideIn {
-            from { transform: translateY(-20px); }
-            to { transform: translateY(0); }
-        }
-
-        /* Wallet Actions */
-        .wallet-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .wallet-actions button {
-            flex: 1;
-        }
-        .transaction-history {
-            margin-top: 15px;
-            padding: 10px;
-            background: #2c2c44;
-            border-radius: 12px;
-        }
-        .transaction-item {
-            padding: 8px;
-            border-bottom: 1px solid #3a3a55;
-            font-size: 12px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JokeFi Wallet</title>
+<style>
+/* General */
+body { margin:0; font-family:'Inter',sans-serif; background:#0e0e1f; color:#fff; min-height:100vh; display:flex; justify-content:center; align-items:center; }
+.container { width:90%; max-width:400px; padding:20px; background:#1a1a2e; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.topbar { background:linear-gradient(90deg,#4CAF50,#00c6ff); padding:15px; border-radius:15px; text-align:center; font-weight:700; font-size:20px; margin-bottom:20px; position:relative;}
+.wallet-card { background:#25253a; padding:20px; border-radius:15px; margin-bottom:20px; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.wallet-card p { margin:8px 0; word-break:break-word; font-size:14px;}
+.wallet-actions { display:flex; gap:5px; margin-top:15px;}
+.wallet-actions button { flex:1; padding:10px; border:none; border-radius:12px; background:linear-gradient(90deg,#4CAF50,#00c6ff); color:#fff; font-size:14px; cursor:pointer;}
+.transaction-history { margin-top:15px; background:#2c2c44; padding:10px; border-radius:12px; max-height:150px; overflow-y:auto;}
+.transaction-item { font-size:12px; padding:5px; border-bottom:1px solid #3a3a55;}
+button { width:100%; padding:12px; border:none; border-radius:12px; background:linear-gradient(90deg,#4CAF50,#00c6ff); color:#fff; margin:5px 0; font-size:16px; cursor:pointer;}
+input, select { width:100%; padding:10px; border-radius:8px; border:none; background:#2c2c44; color:#fff; margin:5px 0; box-sizing:border-box; text-align:center;}
+.phrase-inputs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin:10px 0;}
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:100;}
+.modal-content { background:#25253a; padding:20px; border-radius:20px; width:90%; max-width:350px; text-align:center;}
+.warning { color:#ff4d4d; font-size:14px; margin-top:5px;}
+@media (max-width:400px){ .wallet-actions button{ font-size:12px; padding:8px; } }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="topbar">JokeFi Wallet</div>
+<div class="container">
+<div class="topbar">JokeFi Wallet</div>
 
-        <!-- Wallet Card -->
-        <div class="wallet-card" id="walletCard" style="display:none;">
-            <h2>Your Wallet</h2>
-            <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-            <p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
-            <p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
-            <p class="connection-status">Connected to JokeFi Testnet</p>
-            <div class="wallet-actions">
-                <button onclick="openModal('depositModal')">Deposit</button>
-                <button onclick="openModal('sendModal')">Send</button>
-                <button onclick="openModal('receiveModal')">Receive</button>
-            </div>
-            <div class="transaction-history" id="transactionHistory"></div>
-        </div>
-
-        <!-- Modals -->
-        <div class="modal" id="welcomeModal">
-            <div class="modal-content">
-                <h2>Welcome to JokeFi Wallet</h2>
-                <p>Create a new wallet or import an existing one.</p>
-                <button onclick="openModal('createModal'); closeModal('welcomeModal')">Create Wallet</button>
-                <button onclick="openModal('importModal'); closeModal('welcomeModal')">Import Wallet</button>
-            </div>
-        </div>
-
-        <div class="modal" id="createModal">
-            <div class="modal-content">
-                <h2>Create Wallet</h2>
-                <p><strong>Seed Phrase:</strong></p>
-                <p id="newWalletPhrase"></p>
-                <p class="warning">⚠️ Save this seed phrase securely. Do not share it with anyone!</p>
-                <button onclick="createWallet()">Confirm & Create</button>
-                <button onclick="closeModal('createModal')">Cancel</button>
-            </div>
-        </div>
-
-        <div class="modal" id="importModal">
-            <div class="modal-content">
-                <h2>Import Wallet</h2>
-                <p>Enter your 12-word seed phrase below:</p>
-                <div class="phrase-inputs" id="phraseInputs"></div>
-                <button onclick="importWallet()">Import</button>
-                <button onclick="closeModal('importModal')">Cancel</button>
-            </div>
-        </div>
-
-        <div class="modal" id="depositModal">
-            <div class="modal-content">
-                <h2>Deposit</h2>
-                <p>Select token and amount to deposit:</p>
-                <select id="depositToken">
-                    <option value="USDT">USDT</option>
-                    <option value="USDC">USDC</option>
-                </select>
-                <input type="number" id="depositAmount" placeholder="Enter amount" min="0">
-                <button onclick="depositTokens()">Deposit</button>
-                <button onclick="closeModal('depositModal')">Cancel</button>
-            </div>
-        </div>
-
-        <div class="modal" id="sendModal">
-            <div class="modal-content">
-                <h2>Send</h2>
-                <p>Enter recipient address and amount:</p>
-                <input type="text" id="recipientAddress" placeholder="Enter wallet address (0x...)">
-                <select id="sendToken">
-                    <option value="USDT">USDT</option>
-                    <option value="USDC">USDC</option>
-                </select>
-                <input type="number" id="sendAmount" placeholder="Enter amount" min="0">
-                <button onclick="sendTokens()">Send</button>
-                <button onclick="closeModal('sendModal')">Cancel</button>
-            </div>
-        </div>
-
-        <div class="modal" id="receiveModal">
-            <div class="modal-content">
-                <h2>Receive</h2>
-                <p>Share this address to receive funds:</p>
-                <p id="receiveAddress"></p>
-                <button onclick="copyAddress()">Copy Address</button>
-                <button onclick="closeModal('receiveModal')">Close</button>
-            </div>
-        </div>
+<!-- Wallet Card -->
+<div class="wallet-card" id="walletCard">
+    <h2>Your Wallet</h2>
+    <p><strong>Address:</strong> <span id="walletAddress"></span></p>
+    <p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
+    <p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
+    <div class="wallet-actions">
+        <button onclick="openModal('depositModal')">Deposit</button>
+        <button onclick="openModal('sendModal')">Send</button>
+        <button onclick="openModal('receiveModal')">Receive</button>
     </div>
+    <div class="transaction-history" id="transactionHistory"></div>
+</div>
 
-    <script>
-        // Wallet Phrase Generator
-        function generatePhrase() {
-            const words = [
-                'apple', 'banana', 'crypto', 'moon', 'star', 'block', 'chain', 'token',
-                'king', 'queen', 'saturn', 'venus', 'mars', 'sky', 'sun', 'orbit',
-                'ledger', 'trust', 'secure', 'vault', 'digital', 'asset', 'freedom', 'rise'
-            ];
-            let phrase = [];
-            for (let i = 0; i < 12; i++) {
-                phrase.push(words[Math.floor(Math.random() * words.length)]);
-            }
-            return phrase.join(' ');
-        }
+<!-- Modals -->
+<div class="modal" id="welcomeModal">
+<div class="modal-content">
+<h2>Welcome</h2>
+<button onclick="openModal('createModal'); closeModal('welcomeModal')">Create Wallet</button>
+<button onclick="openModal('importModal'); closeModal('welcomeModal')">Import Wallet</button>
+</div>
+</div>
 
-        // Wallet Address Generator
-        function generateWalletAddress() {
-            const baseAddress = '0x4F3C2A1B9D8E7F6A5B4C3D2E1F0A9B8C7D6E5F4A';
-            const chars = '0123456789ABCDEF';
-            let address = '0x';
-            for (let i = 2; i < baseAddress.length; i++) {
-                if (Math.random() < 0.1) { // 10% chance to change a character
-                    address += chars[Math.floor(Math.random() * chars.length)];
-                } else {
-                    address += baseAddress[i];
-                }
-            }
-            return address;
-        }
+<div class="modal" id="createModal">
+<div class="modal-content">
+<h2>Create Wallet</h2>
+<p id="newWalletPhrase" style="color:#00ffdd; font-weight:bold;"></p>
+<p class="warning">⚠️ Save this phrase safely</p>
+<button onclick="createWallet()">Confirm & Create</button>
+<button onclick="closeModal('createModal')">Cancel</button>
+</div>
+</div>
 
-        // Wallet Functions
-        function createWallet() {
-            const phrase = document.getElementById('newWalletPhrase').innerText;
-            const address = generateWalletAddress();
-            localStorage.setItem('fakeWallet', phrase);
-            localStorage.setItem('walletAddress', address);
-            localStorage.setItem('usdtBalance', '0');
-            localStorage.setItem('usdcBalance', '0');
-            localStorage.setItem('transactions', JSON.stringify([]));
-            closeModal('createModal');
-            showWallet();
-        }
+<div class="modal" id="importModal">
+<div class="modal-content">
+<h2>Import Wallet</h2>
+<div class="phrase-inputs" id="phraseInputs"></div>
+<button onclick="importWallet()">Import</button>
+<button onclick="closeModal('importModal')">Cancel</button>
+</div>
+</div>
 
-        function importWallet() {
-            const inputs = document.querySelectorAll('#phraseInputs input');
-            const enteredPhrase = Array.from(inputs).map(input => input.value.trim()).join(' ');
-            const savedPhrase = localStorage.getItem('fakeWallet');
-            if (enteredPhrase === savedPhrase && enteredPhrase) {
-                closeModal('importModal');
-                showWallet();
-            } else {
-                alert('Invalid seed phrase. Please try again.');
-            }
-        }
+<div class="modal" id="depositModal">
+<div class="modal-content">
+<h2>Deposit</h2>
+<select id="depositToken"><option value="USDT">USDT</option><option value="USDC">USDC</option></select>
+<input type="number" id="depositAmount" placeholder="Amount">
+<button onclick="depositTokens()">Deposit</button>
+<button onclick="closeModal('depositModal')">Cancel</button>
+</div>
+</div>
 
-        function showWallet() {
-            document.getElementById('walletCard').style.display = 'block';
-            document.getElementById('walletAddress').innerText = localStorage.getItem('walletAddress');
-            document.getElementById('usdtBalance').innerText = localStorage.getItem('usdtBalance');
-            document.getElementById('usdcBalance').innerText = localStorage.getItem('usdcBalance');
-            document.getElementById('receiveAddress').innerText = localStorage.getItem('walletAddress');
-            updateTransactionHistory();
-        }
+<div class="modal" id="sendModal">
+<div class="modal-content">
+<h2>Send</h2>
+<input type="text" id="recipientAddress" placeholder="0x...">
+<select id="sendToken"><option value="USDT">USDT</option><option value="USDC">USDC</option></select>
+<input type="number" id="sendAmount" placeholder="Amount">
+<button onclick="sendTokens()">Send</button>
+<button onclick="closeModal('sendModal')">Cancel</button>
+</div>
+</div>
 
-        // Modals
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+<div class="modal" id="receiveModal">
+<div class="modal-content">
+<h2>Receive</h2>
+<p id="receiveAddress"></p>
+<button onclick="copyAddress()">Copy Address</button>
+<button onclick="closeModal('receiveModal')">Close</button>
+</div>
+</div>
+</div>
 
-        // Deposit Tokens
-        function depositTokens() {
-            const token = document.getElementById('depositToken').value;
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            if (amount <= 0 || isNaN(amount)) {
-                alert('Please enter a valid amount.');
-                return;
-            }
-            let balance = parseFloat(localStorage.getItem(`${token.toLowerCase()}Balance`)) || 0;
-            balance += amount;
-            localStorage.setItem(`${token.toLowerCase()}Balance`, balance.toFixed(2));
-            document.getElementById(`${token.toLowerCase()}Balance`).innerText = balance.toFixed(2);
-            addTransaction(`Deposited ${amount} ${token}`);
-            closeModal('depositModal');
-            alert(`Deposited ${amount} ${token}`);
-        }
+<script>
+// Phrase & Wallet Address
+function generatePhrase() {
+    const words=['apple','banana','crypto','moon','star','block','chain','token','king','queen','saturn','venus','mars','sky','sun','orbit','ledger','trust','secure','vault'];
+    let phrase=[]; for(let i=0;i<12;i++){ phrase.push(words[Math.floor(Math.random()*words.length)]);}
+    return phrase.join(' ');
+}
+function generateWalletAddress(){
+    const base='0x4F3C2A1B9D8E7F6A5B4C3D2E1F0A9B8C7D6E5F4A';
+    const chars='0123456789ABCDEF';
+    let addr='0x'; for(let i=2;i<base.length;i++){ addr += Math.random()<0.1? chars[Math.floor(Math.random()*chars.length)]: base[i]; } return addr;
+}
 
-        // Send Tokens
-        function sendTokens() {
-            const recipient = document.getElementById('recipientAddress').value.trim();
-            const token = document.getElementById('sendToken').value;
-            const amount = parseFloat(document.getElementById('sendAmount').value);
-            const balance = parseFloat(localStorage.getItem(`${token.toLowerCase()}Balance`)) || 0;
+// Wallet Functions
+function createWallet(){
+    const phrase=document.getElementById('newWalletPhrase').innerText;
+    const address=generateWalletAddress();
+    localStorage.setItem('fakeWallet',phrase);
+    localStorage.setItem('walletAddress',address);
+    localStorage.setItem('usdtBalance','0');
+    localStorage.setItem('usdcBalance','0');
+    localStorage.setItem('transactions',JSON.stringify([]));
+    closeModal('createModal'); showWallet();
+}
+function importWallet(){
+    const inputs=document.querySelectorAll('#phraseInputs input');
+    const entered=Array.from(inputs).map(i=>i.value.trim()).join(' ');
+    const saved=localStorage.getItem('fakeWallet');
+    if(entered===saved && entered){ closeModal('importModal'); showWallet(); } else { alert('Invalid phrase'); }
+}
+function showWallet(){
+    document.getElementById('walletCard').style.display='block';
+    document.getElementById('walletAddress').innerText=localStorage.getItem('walletAddress');
+    document.getElementById('usdtBalance').innerText=localStorage.getItem('usdtBalance');
+    document.getElementById('usdcBalance').innerText=localStorage.getItem('usdcBalance');
+    document.getElementById('receiveAddress').innerText=localStorage.getItem('walletAddress');
+    updateTransactionHistory();
+}
 
-            // Validate recipient address format
-            const addressRegex = /^0x[0-9A-Fa-f]{40}$/;
-            if (!addressRegex.test(recipient)) {
-                alert('Invalid recipient address. Must be a valid 0x... address.');
-                return;
-            }
-            if (recipient === localStorage.getItem('walletAddress')) {
-                alert('Cannot send to your own address.');
-                return;
-            }
-            if (amount <= 0 || isNaN(amount)) {
-                alert('Please enter a valid amount.');
-                return;
-            }
-            if (amount > balance) {
-                alert(`Not enough ${token} balance.`);
-                return;
-            }
+// Modals
+function openModal(id){ document.getElementById(id).style.display='flex'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
 
-            // Simulate sending by deducting balance
-            localStorage.setItem(`${token.toLowerCase()}Balance`, (balance - amount).toFixed(2));
-            document.getElementById(`${token.toLowerCase()}Balance`).innerText = (balance - amount).toFixed(2);
-            addTransaction(`Sent ${amount} ${token} to ${recipient.slice(0, 6)}...${recipient.slice(-4)}`);
-            closeModal('sendModal');
-            alert(`Sent ${amount} ${token} to ${recipient}`);
-        }
+// Deposit/Send/Receive
+function depositTokens(){
+    const token=document.getElementById('depositToken').value;
+    const amt=parseFloat(document.getElementById('depositAmount').value); if(isNaN(amt)||amt<=0){alert('Invalid');return;}
+    let bal=parseFloat(localStorage.getItem(token.toLowerCase()+'Balance'))||0; bal+=amt;
+    localStorage.setItem(token.toLowerCase()+'Balance',bal.toFixed(2)); document.getElementById(token.toLowerCase()+'Balance').innerText=bal.toFixed(2);
+    addTransaction(`Deposited ${amt} ${token}`); closeModal('depositModal'); alert(`Deposited ${amt} ${token}`);
+}
+function sendTokens(){
+    const recipient=document.getElementById('recipientAddress').value.trim();
+    const token=document.getElementById('sendToken').value;
+    const amt=parseFloat(document.getElementById('sendAmount').value); let bal=parseFloat(localStorage.getItem(token.toLowerCase()+'Balance'))||0;
+    if(!/^0x[0-9A-Fa-f]{40}$/.test(recipient)){alert('Invalid address'); return;}
+    if(recipient===localStorage.getItem('walletAddress')){alert('Cannot send to self');return;}
+    if(isNaN(amt)||amt<=0||amt>bal){alert('Invalid amount');return;}
+    bal-=amt; localStorage.setItem(token.toLowerCase()+'Balance',bal.toFixed(2)); document.getElementById(token.toLowerCase()+'Balance').innerText=bal.toFixed(2);
+    addTransaction(`Sent ${amt} ${token} to ${recipient.slice(0,6)}...${recipient.slice(-4)}`); closeModal('sendModal'); alert(`Sent ${amt} ${token}`);
+}
+function copyAddress(){ navigator.clipboard.writeText(localStorage.getItem('walletAddress')).then(()=>{alert('Copied');}); }
 
-        // Receive Tokens
-        function copyAddress() {
-            const address = localStorage.getItem('walletAddress');
-            navigator.clipboard.writeText(address).then(() => {
-                alert('Address copied to clipboard!');
-            });
-        }
+// Transactions
+function addTransaction(msg){
+    let tx=JSON.parse(localStorage.getItem('transactions')||'[]');
+    tx.unshift({msg,timestamp:new Date().toLocaleString()}); if(tx.length>10)tx.pop();
+    localStorage.setItem('transactions',JSON.stringify(tx)); updateTransactionHistory();
+}
+function updateTransactionHistory(){
+    const hist=document.getElementById('transactionHistory');
+    const tx=JSON.parse(localStorage.getItem('transactions')||'[]');
+    hist.innerHTML=tx.length? tx.map(t=>`<div class="transaction-item">${t.timestamp}: ${t.msg}</div>`).join(''):'<p>No transactions</p>';
+}
 
-        // Transaction History
-        function addTransaction(message) {
-            let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-            transactions.unshift({
-                message: message,
-                timestamp: new Date().toLocaleString()
-            });
-            if (transactions.length > 10) transactions.pop(); // Limit to 10 transactions
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            updateTransactionHistory();
-        }
+// Initialize modals
+function initCreateModal(){ document.getElementById('newWalletPhrase').innerText=generatePhrase(); }
+function initImportModal(){
+    const container=document.getElementById('phraseInputs'); container.innerHTML='';
+    for(let i=0;i<12;i++){ const input=document.createElement('input'); input.placeholder=`Word ${i+1}`; container.appendChild(input);}
+}
 
-        function updateTransactionHistory() {
-            const history = document.getElementById('transactionHistory');
-            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-            history.innerHTML = transactions.length
-                ? transactions.map(tx => `<div class="transaction-item">${tx.timestamp}: ${tx.message}</div>`).join('')
-                : '<p>No transactions yet.</p>';
-        }
-
-        // Initialize Create Wallet Modal
-        function initCreateModal() {
-            const phrase = generatePhrase();
-            document.getElementById('newWalletPhrase').innerText = phrase;
-        }
-
-        // Initialize Import Wallet Modal
-        function initImportModal() {
-            const phraseInputs = document.getElementById('phraseInputs');
-            phraseInputs.innerHTML = '';
-            for (let i = 0; i < 12; i++) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.placeholder = `Word ${i + 1}`;
-                phraseInputs.appendChild(input);
-            }
-        }
-
-        // Auto-load
-        window.onload = function() {
-            if (localStorage.getItem('fakeWallet')) {
-                showWallet();
-            } else {
-                openModal('welcomeModal');
-                initCreateModal();
-                initImportModal();
-            }
-        };
-    </script>
+// Load
+window.onload=function(){
+    if(localStorage.getItem('fakeWallet')) showWallet(); else { openModal('welcomeModal'); initCreateModal(); initImportModal();}
+}
+</script>
 </body>
 </html>
