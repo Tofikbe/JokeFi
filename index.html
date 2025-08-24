@@ -1,240 +1,624 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JokeFi Wallet</title>
-<style>
-/* General */
-body { margin:0; font-family:'Segoe UI',sans-serif; background:#0e0e1f; color:#fff; }
-.container { max-width:400px; margin:auto; padding:20px; }
-h1 { text-align:center; margin-bottom:20px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JokeFi Wallet</title>
+    <style>
+        /* General */
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0e0e1f 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 450px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #4CAF50, #00c6ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
 
-/* Topbar */
-.topbar { background:linear-gradient(90deg,#4CAF50,#00c6ff); padding:15px; border-radius:15px; text-align:center; font-weight:bold; font-size:20px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.5); }
+        /* Topbar */
+        .topbar {
+            background: linear-gradient(90deg, #4CAF50, #00c6ff);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .topbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            50% {
+                left: 100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
 
-/* Wallet Card */
-.wallet-card { background:#1a1a2e; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 0 10px #000; }
-.wallet-card p { margin:5px 0; font-size:14px; word-break:break-word; }
+        /* Wallet Card */
+        .wallet-card {
+            background: #25253a;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .wallet-card:hover {
+            transform: translateY(-5px);
+        }
+        .wallet-card p {
+            margin: 8px 0;
+            font-size: 14px;
+            word-break: break-word;
+        }
+        .connection-status {
+            font-size: 12px;
+            color: #4CAF50;
+            margin-top: 10px;
+        }
 
-/* Tabs Sidebar */
-.tabs { display:flex; justify-content:space-between; margin-bottom:10px; }
-.tab { padding:10px; cursor:pointer; border-radius:10px; text-align:center; flex:1; background:#2c2c44; margin:0 2px; font-size:14px; }
-.tab.active { background:#4CAF50; color:#fff; }
+        /* Tabs Sidebar */
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: #2c2c44;
+            border-radius: 15px;
+            padding: 5px;
+        }
+        .tab {
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        .tab:hover {
+            background: #3a3a55;
+        }
+        .tab.active {
+            background: #4CAF50;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
 
-/* Tab Content */
-.tab-content { display:none; }
-.tab-content.active { display:block; margin-bottom:15px; }
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: #25253a;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .tab-content.active {
+            display: block;
+        }
 
-/* Buttons */
-button { padding:10px; border:none; border-radius:10px; background:#4CAF50; color:#fff; font-size:16px; cursor:pointer; margin:5px 0; width:100%; }
+        /* Buttons */
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #4CAF50, #00c6ff);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
 
-/* Inputs */
-input[type=number]{ width:80px; padding:5px; border-radius:5px; border:none; }
+        /* Inputs */
+        input[type="number"],
+        select {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #2c2c44;
+            color: #fff;
+            font-size: 14px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-/* NFT Grid */
-.nft-grid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
-.nft-grid img { width:80px; border-radius:10px; }
+        /* NFT Grid */
+        .nft-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+        .nft-item {
+            position: relative;
+            background: #2c2c44;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .nft-item:hover {
+            transform: scale(1.05);
+        }
+        .nft-item img {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+        }
+        .nft-details {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #1f1f2f;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        .nft-item:hover .nft-details {
+            display: block;
+        }
 
-/* Modals */
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:100; }
-.modal-content { background:#1f1f2f; padding:20px; border-radius:15px; width:90%; max-width:350px; text-align:center; }
-.modal-content h2{margin-top:0;}
-.modal-content button{margin-top:10px;}
-</style>
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: #25253a;
+            padding: 25px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Transaction History */
+        .transaction-history {
+            margin-top: 15px;
+            padding: 10px;
+            background: #2c2c44;
+            border-radius: 12px;
+        }
+        .transaction-item {
+            padding: 8px;
+            border-bottom: 1px solid #3a3a55;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<div class="topbar">JokeFi Wallet</div>
+    <div class="container">
+        <div class="topbar">JokeFi Wallet</div>
 
-<!-- Wallet Card -->
-<div class="wallet-card" id="walletCard" style="display:none;">
-    <h2>Your Wallet</h2>
-    <p><strong>Phrase:</strong> <span id="walletPhrase"></span></p>
-    <p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
-    <p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
-</div>
+        <!-- Wallet Card -->
+        <div class="wallet-card" id="walletCard" style="display:none;">
+            <h2>Your Wallet</h2>
+            <p><strong>Phrase:</strong> <span id="walletPhrase"></span></p>
+            <p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
+            <p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
+            <p class="connection-status">Connected to JokeFi Network</p>
+        </div>
 
-<!-- Tabs -->
-<div class="tabs" id="tabs" style="display:none;">
-    <div class="tab active" data-tab="tokens">Tokens</div>
-    <div class="tab" data-tab="nfts">NFTs</div>
-    <div class="tab" data-tab="staking">Staking</div>
-    <div class="tab" data-tab="swap">Swap</div>
-    <div class="tab" data-tab="settings">Settings</div>
-</div>
+        <!-- Tabs -->
+        <div class="tabs" id="tabs" style="display:none;">
+            <div class="tab active" data-tab="tokens">Tokens</div>
+            <div class="tab" data-tab="nfts">NFTs</div>
+            <div class="tab" data-tab="staking">Staking</div>
+            <div class="tab" data-tab="swap">Swap</div>
+            <div class="tab" data-tab="settings">Settings</div>
+        </div>
 
-<!-- Tab Contents -->
-<div id="tokens" class="tab-content active">
-    <button onclick="addFakeToken('USDT',1000)">Complete Twitter Task → +1000 USDT</button>
-    <button onclick="addFakeToken('USDC',500)">Add 500 USDC</button>
-</div>
+        <!-- Tab Contents -->
+        <div id="tokens" class="tab-content active">
+            <div id="twitterTaskButton">
+                <button onclick="addFakeToken('USDT', 1000)">Complete Twitter Task → +1000 USDT</button>
+            </div>
+            <div class="transaction-history" id="transactionHistory"></div>
+        </div>
 
-<div id="nfts" class="tab-content">
-    <div class="nft-grid">
-        <img src="https://via.placeholder.com/80" alt="NFT1">
-        <img src="https://via.placeholder.com/80" alt="NFT2">
-        <img src="https://via.placeholder.com/80" alt="NFT3">
+        <div id="nfts" class="tab-content">
+            <div class="nft-grid" id="nftGrid">
+                <!-- NFTs will be populated dynamically -->
+            </div>
+        </div>
+
+        <div id="staking" class="tab-content">
+            <p>Stake USDT or USDC to earn up to 100% APR</p>
+            <input type="number" id="stakeAmount" placeholder="Enter amount" min="0">
+            <select id="stakeToken">
+                <option value="USDT">USDT</option>
+                <option value="USDC">USDC</option>
+            </select>
+            <select id="stakeDuration">
+                <option value="1">1 Day</option>
+                <option value="2">2 Days</option>
+                <option value="3">3 Days</option>
+                <option value="10">10 Days</option>
+                <option value="30">30 Days</option>
+                <option value="365">1 Year</option>
+            </select>
+            <button onclick="stakeTokens()">Stake</button>
+            <p id="stakeInfo"></p>
+        </div>
+
+        <div id="swap" class="tab-content">
+            <p>Swap USDT ↔ USDC</p>
+            <input type="number" id="swapAmount" placeholder="Enter amount" min="0">
+            <select id="swapToken">
+                <option value="USDT">USDT → USDC</option>
+                <option value="USDC">USDC → USDT</option>
+            </select>
+            <button onclick="swapTokens()">Swap</button>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <button onclick="resetWallet()">Reset Wallet</button>
+        </div>
+
+        <!-- Wallet Modals -->
+        <div class="modal" id="createModal">
+            <div class="modal-content">
+                <h2>Create Wallet</h2>
+                <p>Generate a new wallet with a unique seed phrase.</p>
+                <button onclick="createWallet()">Generate Wallet</button>
+                <button onclick="closeModal('createModal')">Cancel</button>
+            </div>
+        </div>
+
+        <div class="modal" id="importModal">
+            <div class="modal-content">
+                <h2>Import Wallet</h2>
+                <p>Enter your seed phrase to restore your wallet.</p>
+                <input type="text" id="importPhrase" placeholder="Enter seed phrase">
+                <button onclick="importWallet()">Import</button>
+                <button onclick="closeModal('importModal')">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Initial Buttons -->
+        <div id="initialButtons" style="text-align:center;">
+            <button onclick="openModal('createModal')">Create Wallet</button>
+            <button onclick="openModal('importModal')">Import Wallet</button>
+        </div>
     </div>
-</div>
 
-<div id="staking" class="tab-content">
-    <p>Stake USDT to earn 100% APR</p>
-    <input type="number" id="stakeAmount" value="0"> <button onclick="stakeTokens()">Stake</button>
-    <p id="stakeInfo"></p>
-</div>
+    <script>
+        // Wallet Phrase Generator
+        function generatePhrase() {
+            const words = [
+                'apple', 'banana', 'crypto', 'moon', 'star', 'block', 'chain', 'token',
+                'king', 'queen', 'saturn', 'venus', 'mars', 'sky', 'sun', 'orbit'
+            ];
+            let phrase = [];
+            for (let i = 0; i < 12; i++) {
+                phrase.push(words[Math.floor(Math.random() * words.length)]);
+            }
+            return phrase.join(' ');
+        }
 
-<div id="swap" class="tab-content">
-    <p>Swap USDT ↔ USDC (Fake)</p>
-    <input type="number" id="swapAmount" value="0"> 
-    <select id="swapToken"><option value="USDT">USDT → USDC</option><option value="USDC">USDC → USDT</option></select>
-    <button onclick="swapTokens()">Swap</button>
-</div>
+        // Wallet Functions
+        function createWallet() {
+            const phrase = generatePhrase();
+            localStorage.setItem('fakeWallet', phrase);
+            localStorage.setItem('usdtBalance', '0');
+            localStorage.setItem('usdcBalance', '0');
+            localStorage.setItem('twitterTaskCompleted', 'false');
+            localStorage.setItem('transactions', JSON.stringify([]));
+            closeModal('createModal');
+            showWallet();
+        }
 
-<div id="settings" class="tab-content">
-    <button onclick="resetWallet()">Reset Wallet</button>
-</div>
+        function importWallet() {
+            const phrase = document.getElementById('importPhrase').value.trim();
+            if (phrase) {
+                localStorage.setItem('fakeWallet', phrase);
+                if (!localStorage.getItem('usdtBalance')) localStorage.setItem('usdtBalance', '0');
+                if (!localStorage.getItem('usdcBalance')) localStorage.setItem('usdcBalance', '0');
+                if (!localStorage.getItem('twitterTaskCompleted')) localStorage.setItem('twitterTaskCompleted', 'false');
+                if (!localStorage.getItem('transactions')) localStorage.setItem('transactions', JSON.stringify([]));
+                closeModal('importModal');
+                showWallet();
+            } else {
+                alert('Please enter a valid seed phrase.');
+            }
+        }
 
-<!-- Wallet Modals -->
-<div class="modal" id="createModal">
-    <div class="modal-content">
-        <h2>Create Wallet</h2>
-        <button onclick="createWallet()">Generate Wallet</button>
-        <button onclick="closeModal('createModal')">Cancel</button>
-    </div>
-</div>
+        function resetWallet() {
+            if (confirm('Reset wallet? All data will be lost.')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
 
-<div class="modal" id="importModal">
-    <div class="modal-content">
-        <h2>Import Wallet</h2>
-        <button onclick="importWallet()">Enter Phrase</button>
-        <button onclick="closeModal('importModal')">Cancel</button>
-    </div>
-</div>
+        function showWallet() {
+            document.getElementById('walletCard').style.display = 'block';
+            document.getElementById('tabs').style.display = 'flex';
+            document.getElementById('initialButtons').style.display = 'none';
+            document.getElementById('walletPhrase').innerText = localStorage.getItem('fakeWallet');
+            document.getElementById('usdtBalance').innerText = localStorage.getItem('usdtBalance');
+            document.getElementById('usdcBalance').innerText = localStorage.getItem('usdcBalance');
+            updateTwitterTaskButton();
+            populateNFTs();
+            updateTransactionHistory();
+            updateStakingRewards();
+        }
 
-<!-- Initial Buttons -->
-<div id="initialButtons" style="text-align:center;">
-    <button onclick="openModal('createModal')">Create Wallet</button>
-    <button onclick="openModal('importModal')">Import Wallet</button>
-</div>
+        // Modals
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+unauthorized access to the wallet. Please try again.'));
+            }
+        }
 
-<script>
-// Wallet Phrase Generator
-function generatePhrase() {
-    const words = ['apple','banana','crypto','moon','star','block','chain','token','king','queen','saturn','venus','mars','sky','sun'];
-    let phrase = [];
-    for(let i=0;i<12;i++){ phrase.push(words[Math.floor(Math.random()*words.length)]); }
-    return phrase.join(' ');
-}
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
 
-// Wallet Functions
-function createWallet(){
-    const phrase = generatePhrase();
-    localStorage.setItem('fakeWallet', phrase);
-    localStorage.setItem('usdtBalance', '0');
-    localStorage.setItem('usdcBalance', '0');
-    closeModal('createModal'); showWallet();
-}
+        // Fake Token Add
+        function addFakeToken(token, amount) {
+            if (token === 'USDT') {
+                alert('Please complete the Twitter task first.');
+                window.open('https://x.com/Crypto_King877?t=gdy2Nze5NOhAiSE_4Xu6pg&s=09', '_blank');
+                setTimeout(() => {
+                    let bal = parseInt(localStorage.getItem('usdtBalance')) || 0;
+                    bal += amount;
+                    localStorage.setItem('usdtBalance', bal);
+                    localStorage.setItem('twitterTaskCompleted', 'true');
+                    document.getElementById('usdtBalance').innerText = bal;
+                    updateTwitterTaskButton();
+                    addTransaction(`Added ${amount} USDT via Twitter Task`);
+                    alert(`${amount} USDT added!`);
+                }, Math.floor(Math.random() * 2000) + 3000);
+            }
+        }
 
-function importWallet(){
-    const phrase = prompt("Enter your wallet phrase:");
-    if(phrase){
-        localStorage.setItem('fakeWallet', phrase);
-        if(!localStorage.getItem('usdtBalance')) localStorage.setItem('usdtBalance','0');
-        if(!localStorage.getItem('usdcBalance')) localStorage.setItem('usdcBalance','0');
-        closeModal('importModal'); showWallet();
-    }
-}
+        function updateTwitterTaskButton() {
+            if (localStorage.getItem('twitterTaskCompleted') === 'true') {
+                document.getElementById('twitterTaskButton').innerHTML = '<p>Twitter task completed!</p>';
+            }
+        }
 
-function resetWallet(){
-    if(confirm("Reset wallet? All data will be lost.")){
-        localStorage.clear(); location.reload();
-    }
-}
+        // NFT Population
+        function populateNFTs() {
+            const nftGrid = document.getElementById('nftGrid');
+            nftGrid.innerHTML = '';
+            const nfts = [
+                { id: 1, name: 'JokeFi NFT #1', description: 'A rare collectible' },
+                { id: 2, name: 'JokeFi NFT #2', description: 'Unique digital art' },
+                { id: 3, name: 'JokeFi NFT #3', description: 'Limited edition' }
+            ];
+            nfts.forEach(nft => {
+                const nftItem = document.createElement('div');
+                nftItem.className = 'nft-item';
+                nftItem.innerHTML = `
+                    <div style="font-size: 50px;">🫥</div>
+                    <div class="nft-details">
+                        <p><strong>${nft.name}</strong></p>
+                        <p>${nft.description}</p>
+                    </div>
+                `;
+                nftGrid.appendChild(nftItem);
+            });
+        }
 
-function showWallet(){
-    document.getElementById('walletCard').style.display='block';
-    document.getElementById('tabs').style.display='flex';
-    document.getElementById('initialButtons').style.display='none';
-    document.getElementById('walletPhrase').innerText = localStorage.getItem('fakeWallet');
-    document.getElementById('usdtBalance').innerText = localStorage.getItem('usdtBalance');
-    document.getElementById('usdcBalance').innerText = localStorage.getItem('usdcBalance');
-}
+        // Staking
+        function stakeTokens() {
+            let amt = parseInt(document.getElementById('stakeAmount').value);
+            let token = document.getElementById('stakeToken').value;
+            let duration = parseInt(document.getElementById('stakeDuration').value);
+            let balance = parseInt(localStorage.getItem(`${token.toLowerCase()}Balance`)) || 0;
 
-// Modals
-function openModal(id){ document.getElementById(id).style.display='flex'; }
-function closeModal(id){ document.getElementById(id).style.display='none'; }
+            if (amt <= 0 || isNaN(amt)) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+            if (amt > balance) {
+                alert(`Not enough ${token} balance.`);
+                return;
+            }
 
-// Tabs
-document.querySelectorAll('.tab').forEach(tab=>{
-    tab.addEventListener('click',()=>{
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.remove('active'));
-        document.getElementById(tab.dataset.tab).classList.add('active');
-    });
-});
+            balance -= amt;
+            localStorage.setItem(`${token.toLowerCase()}Balance`, balance);
+            document.getElementById(`${token.toLowerCase()}Balance`).innerText = balance;
 
-// Fake Token Add
-function addFakeToken(token,amount){
-    if(token==='USDT'){
-        alert("Please complete Twitter task first");
-        window.open('https://x.com/Crypto_King877?t=gdy2Nze5NOhAiSE_4Xu6pg&s=09','_blank');
-        setTimeout(()=>{
-            let bal=parseInt(localStorage.getItem('usdtBalance'))||0;
-            bal+=amount;
-            localStorage.setItem('usdtBalance',bal);
-            document.getElementById('usdtBalance').innerText = bal;
-            alert(amount+" USDT added!");
-        }, Math.floor(Math.random()*2000)+3000);
-    }
-    if(token==='USDC'){
-        let bal=parseInt(localStorage.getItem('usdcBalance'))||0;
-        bal+=amount;
-        localStorage.setItem('usdcBalance',bal);
-        document.getElementById('usdcBalance').innerText = bal;
-    }
-}
+            const apr = Math.random() * (100 - 50) + 50; // Random APR between 50% and 100%
+            const reward = (amt * apr * duration) / (100 * 365); // Pro-rated reward
+            const stakeData = {
+                amount: amt,
+                token: token,
+                duration: duration,
+                startTime: Date.now(),
+                apr: apr,
+                reward: reward
+            };
 
-// Staking
-function stakeTokens(){
-    let amt=parseInt(document.getElementById('stakeAmount').value);
-    let balance=parseInt(localStorage.getItem('usdtBalance'))||0;
-    if(amt>balance){ alert("Not enough balance"); return; }
-    balance-=amt;
-    localStorage.setItem('usdtBalance',balance);
-    document.getElementById('usdtBalance').innerText=balance;
-    document.getElementById('stakeInfo').innerText="You staked "+amt+" USDT. After 1 year, you'll have approx "+(amt*2)+" USDT (100% APR simulated)";
-}
+            let stakes = JSON.parse(localStorage.getItem('stakes') || '[]');
+            stakes.push(stakeData);
+            localStorage.setItem('stakes', JSON.stringify(stakes));
 
-// Swap Simulation
-function swapTokens(){
-    let amt=parseInt(document.getElementById('swapAmount').value);
-    let token=document.getElementById('swapToken').value;
-    if(token==='USDT'){
-        let usdtBal=parseInt(localStorage.getItem('usdtBalance'))||0;
-        if(amt>usdtBal){ alert("Not enough USDT"); return; }
-        usdtBal-=amt;
-        let usdcBal=parseInt(localStorage.getItem('usdcBalance'))||0;
-        usdcBal+=amt; // 1:1 fake swap
-        localStorage.setItem('usdtBalance',usdtBal);
-        localStorage.setItem('usdcBalance',usdcBal);
-    } else {
-        let usdcBal=parseInt(localStorage.getItem('usdcBalance'))||0;
-        if(amt>usdcBal){ alert("Not enough USDC"); return; }
-        usdcBal-=amt;
-        let usdtBal=parseInt(localStorage.getItem('usdtBalance'))||0;
-        usdtBal+=amt;
-        localStorage.setItem('usdcBalance',usdcBal);
-        localStorage.setItem('usdtBalance',usdtBal);
-    }
-    document.getElementById('usdtBalance').innerText=localStorage.getItem('usdtBalance');
-    document.getElementById('usdcBalance').innerText=localStorage.getItem('usdcBalance');
-    alert("Swap completed (fake)");
-}
+            document.getElementById('stakeInfo').innerText = `You staked ${amt} ${token} for ${duration} day(s) at ~${apr.toFixed(2)}% APR. Expected reward: ${reward.toFixed(2)} ${token}.`;
+            addTransaction(`Staked ${amt} ${token} for ${duration} day(s)`);
+        }
 
-// Auto load wallet
-if(localStorage.getItem('fakeWallet')) showWallet();
-</script>
+        // Update Staking Rewards
+        function updateStakingRewards() {
+            let stakes = JSON.parse(localStorage.getItem('stakes') || '[]');
+            const now = Date.now();
+            stakes = stakes.filter(stake => {
+                const elapsedDays = (now - stake.startTime) / (1000 * 60 * 60 * 24);
+                if (elapsedDays >= stake.duration) {
+                    let bal = parseInt(localStorage.getItem(`${stake.token.toLowerCase()}Balance`)) || 0;
+                    bal += stake.amount + stake.reward;
+                    localStorage.setItem(`${stake.token.toLowerCase()}Balance`, bal);
+                    document.getElementById(`${stake.token.toLowerCase()}Balance`).innerText = bal;
+                    addTransaction(`Unstaked ${stake.amount} ${stake.token} with ${stake.reward.toFixed(2)} ${stake.token} reward`);
+                    return false;
+                }
+                return true;
+            });
+            localStorage.setItem('stakes', JSON.stringify(stakes));
+
+            // Random APR update every 5-10 hours
+            const lastUpdate = localStorage.getItem('lastAPRUpdate') || 0;
+            const hoursSinceUpdate = (now - lastUpdate) / (1000 * 60 * 60);
+            if (hoursSinceUpdate >= Math.random() * (10 - 5) + 5) {
+                stakes.forEach(stake => {
+                    stake.apr = Math.random() * (100 - 50) + 50;
+                    stake.reward = (stake.amount * stake.apr * stake.duration) / (100 * 365);
+                });
+                localStorage.setItem('stakes', JSON.stringify(stakes));
+                localStorage.setItem('lastAPRUpdate', now);
+            }
+
+            setTimeout(updateStakingRewards, 60 * 1000); // Check every minute
+        }
+
+        // Swap Simulation
+        function swapTokens() {
+            let amt = parseInt(document.getElementById('swapAmount').value);
+            let token = document.getElementById('swapToken').value;
+            if (amt <= 0 || isNaN(amt)) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+            if (token === 'USDT') {
+                let usdtBal = parseInt(localStorage.getItem('usdtBalance')) || 0;
+                if (amt > usdtBal) {
+                    alert('Not enough USDT.');
+                    return;
+                }
+                usdtBal -= amt;
+                let usdcBal = parseInt(localStorage.getItem('usdcBalance')) || 0;
+                usdcBal += amt; // 1:1 fake swap
+                localStorage.setItem('usdtBalance', usdtBal);
+                localStorage.setItem('usdcBalance', usdcBal);
+                addTransaction(`Swapped ${amt} USDT to USDC`);
+            } else {
+                let usdcBal = parseInt(localStorage.getItem('usdcBalance')) || 0;
+                if (amt > usdcBal) {
+                    alert('Not enough USDC.');
+                    return;
+                }
+                usdcBal -= amt;
+                let usdtBal = parseInt(localStorage.getItem('usdtBalance')) || 0;
+                usdtBal += amt;
+                localStorage.setItem('usdcBalance', usdcBal);
+                localStorage.setItem('usdtBalance', usdtBal);
+                addTransaction(`Swapped ${amt} USDC to USDT`);
+            }
+            document.getElementById('usdtBalance').innerText = localStorage.getItem('usdtBalance');
+            document.getElementById('usdcBalance').innerText = localStorage.getItem('usdcBalance');
+            alert('Swap completed (fake).');
+        }
+
+        // Transaction History
+        function addTransaction(message) {
+            let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            transactions.unshift({
+                message: message,
+                timestamp: new Date().toLocaleString()
+            });
+            if (transactions.length > 10) transactions.pop(); // Limit to 10 transactions
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            updateTransactionHistory();
+        }
+
+        function updateTransactionHistory() {
+            const history = document.getElementById('transactionHistory');
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            history.innerHTML = transactions.length
+                ? transactions.map(tx => `<div class="transaction-item">${tx.timestamp}: ${tx.message}</div>`).join('')
+                : '<p>No transactions yet.</p>';
+        }
+
+        // Auto-load wallet
+        if (localStorage.getItem('fakeWallet')) {
+            showWallet();
+        }
+    </script>
 </body>
 </html>
