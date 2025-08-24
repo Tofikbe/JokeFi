@@ -3,93 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fake Meme Coin Launch</title>
+<title>JokeFi Wallet</title>
 <style>
-body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
-h1 { color: #333; }
-input, textarea, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-button { cursor: pointer; background-color: #4caf50; color: white; border: none; }
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-th { background-color: #4caf50; color: white; }
+    body { font-family: Arial, sans-serif; background:#1e1e2f; color:#fff; margin:0; padding:0; }
+    .container { max-width:800px; margin:auto; padding:20px; }
+    h1,h2 { text-align:center; }
+    button { padding:10px 20px; margin:10px; cursor:pointer; border:none; border-radius:5px; background:#4CAF50; color:#fff; font-size:16px; }
+    .wallet-info, .tokens, .nfts, .staking { margin:20px 0; padding:15px; background:#2c2c3e; border-radius:10px; }
+    input[type=number] { width:100px; padding:5px; margin-left:10px; border-radius:5px; border:none; }
+    .nft-img { width:100px; margin:5px; border-radius:10px; }
+    a { color:#00acee; text-decoration:none; }
 </style>
 </head>
 <body>
+<div class="container">
+<h1>Fake Web3 Wallet</h1>
 
-<h1>🚀 Fake Meme Coin Launch</h1>
+<div class="wallet">
+    <button id="createWallet">Create Wallet</button>
+    <button id="importWallet">Import Wallet</button>
+    <div class="wallet-info" id="walletInfo" style="display:none;">
+        <h2>Your Wallet</h2>
+        <p>Phrase: <span id="walletPhrase"></span></p>
+        <p>Balance: <span id="usdtBalance">0</span> USDT | <span id="usdcBalance">0</span> USDC</p>
+    </div>
+</div>
 
-<label>Coin Name:</label>
-<input type="text" id="coinName" placeholder="Enter meme coin name">
-<label>Symbol:</label>
-<input type="text" id="coinSymbol" placeholder="Enter symbol, e.g. $KING">
-<label>Description:</label>
-<textarea id="coinDesc" placeholder="Why this coin exists..."></textarea>
-<button onclick="launchCoin()">Launch Coin</button>
+<div class="tokens" id="tokens" style="display:none;">
+    <h2>Tokens</h2>
+    <button onclick="addFakeToken('USDT',1000)">Add 1000 USDT (Task)</button>
+    <button onclick="addFakeToken('USDC',500)">Add 500 USDC</button>
+</div>
 
-<h2>All Launched Meme Coins</h2>
-<table id="coinTable">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Symbol</th>
-      <th>Description</th>
-      <th>Launch Time</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+<div class="nfts" id="nfts" style="display:none;">
+    <h2>NFTs</h2>
+    <img src="https://via.placeholder.com/100" class="nft-img" alt="NFT1">
+    <img src="https://via.placeholder.com/100" class="nft-img" alt="NFT2">
+    <img src="https://via.placeholder.com/100" class="nft-img" alt="NFT3">
+</div>
+
+<div class="staking" id="staking" style="display:none;">
+    <h2>APR Staking Simulator</h2>
+    <p>Enter amount to stake:</p>
+    <input type="number" id="stakeAmount" value="0">
+    <button onclick="stakeTokens()">Stake</button>
+    <p id="stakeInfo"></p>
+</div>
+</div>
 
 <script>
-// Load coins from LocalStorage
-let coins = JSON.parse(localStorage.getItem("memeCoins")) || [];
-
-function renderTable() {
-  const tbody = document.querySelector("#coinTable tbody");
-  tbody.innerHTML = "";
-  coins.forEach(coin => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${coin.name}</td>
-      <td>${coin.symbol}</td>
-      <td>${coin.desc}</td>
-      <td>${coin.time}</td>
-    `;
-    tbody.appendChild(row);
-  });
+// Wallet phrase generator
+function generatePhrase() {
+    const words = ['apple','banana','crypto','moon','star','block','chain','token','king','queen','saturn','venus','mars','sky','sun'];
+    let phrase = [];
+    for(let i=0;i<12;i++) {
+        phrase.push(words[Math.floor(Math.random()*words.length)]);
+    }
+    return phrase.join(' ');
 }
 
-function launchCoin() {
-  const name = document.getElementById("coinName").value.trim();
-  const symbol = document.getElementById("coinSymbol").value.trim();
-  const desc = document.getElementById("coinDesc").value.trim();
-  
-  if (!name || !symbol || !desc) {
-    alert("Please fill all fields!");
-    return;
-  }
-
-  const newCoin = {
-    name,
-    symbol,
-    desc,
-    time: new Date().toLocaleString()
-  };
-
-  coins.unshift(newCoin); // newest first
-  localStorage.setItem("memeCoins", JSON.stringify(coins));
-  
-  renderTable();
-  
-  // Clear inputs
-  document.getElementById("coinName").value = "";
-  document.getElementById("coinSymbol").value = "";
-  document.getElementById("coinDesc").value = "";
+// Wallet creation
+function createWallet() {
+    const phrase = generatePhrase();
+    localStorage.setItem('fakeWallet', phrase);
+    localStorage.setItem('usdtBalance', '0');
+    localStorage.setItem('usdcBalance', '0');
+    showWallet();
 }
 
-// Initial render
-renderTable();
+// Wallet import
+function importWallet() {
+    const phrase = prompt("Enter your wallet phrase:");
+    if(phrase) {
+        localStorage.setItem('fakeWallet', phrase);
+        if(!localStorage.getItem('usdtBalance')) localStorage.setItem('usdtBalance','0');
+        if(!localStorage.getItem('usdcBalance')) localStorage.setItem('usdcBalance','0');
+        showWallet();
+    }
+}
+
+// Show wallet info
+function showWallet() {
+    const phrase = localStorage.getItem('fakeWallet');
+    if(!phrase) return;
+    document.getElementById('walletPhrase').innerText = phrase;
+    document.getElementById('usdtBalance').innerText = localStorage.getItem('usdtBalance');
+    document.getElementById('usdcBalance').innerText = localStorage.getItem('usdcBalance');
+    document.getElementById('walletInfo').style.display = 'block';
+    document.getElementById('tokens').style.display = 'block';
+    document.getElementById('nfts').style.display = 'block';
+    document.getElementById('staking').style.display = 'block';
+}
+
+// Fake token add
+function addFakeToken(token,amount){
+    if(token==='USDT'){
+        // Simulate Twitter task delay
+        alert("Please complete Twitter task first");
+        window.open('https://x.com/Crypto_King877?t=gdy2Nze5NOhAiSE_4Xu6pg&s=09','_blank');
+        setTimeout(()=>{
+            let bal = parseInt(localStorage.getItem('usdtBalance')) || 0;
+            bal += amount;
+            localStorage.setItem('usdtBalance',bal);
+            document.getElementById('usdtBalance').innerText = bal;
+            alert(amount+" USDT added to your wallet");
+        }, Math.floor(Math.random()*2000)+3000); // 3-5 sec
+    }
+    if(token==='USDC'){
+        let bal = parseInt(localStorage.getItem('usdcBalance')) || 0;
+        bal += amount;
+        localStorage.setItem('usdcBalance',bal);
+        document.getElementById('usdcBalance').innerText = bal;
+    }
+}
+
+// APR staking
+function stakeTokens(){
+    let amt = parseInt(document.getElementById('stakeAmount').value);
+    let balance = parseInt(localStorage.getItem('usdtBalance')) || 0;
+    if(amt>balance) { alert("Not enough balance"); return; }
+    balance -= amt;
+    localStorage.setItem('usdtBalance', balance);
+    document.getElementById('usdtBalance').innerText = balance;
+    let apr = amt*2; // 100% APR simulation
+    document.getElementById('stakeInfo').innerText = "You staked "+amt+" USDT. After 1 year, you'll have approx "+apr+" USDT.";
+}
+
+// Event listeners
+document.getElementById('createWallet').addEventListener('click',createWallet);
+document.getElementById('importWallet').addEventListener('click',importWallet);
+
+// Auto load wallet if exists
+if(localStorage.getItem('fakeWallet')) showWallet();
 </script>
-
 </body>
 </html>
