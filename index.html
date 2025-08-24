@@ -3,52 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JokeFi Wallet</title>
+<title>Fake Web3 Wallet</title>
 <style>
-    body { font-family: Arial, sans-serif; background:#1e1e2f; color:#fff; margin:0; padding:0; }
-    .container { max-width:800px; margin:auto; padding:20px; }
-    h1,h2 { text-align:center; }
-    button { padding:10px 20px; margin:10px; cursor:pointer; border:none; border-radius:5px; background:#4CAF50; color:#fff; font-size:16px; }
-    .wallet-info, .tokens, .nfts, .staking { margin:20px 0; padding:15px; background:#2c2c3e; border-radius:10px; }
-    input[type=number] { width:100px; padding:5px; margin-left:10px; border-radius:5px; border:none; }
-    .nft-img { width:100px; margin:5px; border-radius:10px; }
-    a { color:#00acee; text-decoration:none; }
+    /* General Styles */
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#121212; color:#fff; margin:0; padding:0; }
+    .container { max-width:400px; margin:auto; padding:20px; }
+    h1 { text-align:center; margin-bottom:20px; }
+
+    /* Wallet Modal */
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:100; }
+    .modal-content { background:#1f1f2f; padding:20px; border-radius:15px; width:90%; max-width:350px; }
+    .modal-content h2 { margin-top:0; }
+    .modal-content button { margin-top:10px; width:100%; }
+
+    /* Wallet Card */
+    .wallet-card { background:#1f1f2f; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 0 10px #000; }
+    .wallet-card p { margin:5px 0; font-size:14px; word-break:break-all; }
+
+    /* Tabs */
+    .tabs { display:flex; justify-content:space-around; margin-bottom:10px; }
+    .tab { padding:10px 15px; cursor:pointer; border-radius:10px; }
+    .tab.active { background:#4CAF50; color:#fff; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+
+    /* Buttons */
+    button { padding:10px; border:none; border-radius:10px; background:#4CAF50; color:#fff; font-size:16px; cursor:pointer; }
+    input[type=number] { width:80px; padding:5px; border-radius:5px; border:none; }
+
+    /* NFT Grid */
+    .nft-grid { display:flex; flex-wrap:wrap; gap:10px; }
+    .nft-grid img { width:80px; border-radius:10px; }
+
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Fake Web3 Wallet</h1>
 
-<div class="wallet">
-    <button id="createWallet">Create Wallet</button>
-    <button id="importWallet">Import Wallet</button>
-    <div class="wallet-info" id="walletInfo" style="display:none;">
-        <h2>Your Wallet</h2>
-        <p>Phrase: <span id="walletPhrase"></span></p>
-        <p>Balance: <span id="usdtBalance">0</span> USDT | <span id="usdcBalance">0</span> USDC</p>
-    </div>
+<!-- Wallet Card -->
+<div class="wallet-card" id="walletCard" style="display:none;">
+    <h2>Your Wallet</h2>
+    <p><strong>Phrase:</strong> <span id="walletPhrase"></span></p>
+    <p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
+    <p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
 </div>
 
-<div class="tokens" id="tokens" style="display:none;">
-    <h2>Tokens</h2>
-    <button onclick="addFakeToken('USDT',1000)">Add 1000 USDT (Task)</button>
+<!-- Tabs -->
+<div class="tabs" id="tabs" style="display:none;">
+    <div class="tab active" data-tab="tokens">Tokens</div>
+    <div class="tab" data-tab="nfts">NFTs</div>
+    <div class="tab" data-tab="staking">Staking</div>
+</div>
+
+<!-- Tab Contents -->
+<div id="tokens" class="tab-content active">
+    <button onclick="addFakeToken('USDT',1000)">Complete Twitter Task → +1000 USDT</button>
     <button onclick="addFakeToken('USDC',500)">Add 500 USDC</button>
 </div>
 
-<div class="nfts" id="nfts" style="display:none;">
-    <h2>NFTs</h2>
-    <img src="https://via.placeholder.com/100" class="nft-img" alt="NFT1">
-    <img src="https://via.placeholder.com/100" class="nft-img" alt="NFT2">
-    <img src="https://via.placeholder.com/100" class="nft-img" alt="NFT3">
+<div id="nfts" class="tab-content">
+    <div class="nft-grid">
+        <img src="https://via.placeholder.com/80" alt="NFT1">
+        <img src="https://via.placeholder.com/80" alt="NFT2">
+        <img src="https://via.placeholder.com/80" alt="NFT3">
+    </div>
 </div>
 
-<div class="staking" id="staking" style="display:none;">
-    <h2>APR Staking Simulator</h2>
-    <p>Enter amount to stake:</p>
-    <input type="number" id="stakeAmount" value="0">
-    <button onclick="stakeTokens()">Stake</button>
+<div id="staking" class="tab-content">
+    <p>Stake USDT/USDC to earn 100% APR</p>
+    <input type="number" id="stakeAmount" value="0"> <button onclick="stakeTokens()">Stake</button>
     <p id="stakeInfo"></p>
 </div>
+
+<!-- Wallet Modals -->
+<div class="modal" id="createModal">
+    <div class="modal-content">
+        <h2>Create Wallet</h2>
+        <button onclick="createWallet()">Generate Wallet</button>
+        <button onclick="closeModal('createModal')">Cancel</button>
+    </div>
+</div>
+
+<div class="modal" id="importModal">
+    <div class="modal-content">
+        <h2>Import Wallet</h2>
+        <button onclick="importWallet()">Enter Phrase</button>
+        <button onclick="closeModal('importModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- Initial Buttons -->
+<div id="initialButtons" style="text-align:center;">
+    <button onclick="openModal('createModal')">Create Wallet</button>
+    <button onclick="openModal('importModal')">Import Wallet</button>
 </div>
 
 <script>
@@ -62,43 +110,55 @@ function generatePhrase() {
     return phrase.join(' ');
 }
 
-// Wallet creation
+// Create Wallet
 function createWallet() {
     const phrase = generatePhrase();
     localStorage.setItem('fakeWallet', phrase);
     localStorage.setItem('usdtBalance', '0');
     localStorage.setItem('usdcBalance', '0');
+    closeModal('createModal');
     showWallet();
 }
 
-// Wallet import
+// Import Wallet
 function importWallet() {
     const phrase = prompt("Enter your wallet phrase:");
-    if(phrase) {
+    if(phrase){
         localStorage.setItem('fakeWallet', phrase);
         if(!localStorage.getItem('usdtBalance')) localStorage.setItem('usdtBalance','0');
         if(!localStorage.getItem('usdcBalance')) localStorage.setItem('usdcBalance','0');
+        closeModal('importModal');
         showWallet();
     }
 }
 
-// Show wallet info
-function showWallet() {
-    const phrase = localStorage.getItem('fakeWallet');
-    if(!phrase) return;
-    document.getElementById('walletPhrase').innerText = phrase;
+// Show Wallet
+function showWallet(){
+    document.getElementById('walletCard').style.display='block';
+    document.getElementById('tabs').style.display='flex';
+    document.getElementById('initialButtons').style.display='none';
+    document.getElementById('walletPhrase').innerText = localStorage.getItem('fakeWallet');
     document.getElementById('usdtBalance').innerText = localStorage.getItem('usdtBalance');
     document.getElementById('usdcBalance').innerText = localStorage.getItem('usdcBalance');
-    document.getElementById('walletInfo').style.display = 'block';
-    document.getElementById('tokens').style.display = 'block';
-    document.getElementById('nfts').style.display = 'block';
-    document.getElementById('staking').style.display = 'block';
 }
+
+// Modals
+function openModal(id){ document.getElementById(id).style.display='flex'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.remove('active'));
+        document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+});
 
 // Fake token add
 function addFakeToken(token,amount){
     if(token==='USDT'){
-        // Simulate Twitter task delay
         alert("Please complete Twitter task first");
         window.open('https://x.com/Crypto_King877?t=gdy2Nze5NOhAiSE_4Xu6pg&s=09','_blank');
         setTimeout(()=>{
@@ -106,8 +166,8 @@ function addFakeToken(token,amount){
             bal += amount;
             localStorage.setItem('usdtBalance',bal);
             document.getElementById('usdtBalance').innerText = bal;
-            alert(amount+" USDT added to your wallet");
-        }, Math.floor(Math.random()*2000)+3000); // 3-5 sec
+            alert(amount+" USDT added!");
+        }, Math.floor(Math.random()*2000)+3000);
     }
     if(token==='USDC'){
         let bal = parseInt(localStorage.getItem('usdcBalance')) || 0;
@@ -117,21 +177,16 @@ function addFakeToken(token,amount){
     }
 }
 
-// APR staking
+// Staking
 function stakeTokens(){
     let amt = parseInt(document.getElementById('stakeAmount').value);
     let balance = parseInt(localStorage.getItem('usdtBalance')) || 0;
-    if(amt>balance) { alert("Not enough balance"); return; }
+    if(amt>balance){ alert("Not enough balance"); return; }
     balance -= amt;
-    localStorage.setItem('usdtBalance', balance);
-    document.getElementById('usdtBalance').innerText = balance;
-    let apr = amt*2; // 100% APR simulation
-    document.getElementById('stakeInfo').innerText = "You staked "+amt+" USDT. After 1 year, you'll have approx "+apr+" USDT.";
+    localStorage.setItem('usdtBalance',balance);
+    document.getElementById('usdtBalance').innerText=balance;
+    document.getElementById('stakeInfo').innerText="You staked "+amt+" USDT. After 1 year, you'll have approx "+(amt*2)+" USDT (100% APR simulated)";
 }
-
-// Event listeners
-document.getElementById('createWallet').addEventListener('click',createWallet);
-document.getElementById('importWallet').addEventListener('click',importWallet);
 
 // Auto load wallet if exists
 if(localStorage.getItem('fakeWallet')) showWallet();
