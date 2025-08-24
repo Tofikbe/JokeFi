@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fake Meme Coin Launch</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
+h1 { color: #333; }
+input, textarea, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+button { cursor: pointer; background-color: #4caf50; color: white; border: none; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+th { background-color: #4caf50; color: white; }
+</style>
+</head>
+<body>
+
+<h1>🚀 Fake Meme Coin Launch</h1>
+
+<label>Coin Name:</label>
+<input type="text" id="coinName" placeholder="Enter meme coin name">
+<label>Symbol:</label>
+<input type="text" id="coinSymbol" placeholder="Enter symbol, e.g. $KING">
+<label>Description:</label>
+<textarea id="coinDesc" placeholder="Why this coin exists..."></textarea>
+<button onclick="launchCoin()">Launch Coin</button>
+
+<h2>All Launched Meme Coins</h2>
+<table id="coinTable">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Symbol</th>
+      <th>Description</th>
+      <th>Launch Time</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+// Load coins from LocalStorage
+let coins = JSON.parse(localStorage.getItem("memeCoins")) || [];
+
+function renderTable() {
+  const tbody = document.querySelector("#coinTable tbody");
+  tbody.innerHTML = "";
+  coins.forEach(coin => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${coin.name}</td>
+      <td>${coin.symbol}</td>
+      <td>${coin.desc}</td>
+      <td>${coin.time}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function launchCoin() {
+  const name = document.getElementById("coinName").value.trim();
+  const symbol = document.getElementById("coinSymbol").value.trim();
+  const desc = document.getElementById("coinDesc").value.trim();
+  
+  if (!name || !symbol || !desc) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  const newCoin = {
+    name,
+    symbol,
+    desc,
+    time: new Date().toLocaleString()
+  };
+
+  coins.unshift(newCoin); // newest first
+  localStorage.setItem("memeCoins", JSON.stringify(coins));
+  
+  renderTable();
+  
+  // Clear inputs
+  document.getElementById("coinName").value = "";
+  document.getElementById("coinSymbol").value = "";
+  document.getElementById("coinDesc").value = "";
+}
+
+// Initial render
+renderTable();
+</script>
+
+</body>
+</html>
