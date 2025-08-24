@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JokeFi Wallet</title>
+<title>JokeFi Wallet - King Blockchain</title>
 <style>
-/* General */
-body { margin:0; font-family:'Inter',sans-serif; background:#0e0e1f; color:#fff; min-height:100vh; display:flex; justify-content:center; align-items:center; }
-.container { width:90%; max-width:400px; padding:20px; background:#1a1a2e; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.3);}
-.topbar { background:linear-gradient(90deg,#4CAF50,#00c6ff); padding:15px; border-radius:15px; text-align:center; font-weight:700; font-size:20px; margin-bottom:20px; position:relative;}
+body { margin:0; font-family:'Inter',sans-serif; background:#0e0e1f; color:#fff; min-height:100vh; display:flex; justify-content:center; align-items:center;}
+.container { width:95%; max-width:400px; padding:20px; background:#1a1a2e; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.topbar { background:linear-gradient(90deg,#FF8C00,#FFD700); padding:15px; border-radius:15px; text-align:center; font-weight:700; font-size:20px; margin-bottom:20px; position:relative;}
 .wallet-card { background:#25253a; padding:20px; border-radius:15px; margin-bottom:20px; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
 .wallet-card p { margin:8px 0; word-break:break-word; font-size:14px;}
 .wallet-actions { display:flex; gap:5px; margin-top:15px;}
-.wallet-actions button { flex:1; padding:10px; border:none; border-radius:12px; background:linear-gradient(90deg,#4CAF50,#00c6ff); color:#fff; font-size:14px; cursor:pointer;}
+.wallet-actions button { flex:1; padding:10px; border:none; border-radius:12px; background:linear-gradient(90deg,#FF8C00,#FFD700); color:#000; font-weight:600; font-size:14px; cursor:pointer;}
 .transaction-history { margin-top:15px; background:#2c2c44; padding:10px; border-radius:12px; max-height:150px; overflow-y:auto;}
 .transaction-item { font-size:12px; padding:5px; border-bottom:1px solid #3a3a55;}
-button { width:100%; padding:12px; border:none; border-radius:12px; background:linear-gradient(90deg,#4CAF50,#00c6ff); color:#fff; margin:5px 0; font-size:16px; cursor:pointer;}
+button { width:100%; padding:12px; border:none; border-radius:12px; background:linear-gradient(90deg,#FF8C00,#FFD700); color:#000; margin:5px 0; font-size:16px; cursor:pointer;}
 input, select { width:100%; padding:10px; border-radius:8px; border:none; background:#2c2c44; color:#fff; margin:5px 0; box-sizing:border-box; text-align:center;}
 .phrase-inputs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin:10px 0;}
 .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:100;}
@@ -26,28 +25,26 @@ input, select { width:100%; padding:10px; border-radius:8px; border:none; backgr
 </head>
 <body>
 <div class="container">
-<div class="topbar">JokeFi Wallet</div>
+<div class="topbar">JokeFi Wallet - King Testnet</div>
 
-<!-- Wallet Card -->
 <div class="wallet-card" id="walletCard">
-    <h2>Your Wallet</h2>
-    <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-    <p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
-    <p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
-    <div class="wallet-actions">
-        <button onclick="openModal('depositModal')">Deposit</button>
-        <button onclick="openModal('sendModal')">Send</button>
-        <button onclick="openModal('receiveModal')">Receive</button>
-    </div>
-    <div class="transaction-history" id="transactionHistory"></div>
+<h2>Your Wallet</h2>
+<p><strong>Address:</strong> <span id="walletAddress"></span></p>
+<p><strong>USDT:</strong> <span id="usdtBalance">0</span></p>
+<p><strong>USDC:</strong> <span id="usdcBalance">0</span></p>
+<div class="wallet-actions">
+<button onclick="openModal('depositModal')">Deposit</button>
+<button onclick="openModal('sendModal')">Send</button>
+<button onclick="openModal('receiveModal')">Receive</button>
+</div>
+<div class="transaction-history" id="transactionHistory"></div>
 </div>
 
-<!-- Modals -->
 <div class="modal" id="welcomeModal">
 <div class="modal-content">
-<h2>Welcome</h2>
-<button onclick="openModal('createModal'); closeModal('welcomeModal')">Create Wallet</button>
-<button onclick="openModal('importModal'); closeModal('welcomeModal')">Import Wallet</button>
+<h2>Welcome to JokeFi Wallet</h2>
+<button onclick="openModal('createModal'); closeModal('welcomeModal'); initCreateModal();">Create Wallet</button>
+<button onclick="openModal('importModal'); closeModal('welcomeModal'); initImportModal();">Import Wallet</button>
 </div>
 </div>
 
@@ -55,7 +52,7 @@ input, select { width:100%; padding:10px; border-radius:8px; border:none; backgr
 <div class="modal-content">
 <h2>Create Wallet</h2>
 <p id="newWalletPhrase" style="color:#00ffdd; font-weight:bold;"></p>
-<p class="warning">⚠️ Save this phrase safely</p>
+<p class="warning">⚠️ Save this seed phrase securely</p>
 <button onclick="createWallet()">Confirm & Create</button>
 <button onclick="closeModal('createModal')">Cancel</button>
 </div>
@@ -102,19 +99,21 @@ input, select { width:100%; padding:10px; border-radius:8px; border:none; backgr
 </div>
 
 <script>
-// Phrase & Wallet Address
+// Generate 12-word phrase
 function generatePhrase() {
     const words=['apple','banana','crypto','moon','star','block','chain','token','king','queen','saturn','venus','mars','sky','sun','orbit','ledger','trust','secure','vault'];
     let phrase=[]; for(let i=0;i<12;i++){ phrase.push(words[Math.floor(Math.random()*words.length)]);}
     return phrase.join(' ');
 }
+
+// Generate random wallet address
 function generateWalletAddress(){
     const base='0x4F3C2A1B9D8E7F6A5B4C3D2E1F0A9B8C7D6E5F4A';
     const chars='0123456789ABCDEF';
     let addr='0x'; for(let i=2;i<base.length;i++){ addr += Math.random()<0.1? chars[Math.floor(Math.random()*chars.length)]: base[i]; } return addr;
 }
 
-// Wallet Functions
+// Wallet functions
 function createWallet(){
     const phrase=document.getElementById('newWalletPhrase').innerText;
     const address=generateWalletAddress();
@@ -144,30 +143,34 @@ function showWallet(){
 function openModal(id){ document.getElementById(id).style.display='flex'; }
 function closeModal(id){ document.getElementById(id).style.display='none'; }
 
-// Deposit/Send/Receive
+// Deposit / Send / Receive
 function depositTokens(){
     const token=document.getElementById('depositToken').value;
-    const amt=parseFloat(document.getElementById('depositAmount').value); if(isNaN(amt)||amt<=0){alert('Invalid');return;}
+    const amt=parseFloat(document.getElementById('depositAmount').value);
+    if(isNaN(amt)||amt<=0){alert('Invalid'); return;}
     let bal=parseFloat(localStorage.getItem(token.toLowerCase()+'Balance'))||0; bal+=amt;
     localStorage.setItem(token.toLowerCase()+'Balance',bal.toFixed(2)); document.getElementById(token.toLowerCase()+'Balance').innerText=bal.toFixed(2);
-    addTransaction(`Deposited ${amt} ${token}`); closeModal('depositModal'); alert(`Deposited ${amt} ${token}`);
+    addTransaction(`Deposited ${amt} ${token} on King Blockchain`);
+    closeModal('depositModal'); alert(`Deposited ${amt} ${token}`);
 }
 function sendTokens(){
     const recipient=document.getElementById('recipientAddress').value.trim();
     const token=document.getElementById('sendToken').value;
-    const amt=parseFloat(document.getElementById('sendAmount').value); let bal=parseFloat(localStorage.getItem(token.toLowerCase()+'Balance'))||0;
+    const amt=parseFloat(document.getElementById('sendAmount').value); 
+    let bal=parseFloat(localStorage.getItem(token.toLowerCase()+'Balance'))||0;
     if(!/^0x[0-9A-Fa-f]{40}$/.test(recipient)){alert('Invalid address'); return;}
-    if(recipient===localStorage.getItem('walletAddress')){alert('Cannot send to self');return;}
-    if(isNaN(amt)||amt<=0||amt>bal){alert('Invalid amount');return;}
+    if(recipient===localStorage.getItem('walletAddress')){alert('Cannot send to self'); return;}
+    if(isNaN(amt)||amt<=0||amt>bal){alert('Invalid amount'); return;}
     bal-=amt; localStorage.setItem(token.toLowerCase()+'Balance',bal.toFixed(2)); document.getElementById(token.toLowerCase()+'Balance').innerText=bal.toFixed(2);
-    addTransaction(`Sent ${amt} ${token} to ${recipient.slice(0,6)}...${recipient.slice(-4)}`); closeModal('sendModal'); alert(`Sent ${amt} ${token}`);
+    addTransaction(`Sent ${amt} ${token} to ${recipient.slice(0,6)}...${recipient.slice(-4)} on King Blockchain`);
+    closeModal('sendModal'); alert(`Sent ${amt} ${token}`);
 }
 function copyAddress(){ navigator.clipboard.writeText(localStorage.getItem('walletAddress')).then(()=>{alert('Copied');}); }
 
 // Transactions
 function addTransaction(msg){
     let tx=JSON.parse(localStorage.getItem('transactions')||'[]');
-    tx.unshift({msg,timestamp:new Date().toLocaleString()}); if(tx.length>10)tx.pop();
+    tx.unshift({msg,timestamp:new Date().toLocaleString()}); if(tx.length>10) tx.pop();
     localStorage.setItem('transactions',JSON.stringify(tx)); updateTransactionHistory();
 }
 function updateTransactionHistory(){
@@ -176,7 +179,7 @@ function updateTransactionHistory(){
     hist.innerHTML=tx.length? tx.map(t=>`<div class="transaction-item">${t.timestamp}: ${t.msg}</div>`).join(''):'<p>No transactions</p>';
 }
 
-// Initialize modals
+// Init modals
 function initCreateModal(){ document.getElementById('newWalletPhrase').innerText=generatePhrase(); }
 function initImportModal(){
     const container=document.getElementById('phraseInputs'); container.innerHTML='';
@@ -185,7 +188,7 @@ function initImportModal(){
 
 // Load
 window.onload=function(){
-    if(localStorage.getItem('fakeWallet')) showWallet(); else { openModal('welcomeModal'); initCreateModal(); initImportModal();}
+    if(localStorage.getItem('fakeWallet')) showWallet(); else openModal('welcomeModal');
 }
 </script>
 </body>
