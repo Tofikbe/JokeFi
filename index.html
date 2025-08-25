@@ -21,18 +21,22 @@ button{padding:0.8rem 1.5rem;border:none;border-radius:5px;font-size:1rem;cursor
 .token:hover{transform:scale(1.02);}
 .token-price{font-weight:bold;color:#27ae60;}
 .token-name{display:flex;align-items:center;gap:0.5rem;}
-.popup,.token-popup,.scanner-popup,.tx-popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000;}
-.popup-content,.token-popup-content,.scanner-popup-content{background:white;padding:2rem;border-radius:10px;text-align:center;max-width:400px;width:90%;}
-.tx-popup-content{background:white;padding:1rem;border-radius:15px;position:fixed;bottom:0;width:100%;max-height:40%;overflow:auto;animation:slideUp 0.3s ease;}
-.tx-buttons{display:flex;justify-content:space-around;margin-top:1rem;}
-.tx-buttons button{width:40%;}
-.stamp{font-size:3rem;color:#333;opacity:0.4;transform:rotate(-30deg);border:3px solid #333;padding:0.3rem 1rem;display:inline-block;margin-bottom:1rem;}
+.popup,.token-popup,.scanner-popup,.confirm-popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:flex-end;z-index:1000;}
+.popup-content,.token-popup-content,.scanner-popup-content,.confirm-popup-content{background:white;padding:2rem;border-radius:10px 10px 0 0;text-align:center;max-width:400px;width:100%;height:40vh;}
+.popup-content p,.scanner-popup-content p{word-break:break-all;margin-bottom:1rem;cursor:pointer;}
 .close-btn{background-color:#95a5a6;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;cursor:pointer;}
 .close-btn:hover{background-color:#7f8c8d;}
 input{margin:0.5rem 0;padding:0.6rem;width:90%;border-radius:5px;border:1px solid #ccc;}
-#scanner-line{position:absolute;width:100%;height:3px;background:lime;animation:scan 2s infinite;z-index:10;display:none;}
+canvas{margin-bottom:1rem;}
+.tokenomics-circle{width:200px;height:200px;border-radius:50%;position:relative;margin:auto;}
+.segment{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;clip:rect(0px,200px,200px,100px);}
+.segment-inner{position:absolute;width:100%;height:100%;border-radius:50%;clip:rect(0px,100px,200px,0px);}
+#scanner-line{position:absolute;left:0;width:100%;height:3px;background:lime;animation:scan 2s infinite;z-index:10;display:none;}
 @keyframes scan{0%{top:0;}50%{top:100%;}100%{top:0;}}
-@keyframes slideUp{from{bottom:-50%;}to{bottom:0;}}
+.confirm-buttons{display:flex;justify-content:space-around;margin-top:1rem;}
+.kingdom-stamp{position:absolute;top:20%;left:50%;transform:translateX(-50%) rotate(30deg);opacity:0.4;font-size:2rem;font-weight:bold;color:#333;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.confirm-popup-content{animation:slideUp 0.3s ease-out;}
 </style>
 </head>
 <body>
@@ -75,7 +79,7 @@ input{margin:0.5rem 0;padding:0.6rem;width:90%;border-radius:5px;border:1px soli
 <h3>Send KDM</h3>
 <input type="text" id="send-address" placeholder="Recipient Address">
 <input type="number" id="send-amount" placeholder="Amount (KDM)">
-<button class="cream-btn" onclick="prepareTransaction()">Send</button>
+<button class="cream-btn" onclick="confirmSend()">Send</button>
 <br><br>
 <button class="close-btn" onclick="closeSendPopup()">Close</button>
 </div>
@@ -87,13 +91,59 @@ input{margin:0.5rem 0;padding:0.6rem;width:90%;border-radius:5px;border:1px soli
 <h3 id="token-title"></h3>
 <div class="tokenomics-circle" id="tokenomics-circle"></div>
 <p id="token-details"></p>
+<div class="buttons">
+  <button class="cream-btn" onclick="openBuyTokenPopup()">Buy</button>
+  <button class="cream-btn" onclick="openSellTokenPopup()">Sell</button>
+</div>
 <button class="close-btn" onclick="closeTokenPopup()">Close</button>
+</div>
+</div>
+
+<!-- Buy Token Popup -->
+<div class="popup" id="buy-token-popup">
+<div class="popup-content">
+<h3>Buy <span id="buy-token-name"></span></h3>
+<input type="number" id="buy-token-amount" placeholder="Amount to Buy">
+<button class="cream-btn" onclick="confirmBuyToken()">Buy</button>
+<br><br>
+<button class="close-btn" onclick="closeBuyTokenPopup()">Close</button>
+</div>
+</div>
+
+<!-- Sell Token Popup -->
+<div class="popup" id="sell-token-popup">
+<div class="popup-content">
+<h3>Sell <span id="sell-token-name"></span></h3>
+<input type="number" id="sell-token-amount" placeholder="Amount to Sell">
+<button class="cream-btn" onclick="confirmSellToken()">Sell</button>
+<br><br>
+<button class="close-btn" onclick="closeSellTokenPopup()">Close</button>
+</div>
+</div>
+
+<!-- Confirm Transaction Popup -->
+<div class="confirm-popup" id="confirm-transaction-popup">
+<div class="confirm-popup-content">
+<p id="confirm-message"></p>
+<div class="confirm-buttons">
+<button class="cream-btn" onclick="signTransaction()">Sign</button>
+<button class="close-btn" onclick="closeConfirmPopup()">Cancel</button>
+</div>
+</div>
+</div>
+
+<!-- Transaction Success Popup -->
+<div class="confirm-popup" id="transaction-success-popup">
+<div class="confirm-popup-content">
+<div class="kingdom-stamp">KINGDOM</div>
+<p id="success-message"></p>
+<button class="cream-btn" onclick="completeTransaction()">Confirm</button>
 </div>
 </div>
 
 <!-- QR Scanner Popup -->
 <div class="scanner-popup" id="scanner-popup">
-<div class="scanner-popup-content" style="position:relative;width:320px;height:320px;">
+<div class="scanner-popup-content" style="position:relative;">
 <div id="scanner-line"></div>
 <video id="video" width="300" height="300" style="border:1px solid #ccc;"></video>
 <p id="scanner-msg"></p>
@@ -101,163 +151,295 @@ input{margin:0.5rem 0;padding:0.6rem;width:90%;border-radius:5px;border:1px soli
 </div>
 </div>
 
-<!-- Transaction Popup -->
-<div class="tx-popup" id="tx-popup">
-<div class="tx-popup-content" id="tx-content"></div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 <script>
-// Initialize wallets
-let wallets = JSON.parse(localStorage.getItem('wallets')||'{}');
-const mainWallet='kingdom7q6c2tcdpnaijn1js6sjjmh3lbe2tp0b';
-
-// Ensure main wallet exists
-if(!wallets[mainWallet]) wallets[mainWallet]=1000000000; // 1 Billion
-localStorage.setItem('wallets',JSON.stringify(wallets));
-
-// Each device has one unique random address if not main
-if(!localStorage.getItem('myAddress')){
-  let rand="kingdom"+Math.random().toString(36).substring(2,20);
-  if(rand===mainWallet) rand+="1";
-  localStorage.setItem('myAddress',rand);
-  if(!wallets[rand]) wallets[rand]=0;
-  localStorage.setItem('wallets',JSON.stringify(wallets));
+// Generate random wallet address
+function generateWalletAddress() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let address = 'kingdom';
+  for (let i = 0; i < 34; i++) {
+    address += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return address;
 }
-let myAddress=localStorage.getItem('myAddress');
 
-// Tokens stable
-let tokens=[
-{emoji:'🪙',name:'GoldCoin',price:1,community:400000,investors:300000,liquidity:200000,others:100000},
-{emoji:'💎',name:'Diamond',price:2,community:200000,investors:150000,liquidity:100000,others:50000},
-{emoji:'🚀',name:'Rocket',price:3,community:300000,investors:200000,liquidity:150000,others:50000},
-{emoji:'🐶',name:'Doge',price:0.5,community:500000,investors:200000,liquidity:100000,others:20000},
+// Initialize wallet address
+let myAddress = localStorage.getItem('myWalletAddress');
+if (!myAddress) {
+  myAddress = generateWalletAddress();
+  localStorage.setItem('myWalletAddress', myAddress);
+}
+
+// Initialize wallets and transactions
+let wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+if (!wallets[myAddress]) wallets[myAddress] = 1000000000; // 1 Billion
+localStorage.setItem('wallets', JSON.stringify(wallets));
+
+// Token holdings
+let tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
+if (!tokenHoldings[myAddress]) tokenHoldings[myAddress] = {};
+localStorage.setItem('tokenHoldings', JSON.stringify(tokenHoldings));
+
+// Tokens stable tokenomics
+let tokens = [
+  {emoji:'🪙',name:'GoldCoin',price:1,community:400000,investors:300000,liquidity:200000,others:100000},
+  {emoji:'💎',name:'Diamond',price:2,community:200000,investors:150000,liquidity:100000,others:50000},
+  {emoji:'🚀',name:'Rocket',price:3,community:300000,investors:200000,liquidity:150000,others:50000},
+  {emoji:'🐶',name:'Doge',price:0.5,community:500000,investors:200000,liquidity:100000,others:20000},
+  {emoji:'🍌',name:'Banana',price:0.8,community:150000,investors:50000,liquidity:30000,others:20000},
+  {emoji:'🔥',name:'Fire',price:4,community:200000,investors:150000,liquidity:100000,others:50000},
+  {emoji:'🌕',name:'Moon',price:2,community:250000,investors:200000,liquidity:150000,others:50000},
+  {emoji:'🐱',name:'CatToken',price:1.5,community:300000,investors:200000,liquidity:100000,others:50000},
+  {emoji:'🎮',name:'Gamer',price:0.7,community:150000,investors:70000,liquidity:30000,others:20000},
+  {emoji:'🏆',name:'Trophy',price:1.2,community:200000,investors:100000,liquidity:50000,others:50000},
+  {emoji:'⚡',name:'Thunder',price:3.5,community:100000,investors:50000,liquidity:30000,others:20000},
+  {emoji:'🍕',name:'Pizza',price:2.5,community:200000,investors:150000,liquidity:100000,others:50000},
+  {emoji:'🐉',name:'Dragon',price:4.5,community:300000,investors:200000,liquidity:150000,others:50000},
+  {emoji:'🧊',name:'Ice',price:1.8,community:250000,investors:150000,liquidity:100000,others:50000},
+  {emoji:'🎵',name:'Music',price:2,community:150000,investors:100000,liquidity:50000,others:20000}
 ];
 
-// Init
-function initWallet(){
+// Initialize wallet
+function initWallet() {
   updateBalance();
   displayTokens();
-  setInterval(updateTokenPrices,5000);
-}
-function updateBalance(){
-  wallets=JSON.parse(localStorage.getItem('wallets')||'{}');
-  document.getElementById('balance').textContent=(wallets[myAddress]||0).toFixed(2)+' KDM';
+  setInterval(updateTokenPrices, 5000);
 }
 
-// Tokens
-function displayTokens(){
-  const grid=document.getElementById('tokens-grid'); grid.innerHTML='';
-  tokens.forEach(t=>{
-    const div=document.createElement('div'); div.className='token';
-    div.onclick=()=>showTokenDetails(t);
-    div.innerHTML=`<span class="token-name">${t.emoji} ${t.name}</span><span class="token-price">$${t.price}</span>`;
+// Balance
+function updateBalance() {
+  wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  document.getElementById('balance').textContent = (wallets[myAddress] || 0).toFixed(2) + ' KDM';
+}
+
+// Display tokens
+function displayTokens() {
+  const grid = document.getElementById('tokens-grid');
+  grid.innerHTML = '';
+  tokens.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'token';
+    div.onclick = () => showTokenDetails(t);
+    div.innerHTML = `<span class="token-name">${t.emoji} ${t.name}</span><span class="token-price">$${t.price}</span>`;
     grid.appendChild(div);
   });
 }
-function updateTokenPrices(){
-  tokens.forEach(t=>t.price=(Math.random()*(5-0.01)+0.01).toFixed(2));
+
+// Update token prices
+function updateTokenPrices() {
+  tokens.forEach(t => t.price = (Math.random() * (5 - 0.01) + 0.01).toFixed(2));
   displayTokens();
 }
 
 // Deposit
-function deposit(){document.getElementById('deposit-popup').style.display='flex';}
-function closeDepositPopup(){document.getElementById('deposit-popup').style.display='none';}
+function deposit() { document.getElementById('deposit-popup').style.display = 'flex'; }
+function closeDepositPopup() { document.getElementById('deposit-popup').style.display = 'none'; }
 
 // Receive
-function receive(){
-  const popup=document.getElementById('receive-popup');
-  document.getElementById('wallet-address').textContent=myAddress;
-  QRCode.toCanvas(document.getElementById('qr-code'),myAddress,function(err){if(err)console.error(err);});
-  popup.style.display='flex';
+function receive() {
+  const popup = document.getElementById('receive-popup');
+  document.getElementById('wallet-address').textContent = myAddress;
+  QRCode.toCanvas(document.getElementById('qr-code'), myAddress, function (err) { if (err) console.error(err); });
+  popup.style.display = 'flex';
 }
-function copyAddress(){navigator.clipboard.writeText(myAddress);alert('Address copied!');}
-function closePopup(){document.getElementById('receive-popup').style.display='none';}
+function copyAddress() { navigator.clipboard.writeText(myAddress); alert('Address copied!'); }
+function closePopup() { document.getElementById('receive-popup').style.display = 'none'; }
 
 // Send
-function openSendPopup(){document.getElementById('send-popup').style.display='flex';}
-function closeSendPopup(){document.getElementById('send-popup').style.display='none';}
-let pendingTx=null;
-function prepareTransaction(){
-  const addr=document.getElementById('send-address').value.trim();
-  const amt=parseFloat(document.getElementById('send-amount').value);
-  if(!addr||amt<=0||isNaN(amt)){alert('Enter valid address and amount!'); return;}
-  pendingTx={addr,amt};
-  showTxPopup(`You are about to send ${amt} KDM to ${addr}. Sign to confirm.`,true);
+function openSendPopup() { document.getElementById('send-popup').style.display = 'flex'; }
+function closeSendPopup() { document.getElementById('send-popup').style.display = 'none'; }
+function confirmSend() {
+  const addr = document.getElementById('send-address').value.trim();
+  const amt = parseFloat(document.getElementById('send-amount').value);
+  if (!addr || amt <= 0 || isNaN(amt)) { alert('Enter valid address and amount!'); return; }
+  showConfirmPopup(`Do you want to send ${amt} KDM to ${addr}?`, () => send(addr, amt));
 }
-function sendConfirmed(){
-  if(!pendingTx) return;
-  wallets=JSON.parse(localStorage.getItem('wallets')||'{}');
-  if(!wallets[pendingTx.addr]) wallets[pendingTx.addr]=0;
-  if(wallets[myAddress]<pendingTx.amt){alert('Insufficient balance!'); closeTxPopup(); return;}
-  wallets[myAddress]-=pendingTx.amt; wallets[pendingTx.addr]+=pendingTx.amt;
-  localStorage.setItem('wallets',JSON.stringify(wallets));
+function send(addr, amt) {
+  wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  if (!wallets[addr]) wallets[addr] = 0;
+  if (wallets[myAddress] < amt) { alert('Insufficient balance!'); return; }
+  wallets[myAddress] -= amt;
+  wallets[addr] += amt;
+  localStorage.setItem('wallets', JSON.stringify(wallets));
+  transactions.push({ type: 'send', from: myAddress, to: addr, amount: amt, timestamp: Date.now() });
+  localStorage.setItem('transactions', JSON.stringify(transactions));
   updateBalance();
-  showTxPopup(`<div class="stamp">KINGDOM</div><p>Transaction processed on Kingdom Blockchain.<br>Sent ${pendingTx.amt} KDM to ${pendingTx.addr}</p><button class="cream-btn" onclick="closeTxPopup()">Confirm</button>`,false);
-  pendingTx=null;
+  showSuccessPopup(`Transaction of ${amt} KDM to ${addr} completed on Kingdom Blockchain.`);
 }
 
 // Token Details
-function showTokenDetails(t){
-  document.getElementById('token-title').textContent=`${t.emoji} ${t.name}`;
-  const circle=document.getElementById('tokenomics-circle'); circle.innerHTML='';
-  const total=t.community+t.investors+t.liquidity+t.others;
-  const segments=[{color:'red',val:t.community},{color:'blue',val:t.investors},{color:'green',val:t.liquidity},{color:'orange',val:t.others}];
-  let start=0;
-  segments.forEach(seg=>{
-    const angle=(seg.val/total)*360;
-    const segDiv=document.createElement('div'); segDiv.className='segment'; segDiv.style.transform=`rotate(${start}deg)`;
-    const inner=document.createElement('div'); inner.className='segment-inner'; inner.style.background=seg.color; inner.style.transform=`rotate(${angle}deg)`;
-    segDiv.appendChild(inner); circle.appendChild(segDiv); start+=angle;
+let currentToken;
+function showTokenDetails(t) {
+  currentToken = t;
+  document.getElementById('token-title').textContent = `${t.emoji} ${t.name}`;
+  const circle = document.getElementById('tokenomics-circle');
+  circle.innerHTML = '';
+  const total = t.community + t.investors + t.liquidity + t.others;
+  const segments = [
+    { color: 'red', val: t.community },
+    { color: 'blue', val: t.investors },
+    { color: 'green', val: t.liquidity },
+    { color: 'orange', val: t.others }
+  ];
+  let start = 0;
+  segments.forEach(seg => {
+    const angle = (seg.val / total) * 360;
+    const segDiv = document.createElement('div');
+    segDiv.className = 'segment';
+    segDiv.style.transform = `rotate(${start}deg)`;
+    const inner = document.createElement('div');
+    inner.className = 'segment-inner';
+    inner.style.background = seg.color;
+    inner.style.transform = `rotate(${angle}deg)`;
+    segDiv.appendChild(inner);
+    circle.appendChild(segDiv);
+    start += angle;
   });
-  document.getElementById('token-details').innerHTML=`Price: $${t.price}<br>Total Supply: ${total}`;
-  document.getElementById('token-popup').style.display='flex';
+  tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
+  const holding = tokenHoldings[myAddress][t.name] || 0;
+  document.getElementById('token-details').innerHTML = `Price: $${t.price}<br>Total Supply: ${total}<br>Circulating: ${total - Math.floor(Math.random() * 50000)}<br>Holders: ${Math.floor(Math.random() * 10000)}<br>Listing: ${new Date(Date.now() - Math.random() * 1e10).toLocaleDateString()}<br>Your Holding: ${holding} ${t.name}`;
+  document.getElementById('token-popup').style.display = 'flex';
 }
-function closeTokenPopup(){document.getElementById('token-popup').style.display='none';}
+function closeTokenPopup() { document.getElementById('token-popup').style.display = 'none'; }
+
+// Buy Token
+function openBuyTokenPopup() {
+  document.getElementById('buy-token-name').textContent = currentToken.name;
+  document.getElementById('buy-token-popup').style.display = 'flex';
+}
+function closeBuyTokenPopup() { document.getElementById('buy-token-popup').style.display = 'none'; }
+function confirmBuyToken() {
+  const amount = parseFloat(document.getElementById('buy-token-amount').value);
+  if (isNaN(amount) || amount <= 0) { alert('Enter valid amount!'); return; }
+  const cost = amount * currentToken.price;
+  showConfirmPopup(`Do you want to buy ${amount} ${currentToken.name} for ${cost} KDM?`, () => buyToken(amount));
+}
+function buyToken(amount) {
+  const cost = amount * currentToken.price;
+  wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  if (wallets[myAddress] < cost) { alert('Insufficient balance!'); return; }
+  wallets[myAddress] -= cost;
+  tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
+  if (!tokenHoldings[myAddress][currentToken.name]) tokenHoldings[myAddress][currentToken.name] = 0;
+  tokenHoldings[myAddress][currentToken.name] += amount;
+  localStorage.setItem('wallets', JSON.stringify(wallets));
+  localStorage.setItem('tokenHoldings', JSON.stringify(tokenHoldings));
+  transactions.push({ type: 'buy', token: currentToken.name, amount: amount, cost: cost, timestamp: Date.now() });
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  updateBalance();
+  showSuccessPopup(`Purchase of ${amount} ${currentToken.name} for ${cost} KDM completed on Kingdom Blockchain.`);
+  closeBuyTokenPopup();
+}
+
+// Sell Token
+function openSellTokenPopup() {
+  document.getElementById('sell-token-name').textContent = currentToken.name;
+  document.getElementById('sell-token-popup').style.display = 'flex';
+}
+function closeSellTokenPopup() { document.getElementById('sell-token-popup').style.display = 'none'; }
+function confirmSellToken() {
+  const amount = parseFloat(document.getElementById('sell-token-amount').value);
+  if (isNaN(amount) || amount <= 0) { alert('Enter valid amount!'); return; }
+  tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
+  if (!tokenHoldings[myAddress][currentToken.name] || tokenHoldings[myAddress][currentToken.name] < amount) { alert('Insufficient token balance!'); return; }
+  showConfirmPopup(`Do you want to sell ${amount} ${currentToken.name} for ${amount * currentToken.price} KDM?`, () => sellToken(amount));
+}
+function sellToken(amount) {
+  const revenue = amount * currentToken.price;
+  wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
+  tokenHoldings[myAddress][currentToken.name] -= amount;
+  wallets[myAddress] += revenue;
+  localStorage.setItem('wallets', JSON.stringify(wallets));
+  localStorage.setItem('tokenHoldings', JSON.stringify(tokenHoldings));
+  transactions.push({ type: 'sell', token: currentToken.name, amount: amount, revenue: revenue, timestamp: Date.now() });
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  updateBalance();
+  showSuccessPopup(`Sale of ${amount} ${currentToken.name} for ${revenue} KDM completed on Kingdom Blockchain.`);
+  closeSellTokenPopup();
+}
+
+// Confirm and Success Popups
+function showConfirmPopup(message, callback) {
+  document.getElementById('confirm-message').textContent = message;
+  document.getElementById('confirm-transaction-popup').style.display = 'flex';
+  window.currentCallback = callback;
+}
+function closeConfirmPopup() { document.getElementById('confirm-transaction-popup').style.display = 'none'; }
+function signTransaction() {
+  closeConfirmPopup();
+  window.currentCallback();
+}
+function showSuccessPopup(message) {
+  document.getElementById('success-message').textContent = `${message}\nKingdom Blockchain ensures secure and transparent transactions.`;
+  document.getElementById('transaction-success-popup').style.display = 'flex';
+}
+function completeTransaction() {
+  document.getElementById('transaction-success-popup').style.display = 'none';
+  closeTokenPopup();
+  closeSendPopup();
+}
 
 // Scanner
 let videoStream;
-function openScanner(){
-  const popup=document.getElementById('scanner-popup');popup.style.display='flex';
-  const video=document.getElementById('video');
-  document.getElementById('scanner-line').style.display='block';
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-  .then(stream=>{videoStream=stream;video.srcObject=stream;video.setAttribute('playsinline',true);video.play();requestAnimationFrame(tick);})
-  .catch(()=>document.getElementById('scanner-msg').textContent='Camera access denied');
+function openScanner() {
+  const popup = document.getElementById('scanner-popup');
+  popup.style.display = 'flex';
+  const video = document.getElementById('video');
+  document.getElementById('scanner-line').style.display = 'block';
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(stream => {
+      videoStream = stream;
+      video.srcObject = stream;
+      video.setAttribute('playsinline', true);
+      video.play();
+      requestAnimationFrame(tick);
+    })
+    .catch(() => document.getElementById('scanner-msg').textContent = 'Camera access denied');
 }
-function closeScanner(){
-  document.getElementById('scanner-popup').style.display='none';
-  document.getElementById('scanner-line').style.display='none';
-  if(videoStream){videoStream.getTracks().forEach(t=>t.stop());}
+function closeScanner() {
+  document.getElementById('scanner-popup').style.display = 'none';
+  document.getElementById('scanner-line').style.display = 'none';
+  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); }
 }
-function tick(){
-  const video=document.getElementById('video');
-  const line=document.getElementById('scanner-line');
-  if(video.readyState===video.HAVE_ENOUGH_DATA){
-    line.style.width=video.offsetWidth+'px';
-    const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-    const ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,canvas.width,canvas.height);
-    const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code=jsQR(imageData.data,canvas.width,canvas.height);
-    if(code){pendingTx={addr:code.data,amt:parseFloat(prompt("Send how much KDM?"))};showTxPopup(`You are about to send ${pendingTx.amt} KDM to ${pendingTx.addr}. Sign to confirm.`,true);closeScanner();return;}
+function tick() {
+  const video = document.getElementById('video');
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    if (code) { processScan(code.data); return; }
   }
   requestAnimationFrame(tick);
 }
-
-// Transaction popup
-function showTxPopup(msg,withSign){
-  const tx=document.getElementById('tx-popup');const content=document.getElementById('tx-content');
-  if(withSign){
-    content.innerHTML=`<p>${msg}</p><div class="tx-buttons"><button class="cream-btn" onclick="sendConfirmed()">Sign</button><button class="close-btn" onclick="closeTxPopup()">Cancel</button></div>`;
-  }else{
-    content.innerHTML=msg;
+function processScan(data) {
+  if (data && data.startsWith('kingdom')) {
+    let amt = prompt(`Send how much KDM to ${data}?`);
+    amt = parseFloat(amt);
+    if (isNaN(amt) || amt <= 0) { alert('Invalid amount'); return; }
+    showConfirmPopup(`Do you want to send ${amt} KDM to ${data}?`, () => {
+      wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+      if (!wallets[data]) wallets[data] = 0;
+      if (wallets[myAddress] < amt) { alert('Insufficient balance!'); return; }
+      wallets[myAddress] -= amt;
+      wallets[data] += amt;
+      localStorage.setItem('wallets', JSON.stringify(wallets));
+      transactions.push({ type: 'send', from: myAddress, to: data, amount: amt, timestamp: Date.now() });
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      updateBalance();
+      showSuccessPopup(`Transaction of ${amt} KDM to ${data} completed on Kingdom Blockchain.`);
+    });
   }
-  tx.style.display='flex';
+  closeScanner();
 }
-function closeTxPopup(){document.getElementById('tx-popup').style.display='none';}
 
-window.onload=initWallet;
+window.onload = initWallet;
 </script>
 </body>
 </html>
