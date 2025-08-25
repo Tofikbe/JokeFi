@@ -6,23 +6,55 @@
   <style>
     body {
       font-family: 'Courier New', monospace;
-      background: linear-gradient(135deg, #001a1a, #000000);
+      background: #000;
       color: #00ffcc;
-      margin: 0;
+      margin: 0; overflow-x: hidden;
     }
+    /* 🔥 Animated hacker background */
+    body::before {
+      content:""; position:fixed; top:0; left:0;
+      width:100%; height:100%;
+      background: linear-gradient(135deg,#001a1a,#000000);
+      background-size:400% 400%;
+      animation: gradient 12s ease infinite;
+      z-index:-2;
+    }
+    body::after {
+      content:"1010101010101";
+      position:fixed; top:0; left:0;
+      width:100%; height:100%;
+      color:rgba(0,255,200,0.1); font-size:18px; line-height:14px;
+      white-space:pre; overflow:hidden;
+      animation: rain 20s linear infinite;
+      z-index:-1;
+    }
+    @keyframes gradient {
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
+    @keyframes rain {
+      0%{transform:translateY(-100%);}
+      100%{transform:translateY(100%);}
+    }
+
     header {
-      background:#002222;
+      background:#002222d9;
       color:#00ffcc;
       padding:15px;
       text-align:center;
       font-size:22px;
       font-weight:bold;
-      text-shadow: 0 0 10px #00ffcc;
+      text-shadow:0 0 15px #00ffcc;
+      border-bottom:2px solid #00ffcc;
     }
+    .stats { font-size:14px; margin-top:5px; color:#66ffdd; }
+
     .container {
       width:95%; max-width:750px; margin:15px auto;
-      background:#001010; padding:20px;
-      border-radius:12px; box-shadow:0 0 15px rgba(0,255,200,0.3);
+      background:#001010aa; padding:20px;
+      border-radius:12px; box-shadow:0 0 20px rgba(0,255,200,0.4);
+      backdrop-filter: blur(4px);
     }
     h2,h3 { color:#00ffcc; margin-top:0; }
     input, select {
@@ -42,16 +74,31 @@
       background:#00ffcc; color:#000;
       box-shadow:0 0 15px #00ffcc;
     }
-    .block,.token,.tx {
+    .block,.token,.tx,.user {
       border:1px solid #00ffcc; padding:10px;
       margin:10px 0; border-radius:8px;
-      background:#001a1a; font-size:14px;
+      background:#001a1a;
+      font-size:14px;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from{box-shadow:0 0 5px #00ffcc;}
+      to{box-shadow:0 0 20px #00ffcc;}
     }
     .hidden { display:none; }
     .tabs { display:flex; justify-content:space-around; margin-bottom:10px; }
     .tabs button { flex:1; margin:0 5px; }
     .address { font-size:12px; color:#66ffdd; word-break:break-all; }
-    .scroll { max-height:300px; overflow-y:auto; }
+    .scroll { max-height:250px; overflow-y:auto; }
+    .console { background:#000; color:#0f0; padding:8px; font-size:12px; height:120px; overflow-y:auto; border:1px solid #00ffcc; }
+    .copyBtn { font-size:12px; background:#003333; width:auto; display:inline-block; margin:5px 0; }
+    /* Floating mobile nav */
+    .mobileNav {
+      position:fixed; bottom:0; left:0; right:0;
+      background:#001a1a; display:flex;
+      border-top:2px solid #00ffcc;
+    }
+    .mobileNav button { flex:1; border:none; }
     @media(max-width:600px){
       header { font-size:18px; }
       .container { padding:15px; }
@@ -59,7 +106,9 @@
   </style>
 </head>
 <body>
-  <header>👑 Kingdom Blockchain</header>
+  <header>👑 Kingdom Blockchain
+    <div class="stats">Blocks: <span id="blockCount">0</span> | TXs: <span id="txCount">0</span></div>
+  </header>
 
   <div class="container" id="auth">
     <h2>Login / Signup</h2>
@@ -69,15 +118,10 @@
 
   <div class="container hidden" id="dashboard">
     <h2>Welcome, <span id="user"></span></h2>
-    <div class="address">Wallet: <span id="wallet"></span></div>
+    <div class="address">Wallet: <span id="wallet"></span> <button class="copyBtn" onclick="copyWallet()">Copy</button></div>
     <button onclick="logout()">Logout</button>
-    <div class="tabs">
-      <button onclick="showTab('walletTab')">💰 Wallet</button>
-      <button onclick="showTab('tokenTab')">🪙 Tokens</button>
-      <button onclick="showTab('blockTab')">📜 Blockchain</button>
-    </div>
 
-    <!-- WALLET -->
+    <!-- Sections -->
     <div id="walletTab">
       <h3>Balance</h3>
       <div id="balance">Loading...</div>
@@ -88,7 +132,6 @@
       <div class="scroll" id="transactions"></div>
     </div>
 
-    <!-- TOKENS -->
     <div id="tokenTab" class="hidden">
       <h3>Launch Token</h3>
       <input id="tokenName" placeholder="Token Name">
@@ -97,12 +140,27 @@
       <div id="tokens"></div>
     </div>
 
-    <!-- BLOCKCHAIN -->
     <div id="blockTab" class="hidden">
       <h3>Blockchain Explorer</h3>
-      <button onclick="createBlock()">Mine New Block</button>
+      <button onclick="createBlock()">Mine New Block ⛏️</button>
       <div class="scroll" id="blocks"></div>
     </div>
+
+    <div id="leaderTab" class="hidden">
+      <h3>Leaderboard</h3>
+      <div id="leaderboard"></div>
+    </div>
+
+    <h3>Status Console</h3>
+    <div class="console" id="console"></div>
+  </div>
+
+  <!-- Floating mobile nav -->
+  <div class="mobileNav hidden" id="nav">
+    <button onclick="showTab('walletTab')">💰</button>
+    <button onclick="showTab('tokenTab')">🪙</button>
+    <button onclick="showTab('blockTab')">📜</button>
+    <button onclick="showTab('leaderTab')">🏆</button>
   </div>
 
   <script>
@@ -119,6 +177,12 @@
       localStorage.setItem("txs",JSON.stringify(txs));
     }
 
+    function log(msg){
+      let c=document.getElementById("console");
+      c.innerHTML+="> "+msg+"<br>";
+      c.scrollTop=c.scrollHeight;
+    }
+
     function randomHash(){
       return [...crypto.getRandomValues(new Uint8Array(20))]
              .map(b=>b.toString(16).padStart(2,"0")).join("");
@@ -129,12 +193,14 @@
       if(name===""){alert("Enter username"); return;}
       if(!users[name]){ 
         users[name]={ wallet:"0x"+randomHash(), balance:100 };
+        log("New user created: "+name);
       }
       currentUser=name;
       document.getElementById("user").innerText=name;
       document.getElementById("wallet").innerText=users[name].wallet;
       document.getElementById("auth").classList.add("hidden");
       document.getElementById("dashboard").classList.remove("hidden");
+      document.getElementById("nav").classList.remove("hidden");
       render();
       save();
     }
@@ -143,30 +209,33 @@
       currentUser=null;
       document.getElementById("auth").classList.remove("hidden");
       document.getElementById("dashboard").classList.add("hidden");
+      document.getElementById("nav").classList.add("hidden");
     }
 
     function showTab(tab){
-      document.getElementById("walletTab").classList.add("hidden");
-      document.getElementById("tokenTab").classList.add("hidden");
-      document.getElementById("blockTab").classList.add("hidden");
+      ["walletTab","tokenTab","blockTab","leaderTab"].forEach(t=>{
+        document.getElementById(t).classList.add("hidden");
+      });
       document.getElementById(tab).classList.remove("hidden");
     }
 
     function render(){
       document.getElementById("balance").innerText=users[currentUser].balance+" KING";
-      renderTokens(); renderBlocks(); renderTxs();
+      renderTokens(); renderBlocks(); renderTxs(); renderLeader();
+      document.getElementById("blockCount").innerText=blockchain.length;
+      document.getElementById("txCount").innerText=txs.length;
     }
 
     function sendCoins(){
       let to=document.getElementById("toUser").value.trim();
       let amt=parseInt(document.getElementById("amount").value);
       if(!users[to]){alert("User not found"); return;}
-      if(users[currentUser].balance<amt){alert("Not enough balance"); return;}
-      users[currentUser].balance-=amt;
+      if(users[currentUser].balance<amt+1){alert("Not enough balance (incl. 1 fee)"); return;}
+      users[currentUser].balance-=amt+1; // fee
       users[to].balance+=amt;
       let tx={from:currentUser,to,amt,time:new Date().toLocaleString()};
       txs.push(tx);
-      alert("Transaction added ✅");
+      log("TX: "+currentUser+" sent "+amt+" KING to "+to);
       save(); render();
     }
 
@@ -182,8 +251,8 @@
       let name=document.getElementById("tokenName").value.trim();
       let sym=document.getElementById("tokenSymbol").value.trim();
       if(!name||!sym){alert("Fill fields"); return;}
-      tokens.push({name,sym,creator:currentUser});
-      alert("Token launched 🚀");
+      tokens.push({name,sym,creator:currentUser,supply:1000000});
+      log("Token launched: "+name+" ("+sym+") by "+currentUser);
       save(); renderTokens();
     }
 
@@ -191,19 +260,19 @@
       let div=document.getElementById("tokens");
       div.innerHTML="";
       tokens.forEach(t=>{
-        div.innerHTML+=`<div class="token"><b>${t.name} (${t.sym})</b><br>Creator: ${t.creator}</div>`;
+        div.innerHTML+=`<div class="token"><b>${t.name} (${t.sym})</b><br>Creator: ${t.creator}<br>Supply: ${t.supply}</div>`;
       });
     }
 
     async function createBlock(){
       let prev=blockchain.length?blockchain[blockchain.length-1].hash:"GENESIS";
-      let data=JSON.stringify(txs.slice(-3));
+      let data=JSON.stringify(txs.slice(-5));
       let hash=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(prev+data));
       hash=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
       let block={id:blockchain.length+1, miner:currentUser, prev, data, hash, time:new Date().toLocaleString()};
       blockchain.push(block);
-      alert("Block mined ⛏️ #"+block.id);
-      save(); renderBlocks();
+      log("Block mined #"+block.id+" by "+currentUser);
+      save(); renderBlocks(); render();
     }
 
     function renderBlocks(){
@@ -212,6 +281,20 @@
       blockchain.slice().reverse().forEach(b=>{
         div.innerHTML+=`<div class="block"><b>Block #${b.id}</b><br>Miner: ${b.miner}<br>Prev: ${b.prev.slice(0,12)}...<br>Hash: ${b.hash.slice(0,16)}...<br>Time: ${b.time}</div>`;
       });
+    }
+
+    function renderLeader(){
+      let arr=Object.entries(users).map(([u,v])=>({user:u,bal:v.balance}));
+      arr.sort((a,b)=>b.bal-a.bal);
+      let div=document.getElementById("leaderboard"); div.innerHTML="";
+      arr.forEach(a=>{
+        div.innerHTML+=`<div class="user">${a.user}: ${a.bal} KING</div>`;
+      });
+    }
+
+    function copyWallet(){
+      navigator.clipboard.writeText(users[currentUser].wallet);
+      alert("Wallet copied ✅");
     }
   </script>
 </body>
