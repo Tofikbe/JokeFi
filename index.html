@@ -1,279 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kingdom Wallet</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #111;
-      padding: 15px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: #00ff88;
-    }
-    .wallet {
-      padding: 10px;
-      text-align: center;
-    }
-    .address {
-      font-size: 12px;
-      word-break: break-all;
-      color: #aaa;
-    }
-    .token-list {
-      margin-top: 10px;
-    }
-    .token {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1c1c1c;
-      margin: 5px 10px;
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .token:hover {
-      background: #2a2a2a;
-    }
-    .token .right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .detail-screen, .popup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .detail-content {
-      background: #1b1b1b;
-      padding: 20px;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .buttons {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-around;
-    }
-    button {
-      background: #00ff88;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button.cancel { background: #ff4444; color: #fff; }
-    .popup-box {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 40%;
-      background: #1b1b1b;
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 -3px 8px rgba(0,0,0,0.6);
-      animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-    .stamp {
-      font-size: 30px;
-      color: #00ff88;
-      opacity: 0.4;
-      transform: rotate(-30deg);
-      position: absolute;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(-30deg);
-    }
-    /* Scanner */
-    #scanner {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-    #camera-area {
-      position: relative;
-      width: 80%;
-      max-width: 400px;
-      aspect-ratio: 1;
-      border: 3px solid #00ff88;
-      overflow: hidden;
-    }
-    #scan-line {
-      position: absolute;
-      width: 100%; height: 2px;
-      background: #00ff00;
-      animation: moveLine 2s linear infinite;
-    }
-    @keyframes moveLine {
-      0% { top: 0; }
-      100% { top: 100%; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JokeFi Wallet - Kingdom Blockchain</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f8f1e9;color:#333;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow-x:hidden;}
+.wallet-container{background:#fffcf5;padding:2rem;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:100%;max-width:650px;text-align:center;position:relative;}
+h1{font-size:2rem;margin-bottom:0.5rem;}
+.subtitle{font-size:1rem;color:#666;margin-bottom:1.5rem;}
+.scanner-btn{position:absolute;top:1rem;right:1rem;background:#d6c6a8;color:#333;border:none;border-radius:50%;padding:0.6rem;cursor:pointer;font-size:1.3rem;}
+.balance{font-size:2.5rem;font-weight:bold;margin:1rem 0;color:#2c3e50;}
+.buttons{display:flex;justify-content:center;gap:1rem;margin-bottom:1.5rem;}
+button{padding:0.8rem 1.5rem;border:none;border-radius:5px;font-size:1rem;cursor:pointer;transition:0.3s;}
+.cream-btn{background-color:#d6c6a8;color:#333;}
+.cream-btn:hover{background-color:#c9b894;}
+.divider{border-top:1px solid #ddd;margin:1.5rem 0;}
+.tokens-grid{display:flex;flex-direction:column;gap:0.8rem;}
+.token{background:#f9f9f9;padding:0.8rem;border-radius:5px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:0.2s;}
+.token:hover{transform:scale(1.02);}
+.token-price{font-weight:bold;color:#27ae60;}
+.token-name{display:flex;align-items:center;gap:0.5rem;}
+.popup,.token-popup,.scanner-popup,.tx-popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000;}
+.popup-content,.token-popup-content,.scanner-popup-content{background:white;padding:2rem;border-radius:10px;text-align:center;max-width:400px;width:90%;}
+.tx-popup-content{background:white;padding:1rem;border-radius:15px;position:fixed;bottom:0;width:100%;max-height:40%;overflow:auto;animation:slideUp 0.3s ease;}
+.tx-buttons{display:flex;justify-content:space-around;margin-top:1rem;}
+.tx-buttons button{width:40%;}
+.stamp{font-size:3rem;color:#333;opacity:0.4;transform:rotate(-30deg);border:3px solid #333;padding:0.3rem 1rem;display:inline-block;margin-bottom:1rem;}
+.close-btn{background-color:#95a5a6;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;cursor:pointer;}
+.close-btn:hover{background-color:#7f8c8d;}
+input{margin:0.5rem 0;padding:0.6rem;width:90%;border-radius:5px;border:1px solid #ccc;}
+#scanner-line{position:absolute;width:100%;height:3px;background:lime;animation:scan 2s infinite;z-index:10;display:none;}
+@keyframes scan{0%{top:0;}50%{top:100%;}100%{top:0;}}
+@keyframes slideUp{from{bottom:-50%;}to{bottom:0;}}
+</style>
 </head>
 <body>
-
-<header>Kingdom Wallet</header>
-<div class="wallet">
-  <div>Your Wallet</div>
-  <div class="address" id="walletAddress"></div>
+<div class="wallet-container">
+<button class="scanner-btn" onclick="openScanner()">🔲</button>
+<h1>JokeFi Wallet</h1>
+<div class="subtitle">Kingdom Blockchain Testnet</div>
+<div class="balance" id="balance">0 KDM</div>
+<div class="buttons">
+  <button class="cream-btn" onclick="deposit()">Deposit</button>
+  <button class="cream-btn" onclick="receive()">Receive</button>
+  <button class="cream-btn" onclick="openSendPopup()">Send</button>
+</div>
+<div class="divider"></div>
+<div class="tokens-grid" id="tokens-grid"></div>
 </div>
 
-<div class="token-list" id="tokenList"></div>
+<!-- Deposit Popup -->
+<div class="popup" id="deposit-popup">
+<div class="popup-content">
+<p>If you want KDM funds, contact:</p>
+<p><a href="https://x.com/_RetweetGuy?t=y7FQoP9txZmG_lCTCA2U6Q&s=09" target="_blank">KDM Blockchain Sender</a></p>
+<p>DM them and you will receive funds.</p>
+<button class="close-btn" onclick="closeDepositPopup()">Close</button>
+</div>
+</div>
 
-<!-- Token Detail -->
-<div class="detail-screen" id="detailScreen">
-  <div class="detail-content">
-    <h2 id="detailName"></h2>
-    <p>Price: <span id="detailPrice"></span></p>
-    <p>Community: 50% | Investors: 30% | Treasury: 20%</p>
-    <div class="buttons">
-      <button onclick="openPopup('buy')">Buy</button>
-      <button onclick="openPopup('sell')">Sell</button>
-      <button onclick="openPopup('send')">Send</button>
-    </div>
-    <button class="cancel" onclick="closeDetail()">Close</button>
-  </div>
+<!-- Receive Popup -->
+<div class="popup" id="receive-popup">
+<div class="popup-content">
+<canvas id="qr-code"></canvas>
+<p id="wallet-address" onclick="copyAddress()"></p>
+<button class="close-btn" onclick="closePopup()">Close</button>
+</div>
+</div>
+
+<!-- Send Popup -->
+<div class="popup" id="send-popup">
+<div class="popup-content">
+<h3>Send KDM</h3>
+<input type="text" id="send-address" placeholder="Recipient Address">
+<input type="number" id="send-amount" placeholder="Amount (KDM)">
+<button class="cream-btn" onclick="prepareTransaction()">Send</button>
+<br><br>
+<button class="close-btn" onclick="closeSendPopup()">Close</button>
+</div>
+</div>
+
+<!-- Token Details Popup -->
+<div class="token-popup" id="token-popup">
+<div class="token-popup-content">
+<h3 id="token-title"></h3>
+<div class="tokenomics-circle" id="tokenomics-circle"></div>
+<p id="token-details"></p>
+<button class="close-btn" onclick="closeTokenPopup()">Close</button>
+</div>
+</div>
+
+<!-- QR Scanner Popup -->
+<div class="scanner-popup" id="scanner-popup">
+<div class="scanner-popup-content" style="position:relative;width:320px;height:320px;">
+<div id="scanner-line"></div>
+<video id="video" width="300" height="300" style="border:1px solid #ccc;"></video>
+<p id="scanner-msg"></p>
+<button class="close-btn" onclick="closeScanner()">Close</button>
+</div>
 </div>
 
 <!-- Transaction Popup -->
-<div class="popup" id="popup">
-  <div class="popup-box">
-    <h3 id="popupTitle"></h3>
-    <p id="popupText"></p>
-    <div class="buttons">
-      <button class="cancel" onclick="closePopup()">Cancel</button>
-      <button onclick="signTransaction()">Sign</button>
-    </div>
-  </div>
+<div class="tx-popup" id="tx-popup">
+<div class="tx-popup-content" id="tx-content"></div>
 </div>
 
-<!-- Confirmation Popup -->
-<div class="popup" id="confirmPopup">
-  <div class="popup-box">
-    <div class="stamp">KINGDOM</div>
-    <h3>Transaction Info</h3>
-    <p>This transaction will be saved on Kingdom Blockchain Testnet.</p>
-    <button onclick="finalConfirm()">Confirm</button>
-  </div>
-</div>
-
-<!-- Scanner -->
-<div id="scanner">
-  <div id="camera-area">
-    <div id="scan-line"></div>
-  </div>
-  <button class="cancel" onclick="closeScanner()">Close</button>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 <script>
-  const FIXED_WALLET = "kingdom7q6c2tcdpnaijn1js6sjjmh3lbe2tp0b";
-  let wallet = localStorage.getItem("kingdomWallet");
+// Initialize wallets
+let wallets = JSON.parse(localStorage.getItem('wallets')||'{}');
+const mainWallet='kingdom7q6c2tcdpnaijn1js6sjjmh3lbe2tp0b';
 
-  // Generate new wallet if not exists
-  if (!wallet) {
-    if (!localStorage.getItem("isMainWallet")) {
-      wallet = FIXED_WALLET;
-      localStorage.setItem("isMainWallet", "true");
-    } else {
-      wallet = "kingdom" + Math.random().toString(36).substring(2,15);
-    }
-    localStorage.setItem("kingdomWallet", wallet);
+// Ensure main wallet exists
+if(!wallets[mainWallet]) wallets[mainWallet]=1000000000; // 1 Billion
+localStorage.setItem('wallets',JSON.stringify(wallets));
+
+// Each device has one unique random address if not main
+if(!localStorage.getItem('myAddress')){
+  let rand="kingdom"+Math.random().toString(36).substring(2,20);
+  if(rand===mainWallet) rand+="1";
+  localStorage.setItem('myAddress',rand);
+  if(!wallets[rand]) wallets[rand]=0;
+  localStorage.setItem('wallets',JSON.stringify(wallets));
+}
+let myAddress=localStorage.getItem('myAddress');
+
+// Tokens stable
+let tokens=[
+{emoji:'🪙',name:'GoldCoin',price:1,community:400000,investors:300000,liquidity:200000,others:100000},
+{emoji:'💎',name:'Diamond',price:2,community:200000,investors:150000,liquidity:100000,others:50000},
+{emoji:'🚀',name:'Rocket',price:3,community:300000,investors:200000,liquidity:150000,others:50000},
+{emoji:'🐶',name:'Doge',price:0.5,community:500000,investors:200000,liquidity:100000,others:20000},
+];
+
+// Init
+function initWallet(){
+  updateBalance();
+  displayTokens();
+  setInterval(updateTokenPrices,5000);
+}
+function updateBalance(){
+  wallets=JSON.parse(localStorage.getItem('wallets')||'{}');
+  document.getElementById('balance').textContent=(wallets[myAddress]||0).toFixed(2)+' KDM';
+}
+
+// Tokens
+function displayTokens(){
+  const grid=document.getElementById('tokens-grid'); grid.innerHTML='';
+  tokens.forEach(t=>{
+    const div=document.createElement('div'); div.className='token';
+    div.onclick=()=>showTokenDetails(t);
+    div.innerHTML=`<span class="token-name">${t.emoji} ${t.name}</span><span class="token-price">$${t.price}</span>`;
+    grid.appendChild(div);
+  });
+}
+function updateTokenPrices(){
+  tokens.forEach(t=>t.price=(Math.random()*(5-0.01)+0.01).toFixed(2));
+  displayTokens();
+}
+
+// Deposit
+function deposit(){document.getElementById('deposit-popup').style.display='flex';}
+function closeDepositPopup(){document.getElementById('deposit-popup').style.display='none';}
+
+// Receive
+function receive(){
+  const popup=document.getElementById('receive-popup');
+  document.getElementById('wallet-address').textContent=myAddress;
+  QRCode.toCanvas(document.getElementById('qr-code'),myAddress,function(err){if(err)console.error(err);});
+  popup.style.display='flex';
+}
+function copyAddress(){navigator.clipboard.writeText(myAddress);alert('Address copied!');}
+function closePopup(){document.getElementById('receive-popup').style.display='none';}
+
+// Send
+function openSendPopup(){document.getElementById('send-popup').style.display='flex';}
+function closeSendPopup(){document.getElementById('send-popup').style.display='none';}
+let pendingTx=null;
+function prepareTransaction(){
+  const addr=document.getElementById('send-address').value.trim();
+  const amt=parseFloat(document.getElementById('send-amount').value);
+  if(!addr||amt<=0||isNaN(amt)){alert('Enter valid address and amount!'); return;}
+  pendingTx={addr,amt};
+  showTxPopup(`You are about to send ${amt} KDM to ${addr}. Sign to confirm.`,true);
+}
+function sendConfirmed(){
+  if(!pendingTx) return;
+  wallets=JSON.parse(localStorage.getItem('wallets')||'{}');
+  if(!wallets[pendingTx.addr]) wallets[pendingTx.addr]=0;
+  if(wallets[myAddress]<pendingTx.amt){alert('Insufficient balance!'); closeTxPopup(); return;}
+  wallets[myAddress]-=pendingTx.amt; wallets[pendingTx.addr]+=pendingTx.amt;
+  localStorage.setItem('wallets',JSON.stringify(wallets));
+  updateBalance();
+  showTxPopup(`<div class="stamp">KINGDOM</div><p>Transaction processed on Kingdom Blockchain.<br>Sent ${pendingTx.amt} KDM to ${pendingTx.addr}</p><button class="cream-btn" onclick="closeTxPopup()">Confirm</button>`,false);
+  pendingTx=null;
+}
+
+// Token Details
+function showTokenDetails(t){
+  document.getElementById('token-title').textContent=`${t.emoji} ${t.name}`;
+  const circle=document.getElementById('tokenomics-circle'); circle.innerHTML='';
+  const total=t.community+t.investors+t.liquidity+t.others;
+  const segments=[{color:'red',val:t.community},{color:'blue',val:t.investors},{color:'green',val:t.liquidity},{color:'orange',val:t.others}];
+  let start=0;
+  segments.forEach(seg=>{
+    const angle=(seg.val/total)*360;
+    const segDiv=document.createElement('div'); segDiv.className='segment'; segDiv.style.transform=`rotate(${start}deg)`;
+    const inner=document.createElement('div'); inner.className='segment-inner'; inner.style.background=seg.color; inner.style.transform=`rotate(${angle}deg)`;
+    segDiv.appendChild(inner); circle.appendChild(segDiv); start+=angle;
+  });
+  document.getElementById('token-details').innerHTML=`Price: $${t.price}<br>Total Supply: ${total}`;
+  document.getElementById('token-popup').style.display='flex';
+}
+function closeTokenPopup(){document.getElementById('token-popup').style.display='none';}
+
+// Scanner
+let videoStream;
+function openScanner(){
+  const popup=document.getElementById('scanner-popup');popup.style.display='flex';
+  const video=document.getElementById('video');
+  document.getElementById('scanner-line').style.display='block';
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+  .then(stream=>{videoStream=stream;video.srcObject=stream;video.setAttribute('playsinline',true);video.play();requestAnimationFrame(tick);})
+  .catch(()=>document.getElementById('scanner-msg').textContent='Camera access denied');
+}
+function closeScanner(){
+  document.getElementById('scanner-popup').style.display='none';
+  document.getElementById('scanner-line').style.display='none';
+  if(videoStream){videoStream.getTracks().forEach(t=>t.stop());}
+}
+function tick(){
+  const video=document.getElementById('video');
+  const line=document.getElementById('scanner-line');
+  if(video.readyState===video.HAVE_ENOUGH_DATA){
+    line.style.width=video.offsetWidth+'px';
+    const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+    const ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+    const code=jsQR(imageData.data,canvas.width,canvas.height);
+    if(code){pendingTx={addr:code.data,amt:parseFloat(prompt("Send how much KDM?"))};showTxPopup(`You are about to send ${pendingTx.amt} KDM to ${pendingTx.addr}. Sign to confirm.`,true);closeScanner();return;}
   }
-  document.getElementById("walletAddress").innerText = wallet;
+  requestAnimationFrame(tick);
+}
 
-  // Tokens
-  let tokens = JSON.parse(localStorage.getItem("kingdomTokens")) || {
-    "KDM": { balance: wallet === FIXED_WALLET ? 1000000000 : 0, price: 1 },
-    "MEME": { balance: 0, price: 5 },
-    "APE": { balance: 0, price: 2 }
-  };
-
-  function renderTokens() {
-    const list = document.getElementById("tokenList");
-    list.innerHTML = "";
-    for (let t in tokens) {
-      let div = document.createElement("div");
-      div.className = "token";
-      div.innerHTML = `
-        <div class="left">${tokens[t].price} $</div>
-        <div class="right">🔥 ${t}</div>
-      `;
-      div.onclick = ()=>openDetail(t);
-      list.appendChild(div);
-    }
-    localStorage.setItem("kingdomTokens", JSON.stringify(tokens));
+// Transaction popup
+function showTxPopup(msg,withSign){
+  const tx=document.getElementById('tx-popup');const content=document.getElementById('tx-content');
+  if(withSign){
+    content.innerHTML=`<p>${msg}</p><div class="tx-buttons"><button class="cream-btn" onclick="sendConfirmed()">Sign</button><button class="close-btn" onclick="closeTxPopup()">Cancel</button></div>`;
+  }else{
+    content.innerHTML=msg;
   }
+  tx.style.display='flex';
+}
+function closeTxPopup(){document.getElementById('tx-popup').style.display='none';}
 
-  function openDetail(name) {
-    document.getElementById("detailName").innerText = name;
-    document.getElementById("detailPrice").innerText = tokens[name].price+" $";
-    document.getElementById("detailScreen").style.display = "flex";
-    localStorage.setItem("currentToken", name);
-  }
-  function closeDetail() { document.getElementById("detailScreen").style.display="none"; }
-
-  function openPopup(type) {
-    document.getElementById("popup").style.display="flex";
-    document.getElementById("popupTitle").innerText = "Transaction Request";
-    document.getElementById("popupText").innerText = 
-      `You want to ${type} ${localStorage.getItem("currentToken")}. Please sign to continue.`;
-  }
-  function closePopup(){ document.getElementById("popup").style.display="none"; }
-
-  function signTransaction(){
-    document.getElementById("popup").style.display="none";
-    document.getElementById("confirmPopup").style.display="flex";
-  }
-  function finalConfirm(){
-    document.getElementById("confirmPopup").style.display="none";
-    alert("✅ Transaction saved on Kingdom Blockchain!");
-  }
-
-  function closeScanner(){
-    document.getElementById("scanner").style.display="none";
-  }
-
-  // Update prices every 5s
-  setInterval(()=>{
-    for (let t in tokens) {
-      let change = (Math.random()-0.5)*0.2;
-      tokens[t].price = Math.max(0.1, (tokens[t].price + change).toFixed(2));
-    }
-    renderTokens();
-  },5000);
-
-  renderTokens();
+window.onload=initWallet;
 </script>
-
 </body>
 </html>
