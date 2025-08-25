@@ -5,12 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JokeFi Wallet - Kingdom Blockchain</title>
 <style>
-body{
-  margin:0;font-family:Arial,sans-serif;background:#f8f1e9;color:#333;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow-x:hidden;
-}
-.wallet-container{
-  background:#fffcf5;padding:2rem;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:100%;max-width:650px;text-align:center;position:relative;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f8f1e9;color:#333;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow-x:hidden;}
+.wallet-container{background:#fffcf5;padding:2rem;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:100%;max-width:650px;text-align:center;position:relative;}
 h1{font-size:2rem;margin-bottom:0.5rem;}
 .subtitle{font-size:1rem;color:#666;margin-bottom:1.5rem;}
 .scanner-btn{position:absolute;top:1rem;right:1rem;background:#d6c6a8;color:#333;border:none;border-radius:50%;padding:0.6rem;cursor:pointer;}
@@ -50,6 +46,16 @@ canvas{margin-bottom:1rem;}
 </div>
 <div class="divider"></div>
 <div class="tokens-grid" id="tokens-grid"></div>
+</div>
+
+<!-- Deposit Popup Info -->
+<div class="popup" id="deposit-popup">
+<div class="popup-content">
+<p>If you want KDM funds, contact:</p>
+<p><a href="https://x.com/_RetweetGuy?t=y7FQoP9txZmG_lCTCA2U6Q&s=09" target="_blank">KDM Blockchain Sender</a></p>
+<p>DM them and you will receive funds.</p>
+<button class="close-btn" onclick="closeDepositPopup()">Close</button>
+</div>
 </div>
 
 <!-- Receive Popup -->
@@ -126,38 +132,58 @@ tokens.forEach(token=>{
   const div=document.createElement('div');
   div.className='token';
   div.onclick=()=>showTokenDetails(token);
-  div.innerHTML=`<span class="token-price">$${token.price}</span><span class="token-name">${token.emoji} ${token.name}</span>`;
+  div.innerHTML=`<span class="token-name">${token.emoji} ${token.name}</span><span class="token-price">$${token.price}</span>`;
   tokensGrid.appendChild(div);
 });
 setInterval(updatePrices,5000);
 }
 function updatePrices(){document.querySelectorAll('.token').forEach((div,i)=>{let newPrice=randomPrice();tokens[i].price=newPrice;div.querySelector('.token-price').textContent=`$${newPrice}`;});}
 
-function deposit(){let bal=parseFloat(localStorage.getItem('balance')||'0');const amt=prompt('Enter deposit amount (KDM):');if(amt&&!isNaN(amt)&&amt>0){bal+=parseFloat(amt);localStorage.setItem('balance',bal.toFixed(2));document.getElementById('balance').textContent=`${bal.toFixed(2)} KDM`;alert('Deposit successful!');}else{alert('Invalid amount!');}}
+function deposit(){document.getElementById('deposit-popup').style.display='flex';}
+function closeDepositPopup(){document.getElementById('deposit-popup').style.display='none';}
 
 function openSendPopup(){document.getElementById('send-popup').style.display='flex';}
 function closeSendPopup(){document.getElementById('send-popup').style.display='none';}
-function send(){let bal=parseFloat(localStorage.getItem('balance')||'0');const addr=document.getElementById('send-address').value.trim();const amt=parseFloat(document.getElementById('send-amount').value);if(!addr||amt<=0||isNaN(amt)){alert('Enter valid address and amount!');return;}if(amt<=bal){bal-=amt;localStorage.setItem('balance',bal.toFixed(2));document.getElementById('balance').textContent=`${bal.toFixed(2)} KDM`;alert(`Sent ${amt} KDM to ${addr}`);closeSendPopup();}else{alert('Insufficient balance!');}}
+function send(){
+const addr=document.getElementById('send-address').value.trim();
+const amt=parseFloat(document.getElementById('send-amount').value);
+if(!addr||amt<=0||isNaN(amt)){alert('Enter valid address and amount!');return;}
+let myBal=parseFloat(localStorage.getItem('balance')||'0');
+if(amt>myBal){alert('Insufficient balance!');return;}
+let recipientBal=localStorage.getItem(addr)||'0';
+recipientBal=parseFloat(recipientBal)+amt;
+localStorage.setItem(addr,recipientBal.toFixed(2));
+myBal-=amt;
+localStorage.setItem('balance',myBal.toFixed(2));
+document.getElementById('balance').textContent=`${myBal.toFixed(2)} KDM`;
+alert(`Sent ${amt} KDM to ${addr}`);
+closeSendPopup();
+}
 
-function receive(){const popup=document.getElementById('receive-popup');const addr=localStorage.getItem('walletAddress');document.getElementById('wallet-address').textContent=addr;QRCode.toCanvas(document.getElementById('qr-code'),addr,function(err){if(err)console.error(err);});popup.style.display='flex';}
+function receive(){
+const popup=document.getElementById('receive-popup');
+const addr=localStorage.getItem('walletAddress');
+document.getElementById('wallet-address').textContent=addr;
+QRCode.toCanvas(document.getElementById('qr-code'),addr,function(err){if(err)console.error(err);});
+popup.style.display='flex';
+}
 function copyAddress(){const addr=localStorage.getItem('walletAddress');navigator.clipboard.writeText(addr);alert('Address copied!');}
 function closePopup(){document.getElementById('receive-popup').style.display='none';}
 
 function showTokenDetails(token){
-  document.getElementById('token-title').textContent=`${token.emoji} ${token.name}`;
-  // Generate random tokenomics
-  const total=1000000;const comm=Math.floor(Math.random()*total);const invest=Math.floor(Math.random()*(total-comm));const liquidity=Math.floor(Math.random()*(total-comm-invest));const others=total-comm-invest-liquidity;
-  const circle=document.getElementById('tokenomics-circle');circle.innerHTML='';
-  const segments=[{color:'red',val:comm},{color:'blue',val:invest},{color:'green',val:liquidity},{color:'orange',val:others}];
-  let start=0;
-  segments.forEach(seg=>{
-    const angle=(seg.val/total)*360;
-    const segDiv=document.createElement('div');segDiv.className='segment';
-    segDiv.style.transform=`rotate(${start}deg)`;const inner=document.createElement('div');inner.className='segment-inner';inner.style.background=seg.color;inner.style.transform=`rotate(${angle}deg)`;segDiv.appendChild(inner);circle.appendChild(segDiv);start+=angle;
-  });
-  const details=`Price: $${token.price}<br>Total Supply: ${total}<br>Circulating: ${total-Math.floor(Math.random()*50000)}<br>Holders: ${Math.floor(Math.random()*10000)}<br>Listing: ${new Date(Date.now()-Math.random()*1e10).toLocaleDateString()}`;
-  document.getElementById('token-details').innerHTML=details;
-  document.getElementById('token-popup').style.display='flex';
+document.getElementById('token-title').textContent=`${token.emoji} ${token.name}`;
+const total=1000000;const comm=Math.floor(Math.random()*total);const invest=Math.floor(Math.random()*(total-comm));const liquidity=Math.floor(Math.random()*(total-comm-invest));const others=total-comm-invest-liquidity;
+const circle=document.getElementById('tokenomics-circle');circle.innerHTML='';
+const segments=[{color:'red',val:comm},{color:'blue',val:invest},{color:'green',val:liquidity},{color:'orange',val:others}];
+let start=0;
+segments.forEach(seg=>{
+const angle=(seg.val/total)*360;
+const segDiv=document.createElement('div');segDiv.className='segment';
+segDiv.style.transform=`rotate(${start}deg)`;const inner=document.createElement('div');inner.className='segment-inner';inner.style.background=seg.color;inner.style.transform=`rotate(${angle}deg)`;segDiv.appendChild(inner);circle.appendChild(segDiv);start+=angle;
+});
+const details=`Price: $${token.price}<br>Total Supply: ${total}<br>Circulating: ${total-Math.floor(Math.random()*50000)}<br>Holders: ${Math.floor(Math.random()*10000)}<br>Listing: ${new Date(Date.now()-Math.random()*1e10).toLocaleDateString()}`;
+document.getElementById('token-details').innerHTML=details;
+document.getElementById('token-popup').style.display='flex';
 }
 function closeTokenPopup(){document.getElementById('token-popup').style.display='none';}
 
@@ -172,7 +198,7 @@ function openScanner(){
 }
 function closeScanner(){document.getElementById('scanner-popup').style.display='none';if(videoStream){videoStream.getTracks().forEach(track=>track.stop());}}
 function tick(){const video=document.getElementById('video');if(video.readyState===video.HAVE_ENOUGH_DATA){const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,canvas.width,canvas.height);const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(imageData.data,canvas.width,canvas.height);if(code){processScan(code.data);return;}}requestAnimationFrame(tick);}
-function processScan(data){const myAddress=localStorage.getItem('walletAddress');if(data&&data.startsWith('kingdom')){let amount=prompt(`Send how much KDM to ${data}?`);if(amount&&!isNaN(amount)&&amount>0){let bal=parseFloat(localStorage.getItem('balance')||'0');if(bal>=amount){bal-=parseFloat(amount);localStorage.setItem('balance',bal.toFixed(2));document.getElementById('balance').textContent=`${bal.toFixed(2)} KDM`;alert(`Sent ${amount} KDM to ${data}`);}else{alert('Insufficient balance!');}}}closeScanner();}
+function processScan(data){const myAddress=localStorage.getItem('walletAddress');if(data&&data.startsWith('kingdom')){let amount=prompt(`Send how much KDM to ${data}?`);if(amount&&!isNaN(amount)&&amount>0){let bal=parseFloat(localStorage.getItem('balance')||'0');if(bal>=amount){bal-=parseFloat(amount);localStorage.setItem('balance',bal.toFixed(2));let recipientBal=parseFloat(localStorage.getItem(data)||'0');recipientBal+=parseFloat(amount);localStorage.setItem(data,recipientBal.toFixed(2));document.getElementById('balance').textContent=`${bal.toFixed(2)} KDM`;alert(`Sent ${amount} KDM to ${data}`);}else{alert('Insufficient balance!');}}}closeScanner();}
 window.onload=initWallet;
 </script>
 </body>
