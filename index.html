@@ -2,106 +2,215 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kingdom Blockchain</title>
+  <title>👑 Kingdom Blockchain</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
-    header { background:#3c3cdd; color:#fff; padding:15px; text-align:center; font-size:20px; font-weight:bold; }
-    .container { width:90%; max-width:700px; margin:20px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
-    h2 { margin-top:0; color:#333; }
-    input, button { padding:10px; margin:5px 0; width:100%; border:1px solid #ccc; border-radius:5px; }
-    button { background:#3c3cdd; color:#fff; border:none; cursor:pointer; font-weight:bold; }
-    button:hover { background:#2a2aaa; }
-    .block, .token { border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:8px; background:#f9f9f9; }
+    body {
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #001a1a, #000000);
+      color: #00ffcc;
+      margin: 0;
+    }
+    header {
+      background:#002222;
+      color:#00ffcc;
+      padding:15px;
+      text-align:center;
+      font-size:22px;
+      font-weight:bold;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+    .container {
+      width:95%; max-width:750px; margin:15px auto;
+      background:#001010; padding:20px;
+      border-radius:12px; box-shadow:0 0 15px rgba(0,255,200,0.3);
+    }
+    h2,h3 { color:#00ffcc; margin-top:0; }
+    input, select {
+      padding:10px; margin:6px 0; width:100%;
+      background:#000; color:#00ffcc;
+      border:1px solid #00ffcc; border-radius:5px;
+    }
+    button {
+      background:#001a1a; color:#00ffcc;
+      border:1px solid #00ffcc;
+      padding:10px; margin:6px 0; width:100%;
+      border-radius:5px; cursor:pointer;
+      text-shadow:0 0 5px #00ffcc;
+      transition:0.3s;
+    }
+    button:hover {
+      background:#00ffcc; color:#000;
+      box-shadow:0 0 15px #00ffcc;
+    }
+    .block,.token,.tx {
+      border:1px solid #00ffcc; padding:10px;
+      margin:10px 0; border-radius:8px;
+      background:#001a1a; font-size:14px;
+    }
     .hidden { display:none; }
+    .tabs { display:flex; justify-content:space-around; margin-bottom:10px; }
+    .tabs button { flex:1; margin:0 5px; }
+    .address { font-size:12px; color:#66ffdd; word-break:break-all; }
+    .scroll { max-height:300px; overflow-y:auto; }
+    @media(max-width:600px){
+      header { font-size:18px; }
+      .container { padding:15px; }
+    }
   </style>
 </head>
 <body>
   <header>👑 Kingdom Blockchain</header>
+
   <div class="container" id="auth">
     <h2>Login / Signup</h2>
     <input type="text" id="username" placeholder="Enter username">
-    <button onclick="login()">Enter</button>
+    <button onclick="login()">Enter Kingdom</button>
   </div>
 
   <div class="container hidden" id="dashboard">
     <h2>Welcome, <span id="user"></span></h2>
+    <div class="address">Wallet: <span id="wallet"></span></div>
     <button onclick="logout()">Logout</button>
-    <hr>
-    <h3>Launch Token</h3>
-    <input type="text" id="tokenName" placeholder="Token Name (e.g. Gold)">
-    <input type="text" id="tokenSymbol" placeholder="Symbol (e.g. GLD)">
-    <button onclick="launchToken()">Create Token</button>
-    <div id="tokens"></div>
-    <hr>
-    <h3>Blockchain Explorer</h3>
-    <button onclick="createBlock()">Add New Block</button>
-    <div id="blocks"></div>
+    <div class="tabs">
+      <button onclick="showTab('walletTab')">💰 Wallet</button>
+      <button onclick="showTab('tokenTab')">🪙 Tokens</button>
+      <button onclick="showTab('blockTab')">📜 Blockchain</button>
+    </div>
+
+    <!-- WALLET -->
+    <div id="walletTab">
+      <h3>Balance</h3>
+      <div id="balance">Loading...</div>
+      <h3>Send Coins</h3>
+      <input id="toUser" placeholder="Recipient Username">
+      <input id="amount" type="number" placeholder="Amount">
+      <button onclick="sendCoins()">Send KING</button>
+      <div class="scroll" id="transactions"></div>
+    </div>
+
+    <!-- TOKENS -->
+    <div id="tokenTab" class="hidden">
+      <h3>Launch Token</h3>
+      <input id="tokenName" placeholder="Token Name">
+      <input id="tokenSymbol" placeholder="Symbol">
+      <button onclick="launchToken()">Create Token</button>
+      <div id="tokens"></div>
+    </div>
+
+    <!-- BLOCKCHAIN -->
+    <div id="blockTab" class="hidden">
+      <h3>Blockchain Explorer</h3>
+      <button onclick="createBlock()">Mine New Block</button>
+      <div class="scroll" id="blocks"></div>
+    </div>
   </div>
 
   <script>
-    let currentUser = null;
-    let blockchain = [];
-    let tokens = [];
+    let currentUser=null;
+    let users=JSON.parse(localStorage.getItem("users")||"{}");
+    let blockchain=JSON.parse(localStorage.getItem("blocks")||"[]");
+    let tokens=JSON.parse(localStorage.getItem("tokens")||"[]");
+    let txs=JSON.parse(localStorage.getItem("txs")||"[]");
+
+    function save(){ 
+      localStorage.setItem("users",JSON.stringify(users));
+      localStorage.setItem("blocks",JSON.stringify(blockchain));
+      localStorage.setItem("tokens",JSON.stringify(tokens));
+      localStorage.setItem("txs",JSON.stringify(txs));
+    }
+
+    function randomHash(){
+      return [...crypto.getRandomValues(new Uint8Array(20))]
+             .map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
 
     function login(){
-      let name = document.getElementById("username").value.trim();
-      if(name==="") { alert("Enter username"); return; }
-      currentUser = name;
-      document.getElementById("user").innerText = name;
+      let name=document.getElementById("username").value.trim();
+      if(name===""){alert("Enter username"); return;}
+      if(!users[name]){ 
+        users[name]={ wallet:"0x"+randomHash(), balance:100 };
+      }
+      currentUser=name;
+      document.getElementById("user").innerText=name;
+      document.getElementById("wallet").innerText=users[name].wallet;
       document.getElementById("auth").classList.add("hidden");
       document.getElementById("dashboard").classList.remove("hidden");
+      render();
+      save();
     }
 
     function logout(){
-      currentUser = null;
+      currentUser=null;
       document.getElementById("auth").classList.remove("hidden");
       document.getElementById("dashboard").classList.add("hidden");
     }
 
-    function createBlock(){
-      let block = {
-        id: blockchain.length+1,
-        user: currentUser,
-        timestamp: new Date().toLocaleString(),
-        transactions: tokens.length>0 ? ["Token activity recorded"] : ["No tokens yet"]
-      };
-      blockchain.push(block);
-      renderBlocks();
+    function showTab(tab){
+      document.getElementById("walletTab").classList.add("hidden");
+      document.getElementById("tokenTab").classList.add("hidden");
+      document.getElementById("blockTab").classList.add("hidden");
+      document.getElementById(tab).classList.remove("hidden");
     }
 
-    function launchToken(){
-      let name = document.getElementById("tokenName").value.trim();
-      let symbol = document.getElementById("tokenSymbol").value.trim();
-      if(name==="" || symbol===""){ alert("Fill both fields"); return; }
-      let token = { name, symbol, creator: currentUser };
-      tokens.push(token);
-      renderTokens();
-      alert("Token Created on Kingdom Blockchain ✅");
+    function render(){
+      document.getElementById("balance").innerText=users[currentUser].balance+" KING";
+      renderTokens(); renderBlocks(); renderTxs();
     }
 
-    function renderBlocks(){
-      let blockDiv = document.getElementById("blocks");
-      blockDiv.innerHTML="";
-      blockchain.forEach(b=>{
-        blockDiv.innerHTML += `
-          <div class="block">
-            <b>Block #${b.id}</b><br>
-            By: ${b.user}<br>
-            Time: ${b.timestamp}<br>
-            Tx: ${b.transactions.join(", ")}
-          </div>`;
+    function sendCoins(){
+      let to=document.getElementById("toUser").value.trim();
+      let amt=parseInt(document.getElementById("amount").value);
+      if(!users[to]){alert("User not found"); return;}
+      if(users[currentUser].balance<amt){alert("Not enough balance"); return;}
+      users[currentUser].balance-=amt;
+      users[to].balance+=amt;
+      let tx={from:currentUser,to,amt,time:new Date().toLocaleString()};
+      txs.push(tx);
+      alert("Transaction added ✅");
+      save(); render();
+    }
+
+    function renderTxs(){
+      let div=document.getElementById("transactions");
+      div.innerHTML="";
+      txs.filter(t=>t.from===currentUser||t.to===currentUser).forEach(t=>{
+        div.innerHTML+=`<div class="tx">From: ${t.from} → To: ${t.to}<br>Amount: ${t.amt} KING<br>${t.time}</div>`;
       });
     }
 
+    function launchToken(){
+      let name=document.getElementById("tokenName").value.trim();
+      let sym=document.getElementById("tokenSymbol").value.trim();
+      if(!name||!sym){alert("Fill fields"); return;}
+      tokens.push({name,sym,creator:currentUser});
+      alert("Token launched 🚀");
+      save(); renderTokens();
+    }
+
     function renderTokens(){
-      let tokenDiv = document.getElementById("tokens");
-      tokenDiv.innerHTML="";
+      let div=document.getElementById("tokens");
+      div.innerHTML="";
       tokens.forEach(t=>{
-        tokenDiv.innerHTML += `
-          <div class="token">
-            <b>${t.name} (${t.symbol})</b><br>
-            Creator: ${t.creator}
-          </div>`;
+        div.innerHTML+=`<div class="token"><b>${t.name} (${t.sym})</b><br>Creator: ${t.creator}</div>`;
+      });
+    }
+
+    async function createBlock(){
+      let prev=blockchain.length?blockchain[blockchain.length-1].hash:"GENESIS";
+      let data=JSON.stringify(txs.slice(-3));
+      let hash=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(prev+data));
+      hash=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+      let block={id:blockchain.length+1, miner:currentUser, prev, data, hash, time:new Date().toLocaleString()};
+      blockchain.push(block);
+      alert("Block mined ⛏️ #"+block.id);
+      save(); renderBlocks();
+    }
+
+    function renderBlocks(){
+      let div=document.getElementById("blocks");
+      div.innerHTML="";
+      blockchain.slice().reverse().forEach(b=>{
+        div.innerHTML+=`<div class="block"><b>Block #${b.id}</b><br>Miner: ${b.miner}<br>Prev: ${b.prev.slice(0,12)}...<br>Hash: ${b.hash.slice(0,16)}...<br>Time: ${b.time}</div>`;
       });
     }
   </script>
