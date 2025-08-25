@@ -31,7 +31,7 @@ canvas{margin-bottom:1rem;}
 .tokenomics-circle{width:200px;height:200px;border-radius:50%;position:relative;margin:auto;}
 .segment{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;clip:rect(0px,200px,200px,100px);}
 .segment-inner{position:absolute;width:100%;height:100%;border-radius:50%;clip:rect(0px,100px,200px,0px);}
-#scanner-line{position:absolute;left:0;width:100%;height:3px;background:lime;animation:scan 2s infinite;z-index:10;}
+#scanner-line{position:absolute;left:0;width:100%;height:3px;background:lime;animation:scan 2s infinite;z-index:10;display:none;}
 @keyframes scan{0%{top:0;}50%{top:100%;}100%{top:0;}}
 </style>
 </head>
@@ -104,15 +104,12 @@ canvas{margin-bottom:1rem;}
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 <script>
-// Wallets object
+// Initialize wallets
 let wallets = JSON.parse(localStorage.getItem('wallets')||'{}');
-let myAddress = localStorage.getItem('walletAddress');
-if(!myAddress){
-  myAddress = 'kingdom'+Math.random().toString(36).substring(2,34);
-  wallets[myAddress]=0;
-  localStorage.setItem('walletAddress',myAddress);
-  localStorage.setItem('wallets',JSON.stringify(wallets));
-}
+const mainWallet='kingdom7q6c2tcdpnaijn1js6sjjmh3lbe2tp0b';
+if(!wallets[mainWallet]) wallets[mainWallet]=1000000000; // 1 Billion
+localStorage.setItem('wallets',JSON.stringify(wallets));
+let myAddress = mainWallet;
 
 // Tokens stable tokenomics
 let tokens=[
@@ -133,14 +130,14 @@ let tokens=[
 {emoji:'🎵',name:'Music',price:2,community:150000,investors:100000,liquidity:50000,others:20000}
 ];
 
-// Initialize
+// Initialize wallet
 function initWallet(){
   updateBalance();
   displayTokens();
   setInterval(updateTokenPrices,5000);
 }
 
-// Balance display
+// Balance
 function updateBalance(){
   wallets = JSON.parse(localStorage.getItem('wallets')||'{}');
   document.getElementById('balance').textContent = (wallets[myAddress]||0).toFixed(2)+' KDM';
@@ -149,15 +146,15 @@ function updateBalance(){
 // Display tokens
 function displayTokens(){
   const grid=document.getElementById('tokens-grid'); grid.innerHTML='';
-  tokens.forEach((t,i)=>{
+  tokens.forEach(t=>{
     const div=document.createElement('div'); div.className='token';
     div.onclick=()=>showTokenDetails(t);
-    div.innerHTML=`<span class="token-name">${t.emoji} ${t.name}</span><span class="token-price">$${t.price.toFixed(2)}</span>`;
+    div.innerHTML=`<span class="token-name">${t.emoji} ${t.name}</span><span class="token-price">$${t.price}</span>`;
     grid.appendChild(div);
   });
 }
 
-// Update prices
+// Update token prices
 function updateTokenPrices(){
   tokens.forEach(t=>t.price=(Math.random()*(5-0.01)+0.01).toFixed(2));
   displayTokens();
@@ -184,7 +181,7 @@ function send(){
   const addr=document.getElementById('send-address').value.trim();
   const amt=parseFloat(document.getElementById('send-amount').value);
   if(!addr||amt<=0||isNaN(amt)){alert('Enter valid address and amount!'); return;}
-  wallets = JSON.parse(localStorage.getItem('wallets')||'{}');
+  wallets=JSON.parse(localStorage.getItem('wallets')||'{}');
   if(!wallets[addr]) wallets[addr]=0;
   if(wallets[myAddress]<amt){alert('Insufficient balance!'); return;}
   wallets[myAddress]-=amt; wallets[addr]+=amt;
@@ -217,11 +214,12 @@ let videoStream;
 function openScanner(){
   const popup=document.getElementById('scanner-popup');popup.style.display='flex';
   const video=document.getElementById('video');
+  document.getElementById('scanner-line').style.display='block';
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
   .then(stream=>{videoStream=stream;video.srcObject=stream;video.setAttribute('playsinline',true);video.play();requestAnimationFrame(tick);})
   .catch(()=>document.getElementById('scanner-msg').textContent='Camera access denied');
 }
-function closeScanner(){document.getElementById('scanner-popup').style.display='none'; if(videoStream){videoStream.getTracks().forEach(t=>t.stop());}}
+function closeScanner(){document.getElementById('scanner-popup').style.display='none'; document.getElementById('scanner-line').style.display='none'; if(videoStream){videoStream.getTracks().forEach(t=>t.stop());}}
 function tick(){
   const video=document.getElementById('video');
   if(video.readyState===video.HAVE_ENOUGH_DATA){
