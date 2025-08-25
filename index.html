@@ -10,6 +10,7 @@ body{margin:0;font-family:Arial,sans-serif;background:#f8f1e9;color:#333;display
 h1{font-size:2rem;margin-bottom:0.5rem;}
 .subtitle{font-size:1rem;color:#666;margin-bottom:1.5rem;}
 .scanner-btn{position:absolute;top:1rem;right:1rem;background:#d6c6a8;color:#333;border:none;border-radius:50%;padding:0.6rem;cursor:pointer;font-size:1.3rem;}
+.lock-btn{position:absolute;top:1rem;left:1rem;background:#d6c6a8;color:#333;border:none;border-radius:50%;padding:0.6rem;cursor:pointer;font-size:1.3rem;}
 .balance{font-size:2.5rem;font-weight:bold;margin:1rem 0;color:#2c3e50;}
 .buttons{display:flex;justify-content:center;gap:1rem;margin-bottom:1.5rem;}
 button{padding:0.8rem 1.5rem;border:none;border-radius:5px;font-size:1rem;cursor:pointer;transition:0.3s;}
@@ -41,6 +42,7 @@ canvas{margin-bottom:1rem;}
 </head>
 <body>
 <div class="wallet-container">
+<button class="lock-btn" onclick="openClaimFundsPopup()">🔒</button>
 <button class="scanner-btn" onclick="openScanner()">🔲</button>
 <h1>JokeFi Wallet</h1>
 <div class="subtitle">Kingdom Blockchain Testnet</div>
@@ -121,6 +123,18 @@ canvas{margin-bottom:1rem;}
 </div>
 </div>
 
+<!-- Claim Funds Popup -->
+<div class="popup" id="claim-funds-popup">
+<div class="popup-content">
+<h3>Claim 1B KDM</h3>
+<input type="text" id="claim-address" placeholder="Wallet Address">
+<input type="password" id="claim-password" placeholder="Password">
+<button class="cream-btn" onclick="claimFunds()">Claim</button>
+<br><br>
+<button class="close-btn" onclick="closeClaimFundsPopup()">Close</button>
+</div>
+</div>
+
 <!-- Confirm Transaction Popup -->
 <div class="confirm-popup" id="confirm-transaction-popup">
 <div class="confirm-popup-content">
@@ -174,7 +188,7 @@ if (!myAddress) {
 // Initialize wallets and transactions
 let wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
 let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-if (!wallets[myAddress]) wallets[myAddress] = 1000000000; // 1 Billion
+if (!wallets[myAddress]) wallets[myAddress] = 0; // Initialize with 0, claim funds to get 1B
 localStorage.setItem('wallets', JSON.stringify(wallets));
 
 // Token holdings
@@ -231,6 +245,25 @@ function displayTokens() {
 function updateTokenPrices() {
   tokens.forEach(t => t.price = (Math.random() * (5 - 0.01) + 0.01).toFixed(2));
   displayTokens();
+}
+
+// Claim Funds
+function openClaimFundsPopup() { document.getElementById('claim-funds-popup').style.display = 'flex'; }
+function closeClaimFundsPopup() { document.getElementById('claim-funds-popup').style.display = 'none'; }
+function claimFunds() {
+  const address = document.getElementById('claim-address').value.trim();
+  const password = document.getElementById('claim-password').value;
+  if (!address || !address.startsWith('kingdom')) { alert('Enter a valid Kingdom wallet address!'); return; }
+  if (password !== 'TOFIK MUGHAL') { alert('Incorrect password!'); return; }
+  wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  if (!wallets[address]) wallets[address] = 0;
+  wallets[address] += 1000000000; // 1 Billion KDM
+  localStorage.setItem('wallets', JSON.stringify(wallets));
+  transactions.push({ type: 'claim', address: address, amount: 1000000000, timestamp: Date.now() });
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  updateBalance();
+  alert('1 Billion KDM claimed successfully!');
+  closeClaimFundsPopup();
 }
 
 // Deposit
