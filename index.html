@@ -17,7 +17,7 @@ button{padding:0.8rem 1.5rem;border:none;border-radius:5px;font-size:1rem;cursor
 .cream-btn{background-color:#d6c6a8;color:#333;}
 .cream-btn:hover{background-color:#c9b894;}
 .divider{border-top:1px solid #ddd;margin:1.5rem 0;}
-.assets,.market{display:flex;flex-direction:column;gap:0.8rem;}
+.tokens-grid{display:flex;flex-direction:column;gap:0.8rem;}
 .token{background:#f9f9f9;padding:0.8rem;border-radius:5px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:0.2s;}
 .token:hover{transform:scale(1.02);}
 .token-price{font-weight:bold;color:#27ae60;}
@@ -56,13 +56,7 @@ canvas{margin-bottom:1rem;}
   <button class="cream-btn" onclick="openSendPopup()">Send</button>
 </div>
 <div class="divider"></div>
-<div class="assets" id="assets">
-  <h3>Assets</h3>
-</div>
-<div class="divider"></div>
-<div class="market" id="market">
-  <h3>Market</h3>
-</div>
+<div class="tokens-grid" id="tokens-grid"></div>
 </div>
 
 <!-- Deposit Popup -->
@@ -220,12 +214,9 @@ let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
 if (!wallets[myAddress]) wallets[myAddress] = 0; // Initialize with 0, claim funds to get 1B
 localStorage.setItem('wallets', JSON.stringify(wallets));
 
-// Token holdings (all set to 0 initially)
+// Token holdings
 let tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
 if (!tokenHoldings[myAddress]) tokenHoldings[myAddress] = {};
-tokens.forEach(t => {
-  if (!tokenHoldings[myAddress][t.name]) tokenHoldings[myAddress][t.name] = 0;
-});
 localStorage.setItem('tokenHoldings', JSON.stringify(tokenHoldings));
 
 // Tokens
@@ -250,8 +241,7 @@ let tokens = [
 // Initialize wallet
 function initWallet() {
   updateBalance();
-  displayAssets();
-  displayMarket();
+  displayTokens();
   setInterval(updateTokenPrices, 5000);
 }
 
@@ -259,54 +249,25 @@ function initWallet() {
 function updateBalance() {
   wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
   document.getElementById('balance').textContent = (wallets[myAddress] || 0).toFixed(2) + ' KDM';
-  displayAssets();
 }
 
-// Display assets
-function displayAssets() {
-  const assetsDiv = document.getElementById('assets');
-  assetsDiv.innerHTML = '<h3>Assets</h3>';
-  wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
-  tokenHoldings = JSON.parse(localStorage.getItem('tokenHoldings') || '{}');
-  const kdmBalance = wallets[myAddress] || 0;
-  const div = document.createElement('div');
-  div.className = 'token';
-  div.innerHTML = `<span class="token-name">💵 KDM</span><span class="token-price">${kdmBalance.toFixed(2)} KDM</span>`;
-  assetsDiv.appendChild(div);
-  Object.keys(tokenHoldings[myAddress]).forEach(token => {
-    const amount = tokenHoldings[myAddress][token];
-    if (amount > 0) {
-      const tokenData = tokens.find(t => t.name === token);
-      if (tokenData) {
-        const div = document.createElement('div');
-        div.className = 'token';
-        div.innerHTML = `<span class="token-name">${tokenData.emoji} ${token}</span><span class="token-price">${amount.toFixed(2)} ${token}</span>`;
-        assetsDiv.appendChild(div);
-      }
-    }
-  });
-}
-
-// Display market
-function displayMarket() {
-  const marketDiv = document.getElementById('market');
-  marketDiv.innerHTML = '<h3>Market</h3>';
+// Display tokens
+function displayTokens() {
+  const grid = document.getElementById('tokens-grid');
+  grid.innerHTML = '';
   tokens.forEach(t => {
     const div = document.createElement('div');
     div.className = 'token';
     div.onclick = () => showTokenDetails(t);
     div.innerHTML = `<span class="token-name">${t.emoji} ${t.name}</span><span class="token-price">$${t.price}</span>`;
-    marketDiv.appendChild(div);
+    grid.appendChild(div);
   });
 }
 
 // Update token prices
 function updateTokenPrices() {
   tokens.forEach(t => t.price = (Math.random() * (5 - 0.01) + 0.01).toFixed(2));
-  displayMarket();
-  if (document.getElementById('token-popup').style.display === 'flex' && currentToken) {
-    document.getElementById('token-price').textContent = `Price: $${currentToken.price}`;
-  }
+  displayTokens();
 }
 
 // Claim Funds
@@ -358,8 +319,6 @@ function send(addr, amt) {
   wallets[myAddress] -= amt;
   wallets[addr] += amt;
   localStorage.setItem('wallets', JSON.stringify(wallets));
-  console.log(`Sent ${amt} KDM from ${myAddress} to ${addr}`);
-  console.log('Updated wallets:', wallets);
   transactions.push({ type: 'send', from: myAddress, to: addr, amount: amt, timestamp: Date.now() });
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateBalance();
@@ -514,8 +473,6 @@ function processScan(data) {
       wallets[myAddress] -= amt;
       wallets[data] += amt;
       localStorage.setItem('wallets', JSON.stringify(wallets));
-      console.log(`Sent ${amt} KDM from ${myAddress} to ${data}`);
-      console.log('Updated wallets:', wallets);
       transactions.push({ type: 'send', from: myAddress, to: data, amount: amt, timestamp: Date.now() });
       localStorage.setItem('transactions', JSON.stringify(transactions));
       updateBalance();
