@@ -1,250 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JokeFi Wallet - Kingdom Blockchain</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f8f1e9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .wallet-container {
-            background-color: #fffcf5;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        .subtitle {
-            font-size: 1rem;
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-        .balance {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 1rem 0;
-            color: #2c3e50;
-        }
-        .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .deposit-btn {
-            background-color: #27ae60;
-            color: white;
-        }
-        .deposit-btn:hover {
-            background-color: #219653;
-        }
-        .receive-btn {
-            background-color: #3498db;
-            color: white;
-        }
-        .receive-btn:hover {
-            background-color: #2980b9;
-        }
-        .send-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .send-btn:hover {
-            background-color: #c0392b;
-        }
-        .divider {
-            border-top: 1px solid #ddd;
-            margin: 1.5rem 0;
-        }
-        .tokens-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1rem;
-            text-align: left;
-        }
-        .token {
-            background-color: #f9f9f9;
-            padding: 1rem;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .token span {
-            font-size: 1.2rem;
-        }
-        .token-name {
-            font-size: 0.9rem;
-            color: #333;
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .popup-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .popup-content p {
-            word-break: break-all;
-            margin-bottom: 1rem;
-        }
-        .close-btn {
-            background-color: #95a5a6;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .close-btn:hover {
-            background-color: #7f8c8d;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JokeFi Wallet - Kingdom Blockchain</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f1e9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .wallet-container {
+      background-color: #fffcf5;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 650px;
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    .scanner-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #d6c6a8;
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      padding: 0.6rem;
+      cursor: pointer;
+    }
+    .balance {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      color: #2c3e50;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .cream-btn {
+      background-color: #d6c6a8;
+      color: #333;
+    }
+    .cream-btn:hover {
+      background-color: #c9b894;
+    }
+    .divider {
+      border-top: 1px solid #ddd;
+      margin: 1.5rem 0;
+    }
+    .tokens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      text-align: left;
+    }
+    .token {
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .token:hover {
+      transform: scale(1.05);
+    }
+    .token span {
+      font-size: 1.2rem;
+    }
+    .token-name {
+      font-size: 0.9rem;
+      color: #333;
+    }
+    .token-price {
+      font-size: 0.8rem;
+      color: #27ae60;
+      margin-top: 0.3rem;
+    }
+    .popup, .token-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup-content, .token-popup-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .popup-content p {
+      word-break: break-all;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .close-btn {
+      background-color: #95a5a6;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      background-color: #7f8c8d;
+    }
+    input {
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      width: 90%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-    <div class="wallet-container">
-        <h1>JokeFi Wallet</h1>
-        <div class="subtitle">Kingdom Blockchain Testnet</div>
-        <div class="balance" id="balance">0 KDM</div>
-        <div class="buttons">
-            <button class="deposit-btn" onclick="deposit()">Deposit</button>
-            <button class="receive-btn" onclick="receive()">Receive</button>
-            <button class="send-btn" onclick="send()">Send</button>
-        </div>
-        <div class="divider"></div>
-        <div class="tokens-grid" id="tokens-grid"></div>
+  <div class="wallet-container">
+    <button class="scanner-btn">📷</button>
+    <h1>JokeFi Wallet</h1>
+    <div class="subtitle">Kingdom Blockchain Testnet</div>
+    <div class="balance" id="balance">0 KDM</div>
+    <div class="buttons">
+      <button class="cream-btn" onclick="deposit()">Deposit</button>
+      <button class="cream-btn" onclick="receive()">Receive</button>
+      <button class="cream-btn" onclick="openSendPopup()">Send</button>
     </div>
+    <div class="divider"></div>
+    <div class="tokens-grid" id="tokens-grid"></div>
+  </div>
 
-    <div class="popup" id="receive-popup">
-        <div class="popup-content">
-            <p id="wallet-address"></p>
-            <button class="close-btn" onclick="closePopup()">Close</button>
-        </div>
+  <!-- Receive Popup -->
+  <div class="popup" id="receive-popup">
+    <div class="popup-content">
+      <canvas id="qr-code"></canvas>
+      <p id="wallet-address" onclick="copyAddress()"></p>
+      <button class="close-btn" onclick="closePopup()">Close</button>
     </div>
+  </div>
 
-    <script>
-        const tokens = [
-            { emoji: '🪙', name: 'GoldCoin' },
-            { emoji: '💎', name: 'Diamond' },
-            { emoji: '🚀', name: 'Rocket' },
-            { emoji: '🐶', name: 'Doge' },
-            { emoji: '🍌', name: 'Banana' },
-            { emoji: '🔥', name: 'Fire' },
-            { emoji: '🌕', name: 'Moon' },
-            { emoji: '🐱', name: 'CatToken' },
-            { emoji: '🎮', name: 'Gamer' },
-            { emoji: '🏆', name: 'Trophy' },
-            { emoji: '⚡', name: 'Thunder' },
-            { emoji: '🍕', name: 'Pizza' },
-            { emoji: '🐉', name: 'Dragon' },
-            { emoji: '🧊', name: 'Ice' },
-            { emoji: '🎵', name: 'Music' }
-        ];
+  <!-- Send Popup -->
+  <div class="popup" id="send-popup">
+    <div class="popup-content">
+      <h3>Send KDM</h3>
+      <input type="text" id="send-address" placeholder="Recipient Address">
+      <input type="number" id="send-amount" placeholder="Amount (KDM)">
+      <button class="cream-btn" onclick="send()">Send</button>
+      <br><br>
+      <button class="close-btn" onclick="closeSendPopup()">Close</button>
+    </div>
+  </div>
 
-        function generateWalletAddress() {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let address = 'kingdom';
-            for (let i = 0; i < 32; i++) {
-                address += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return address;
-        }
+  <!-- Token Details Popup -->
+  <div class="token-popup" id="token-popup">
+    <div class="token-popup-content">
+      <h3 id="token-title"></h3>
+      <p id="token-details"></p>
+      <button class="close-btn" onclick="closeTokenPopup()">Close</button>
+    </div>
+  </div>
 
-        function initWallet() {
-            let address = localStorage.getItem('walletAddress');
-            let balance = localStorage.getItem('balance') || '0';
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    const tokens = [
+      { emoji: '🪙', name: 'GoldCoin' },
+      { emoji: '💎', name: 'Diamond' },
+      { emoji: '🚀', name: 'Rocket' },
+      { emoji: '🐶', name: 'Doge' },
+      { emoji: '🍌', name: 'Banana' },
+      { emoji: '🔥', name: 'Fire' },
+      { emoji: '🌕', name: 'Moon' },
+      { emoji: '🐱', name: 'CatToken' },
+      { emoji: '🎮', name: 'Gamer' },
+      { emoji: '🏆', name: 'Trophy' },
+      { emoji: '⚡', name: 'Thunder' },
+      { emoji: '🍕', name: 'Pizza' },
+      { emoji: '🐉', name: 'Dragon' },
+      { emoji: '🧊', name: 'Ice' },
+      { emoji: '🎵', name: 'Music' }
+    ];
 
-            if (!address) {
-                address = generateWalletAddress();
-                localStorage.setItem('walletAddress', address);
-                localStorage.setItem('balance', '0');
-            }
+    function randomPrice() {
+      return (Math.random() * (5 - 0.01) + 0.01).toFixed(2);
+    }
 
-            document.getElementById('balance').textContent = `${parseFloat(balance).toFixed(2)} KDM`;
-            document.getElementById('wallet-address').textContent = address;
+    function generateWalletAddress() {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let address = 'kingdom';
+      for (let i = 0; i < 32; i++) {
+        address += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return address;
+    }
 
-            const tokensGrid = document.getElementById('tokens-grid');
-            tokens.forEach(token => {
-                const tokenDiv = document.createElement('div');
-                tokenDiv.className = 'token';
-                tokenDiv.innerHTML = `<span>${token.emoji}</span><span class="token-name">${token.name}</span>`;
-                tokensGrid.appendChild(tokenDiv);
-            });
-        }
+    function initWallet() {
+      let address = localStorage.getItem('walletAddress');
+      let balance = localStorage.getItem('balance') || '0';
 
-        function deposit() {
-            let balance = parseFloat(localStorage.getItem('balance') || '0');
-            const amount = prompt('Enter deposit amount (KDM):');
-            if (amount && !isNaN(amount) && amount > 0) {
-                balance += parseFloat(amount);
-                localStorage.setItem('balance', balance.toFixed(2));
-                document.getElementById('balance').textContent = `${balance.toFixed(2)} KDM`;
-                alert('Deposit successful!');
-            } else {
-                alert('Invalid amount!');
-            }
-        }
+      if (!address) {
+        address = generateWalletAddress();
+        localStorage.setItem('walletAddress', address);
+        localStorage.setItem('balance', '0');
+      }
 
-        function send() {
-            let balance = parseFloat(localStorage.getItem('balance') || '0');
-            const amount = prompt('Enter amount to send (KDM):');
-            if (amount && !isNaN(amount) && amount > 0) {
-                if (amount <= balance) {
-                    balance -= parseFloat(amount);
-                    localStorage.setItem('balance', balance.toFixed(2));
-                    document.getElementById('balance').textContent = `${balance.toFixed(2)} KDM`;
-                    alert('Send successful!');
-                } else {
-                    alert('Insufficient balance!');
-                }
-            } else {
-                alert('Invalid amount!');
-            }
-        }
+      document.getElementById('balance').textContent = `${parseFloat(balance).toFixed(2)} KDM`;
+      document.getElementById('wallet-address').textContent = address;
 
-        function receive() {
-            const popup = document.getElementById('receive-popup');
-            popup.style.display = 'flex';
-        }
+      const tokensGrid = document.getElementById('tokens-grid');
+      tokensGrid.innerHTML = "";
+      tokens.forEach(token => {
+        token.price = randomPrice();
+        const tokenDiv = document.createElement('div');
+        tokenDiv.className = 'token';
+        tokenDiv.onclick = () => showTokenDetails(token);
+        tokenDiv.innerHTML = `
+          <span>${token.emoji}</span>
+          <span class="token-name">${token.name}</span>
+          <span class="token-price">$${token.price}</span>
+        `;
+        tokensGrid.appendChild(tokenDiv);
+      });
 
-        function closePopup() {
-            const popup = document.getElementById('receive-popup');
-            popup.style.display = 'none';
-        }
+      setInterval(updatePrices, 5000);
+    }
 
-        window.onload = initWallet;
-    </script>
+    function updatePrices() {
+      const tokenDivs = document.querySelectorAll('.token');
+      tokenDivs.forEach((div, i) => {
+        let newPrice = randomPrice();
+        tokens[i].price = newPrice;
+        div.querySelector('.token-price').textContent = `$${newPrice}`;
+      });
+    }
+
+    function deposit() {
+      let balance = parseFloat(localStorage.getItem('balance') || '0');
+      const amount = prompt('Enter deposit amount (KDM):');
+      if (amount && !isNaN(amount) && amount > 0) {
+        balance += parseFloat(amount);
+        localStorage.setItem('balance', balance.toFixed(2));
+        document.getElementById('balance').textContent = `${balance.toFixed(2)} KDM`;
+        alert('Deposit successful!');
+      } else {
+        alert('Invalid amount!');
+      }
+    }
+
+    function openSendPopup() {
+      document.getElementById('send-popup').style.display = 'flex';
+    }
+
+    function closeSendPopup() {
+      document.getElementById('send-popup').style.display = 'none';
+    }
+
+    function send() {
+      let balance = parseFloat(localStorage.getItem('balance') || '0');
+      const address = document.getElementById('send-address').value.trim();
+      const amount = parseFloat(document.getElementById('send-amount').value);
+
+      if (!address || amount <= 0 || isNaN(amount)) {
+        alert('Enter valid address and amount!');
+        return;
+      }
+
+      if (amount <= balance) {
+        balance -= amount;
+        localStorage.setItem('balance', balance.toFixed(2));
+        document.getElementById('balance').textContent = `${balance.toFixed(2)} KDM`;
+        alert(`Sent ${amount} KDM to ${address}`);
+        closeSendPopup();
+      } else {
+        alert('Insufficient balance!');
+      }
+    }
+
+    function receive() {
+      const popup = document.getElementById('receive-popup');
+      const address = localStorage.getItem('walletAddress');
+      document.getElementById('wallet-address').textContent = address;
+      QRCode.toCanvas(document.getElementById('qr-code'), address, function (error) {
+        if (error) console.error(error);
+      });
+      popup.style.display = 'flex';
+    }
+
+    function copyAddress() {
+      const address = localStorage.getItem('walletAddress');
+      navigator.clipboard.writeText(address);
+      alert('Address copied!');
+    }
+
+    function closePopup() {
+      document.getElementById('receive-popup').style.display = 'none';
+    }
+
+    function showTokenDetails(token) {
+      const details = `
+        Listing Date: ${new Date(Date.now() - Math.random()*1e10).toLocaleDateString()}<br>
+        Total Supply: ${(Math.random()*1e9).toFixed(0)}<br>
+        Circulating Supply: ${(Math.random()*1e8).toFixed(0)}<br>
+        Holders: ${(Math.random()*50000).toFixed(0)}
+      `;
+      document.getElementById('token-title').textContent = `${token.emoji} ${token.name}`;
+      document.getElementById('token-details').innerHTML = details;
+      document.getElementById('token-popup').style.display = 'flex';
+    }
+
+    function closeTokenPopup() {
+      document.getElementById('token-popup').style.display = 'none';
+    }
+
+    window.onload = initWallet;
+  </script>
 </body>
 </html>
