@@ -15,62 +15,63 @@
   header {
     text-align: center;
     padding: 10px;
-    font-size: 1.4em;
+    font-size: 1.6em;
     font-weight: bold;
-    text-shadow: 0 0 10px cyan;
+    text-shadow: 0 0 15px cyan, 0 0 25px cyan;
   }
   #menuBtn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     background: black;
     border: none;
     color: cyan;
-    font-size: 1.2em;
-    padding: 8px 12px;
+    font-size: 1.4em;
+    padding: 10px 15px;
     border-radius: 8px;
-    box-shadow: 0 0 10px cyan;
+    box-shadow: 0 0 12px cyan;
     z-index: 10;
   }
   #sideMenu {
     position: fixed;
     top: 0;
-    left: -40%;
-    width: 40%;
+    right: -60%;
+    width: 60%;
     height: 100%;
-    background: rgba(0,20,20,0.95);
-    box-shadow: 2px 0 10px cyan;
-    transition: 0.3s;
-    padding: 20px;
+    background: rgba(0,20,20,0.98);
+    box-shadow: -2px 0 15px cyan;
+    transition: 0.4s;
+    padding: 25px;
     z-index: 9;
   }
-  #sideMenu.active { left: 0; }
+  #sideMenu.active { right: 0; }
   #sideMenu button {
     display: block;
     width: 100%;
-    margin: 15px 0;
-    padding: 12px;
+    margin: 20px 0;
+    padding: 14px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: black;
     color: cyan;
-    font-size: 1em;
+    font-size: 1.1em;
     font-weight: bold;
-    text-shadow: 0 0 5px cyan;
-    box-shadow: 0 0 10px cyan;
-  }
-  #gameCanvas {
-    display: block;
-    margin: auto;
-    background: transparent;
+    text-shadow: 0 0 8px cyan;
+    box-shadow: 0 0 12px cyan;
   }
   #scoreBoard {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 55px;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 1.2em;
-    text-shadow: 0 0 10px cyan;
+    text-shadow: 0 0 12px cyan;
     z-index: 10;
+  }
+  #gameCanvas {
+    display: block;
+    margin: 80px auto 0;
+    background: transparent;
   }
 </style>
 </head>
@@ -83,7 +84,9 @@
   <button onclick="restartGame()">Restart</button>
 </div>
 
-<div id="scoreBoard">Score: <span id="score">0</span> | High: <span id="highScore">0</span></div>
+<div id="scoreBoard">
+  Score: <span id="score">0</span> | High: <span id="highScore">0</span>
+</div>
 <canvas id="gameCanvas" width="360" height="600"></canvas>
 
 <audio id="coinSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
@@ -93,10 +96,10 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// bucket image (wallet)
+// bucket image
 const bucketImg = new Image();
 bucketImg.src = "https://i.postimg.cc/N5wczBr0/image.png";
-const wallet = { x: 150, y: 540, w: 70, h: 50, speed: 6 };
+const wallet = { x: 145, y: 530, w: 70, h: 50, speed: 6 };
 
 let objects = [];
 let score = 0;
@@ -106,7 +109,7 @@ let gameOver = false;
 
 document.getElementById("highScore").innerText = highScore;
 
-// Images
+// token images
 const coinImgs = [
   "https://i.postimg.cc/PpFgyknd/image.png",
   "https://i.postimg.cc/Dm9Dw62p/image.png",
@@ -121,15 +124,16 @@ const bombImg = new Image();
 bombImg.src = "https://i.postimg.cc/7bhD2Krx/image.png";
 
 // controls
-let keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-// mobile touch control
-document.addEventListener("touchstart", e => {
-  let touchX = e.touches[0].clientX;
-  if (touchX < window.innerWidth/2) wallet.x -= wallet.speed*4;
-  else wallet.x += wallet.speed*4;
+let isDragging = false;
+canvas.addEventListener("touchstart", e => {
+  isDragging = true;
+});
+canvas.addEventListener("touchend", () => isDragging = false);
+canvas.addEventListener("touchmove", e => {
+  if(isDragging){
+    let touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+    wallet.x = touchX - wallet.w/2;
+  }
 });
 
 // Menu toggle
@@ -137,36 +141,45 @@ document.getElementById("menuBtn").onclick = () => {
   document.getElementById("sideMenu").classList.toggle("active");
 };
 
-// Game functions
+// Spawn tokens
 function spawnObject(){
   const type = Math.random() < 0.8 ? "coin" : "bomb";
-  let img;
-  if(type === "coin"){
-    img = new Image();
-    img.src = coinImgs[Math.floor(Math.random()*coinImgs.length)];
-  } else {
-    img = bombImg;
-  }
-  objects.push({ x: Math.random() * 320, y: -40, w: 30, h: 30, type, img });
+  let img = new Image();
+  img.src = type === "coin" ? coinImgs[Math.floor(Math.random()*coinImgs.length)] : bombImg.src;
+  objects.push({ x: Math.random() * 320, y: -40, w: 35, h: 35, type, img });
 }
 
+// Draw
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  // wallet (bucket image)
+
+  // bucket
   ctx.drawImage(bucketImg, wallet.x, wallet.y, wallet.w, wallet.h);
+
+  // catching line
+  ctx.beginPath();
+  ctx.strokeStyle = "cyan";
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = "cyan";
+  ctx.moveTo(wallet.x, wallet.y);
+  ctx.lineTo(wallet.x + wallet.w, wallet.y);
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
   // objects
   objects.forEach(o=>{
+    ctx.save();
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "cyan";
     ctx.drawImage(o.img, o.x, o.y, o.w, o.h);
+    ctx.restore();
   });
 }
 
+// Update
 function update(){
   if(gameOver) return;
-  if(keys["ArrowLeft"]) wallet.x -= wallet.speed;
-  if(keys["ArrowRight"]) wallet.x += wallet.speed;
-  if(wallet.x<0) wallet.x=0;
-  if(wallet.x+wallet.w>canvas.width) wallet.x=canvas.width-wallet.w;
-
   objects.forEach(o=>{
     o.y += 3;
     if(o.y > canvas.height){
@@ -189,12 +202,13 @@ function update(){
             highScore=score;
             localStorage.setItem("highScore", highScore);
           }
-          alert("Game Over! Final Score: "+score);
+          setTimeout(()=>alert("Game Over! Final Score: "+score),100);
         }
     }
   });
 }
 
+// Loop
 function gameLoop(){
   update();
   draw();
@@ -211,14 +225,12 @@ function newGame(){
   gameOver = false;
   document.getElementById("score").innerText = score;
 }
-
 function restartGame(){
   score = 0;
   objects = [];
   gameOver = false;
   document.getElementById("score").innerText = score;
 }
-
 </script>
 </body>
 </html>
