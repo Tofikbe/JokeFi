@@ -1,223 +1,224 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kingdom Blockchain Mobile</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Courier New', monospace;
-      background: radial-gradient(circle at center, #001a1a, #000);
-      color: cyan;
-      overflow-x: hidden;
-    }
-    canvas#particles {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -1;
-    }
-    header {
-      text-align: center;
-      padding: 15px;
-      font-size: 1.4em;
-      font-weight: bold;
-      text-shadow: 0 0 10px cyan;
-    }
-    .section {
-      margin: 10px;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(0, 30, 30, 0.85);
-      box-shadow: 0 0 15px rgba(0,255,255,0.3);
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: black;
-      color: cyan;
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      text-shadow: 0 0 5px cyan;
-      box-shadow: 0 0 10px cyan;
-      transition: 0.2s;
-    }
-    .btn:active {
-      transform: scale(0.96);
-      box-shadow: 0 0 15px lime;
-    }
-    .avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      display: inline-block;
-      background: cyan;
-      color: black;
-      text-align: center;
-      line-height: 40px;
-      margin-right: 10px;
-      font-weight: bold;
-    }
-    .console {
-      font-size: 0.9em;
-      background: rgba(0,0,0,0.8);
-      padding: 10px;
-      border-radius: 8px;
-      height: 120px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-    .timeline {
-      display: flex;
-      overflow-x: auto;
-      padding: 10px;
-    }
-    .block {
-      flex: 0 0 auto;
-      min-width: 100px;
-      margin-right: 10px;
-      padding: 10px;
-      background: rgba(0,50,50,0.8);
-      border-radius: 8px;
-      text-align: center;
-      font-size: 0.8em;
-      box-shadow: 0 0 8px cyan;
-    }
-    .leaderboard .entry {
-      display: flex;
-      align-items: center;
-      margin: 6px 0;
-      padding: 6px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.6);
-    }
-    .leaderboard .entry.top1 {box-shadow: 0 0 12px gold;}
-    .leaderboard .entry.top2 {box-shadow: 0 0 12px silver;}
-    .leaderboard .entry.top3 {box-shadow: 0 0 12px brown;}
-    .glow-card {
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 12px;
-      background: rgba(0,0,0,0.8);
-      box-shadow: 0 0 15px cyan;
-      text-align: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Catcher - Kingdom Blockchain</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    background: radial-gradient(circle at center, #001a1a, #000);
+    color: cyan;
+    overflow: hidden;
+  }
+  header {
+    text-align: center;
+    padding: 10px;
+    font-size: 1.4em;
+    font-weight: bold;
+    text-shadow: 0 0 10px cyan;
+  }
+  #menuBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: black;
+    border: none;
+    color: cyan;
+    font-size: 1.2em;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px cyan;
+    z-index: 10;
+  }
+  #sideMenu {
+    position: fixed;
+    top: 0;
+    left: -40%;
+    width: 40%;
+    height: 100%;
+    background: rgba(0,20,20,0.95);
+    box-shadow: 2px 0 10px cyan;
+    transition: 0.3s;
+    padding: 20px;
+    z-index: 9;
+  }
+  #sideMenu.active { left: 0; }
+  #sideMenu button {
+    display: block;
+    width: 100%;
+    margin: 15px 0;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: black;
+    color: cyan;
+    font-size: 1em;
+    font-weight: bold;
+    text-shadow: 0 0 5px cyan;
+    box-shadow: 0 0 10px cyan;
+  }
+  #gameCanvas {
+    display: block;
+    margin: auto;
+    background: transparent;
+  }
+  #scoreBoard {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1.2em;
+    text-shadow: 0 0 10px cyan;
+    z-index: 10;
+  }
+</style>
 </head>
 <body>
-<canvas id="particles"></canvas>
-<header>👑 Kingdom Blockchain</header><div class="section" id="status">
-  <b>Network:</b> Online<br>
-  <b>Blocks:</b> <span id="blockCount">0</span><br>
-  <b>Peers:</b> <span id="peers">0</span><br>
-  <b>Difficulty:</b> <span id="difficulty">1.0</span>
-</div><div class="section">
-  <button class="btn" onclick="mineBlock()">⛏️ Mine Block</button>
-  <button class="btn" onclick="sendTx()">💸 Send Transaction</button>
-  <button class="btn" onclick="launchToken()">🚀 Launch Token</button>
-  <button class="btn" onclick="toggleTheme()">🌓 Toggle Theme</button>
-</div><div class="section">
-  <h3>Block Explorer</h3>
-  <div class="timeline" id="timeline"></div>
-</div><div class="section leaderboard">
-  <h3>Leaderboard</h3>
-  <div class="entry top1"><div class="avatar">A1</div> Alice - 150 pts</div>
-  <div class="entry top2"><div class="avatar">B2</div> Bob - 120 pts</div>
-  <div class="entry top3"><div class="avatar">C3</div> Carol - 100 pts</div>
-</div><div class="section">
-  <h3>Console Logs</h3>
-  <div class="console" id="console"></div>
-</div><audio id="txSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio> <audio id="blockSound" src="https://actions.google.com/sounds/v1/impacts/metal_thud_and_ring.ogg"></audio>
+<header>Coin Catcher</header>
+<button id="menuBtn">☰</button>
+<div id="sideMenu">
+  <button onclick="newGame()">New Game</button>
+  <button onclick="alert('Total Games Played: ' + totalGames)">Total Games Played</button>
+  <button onclick="restartGame()">Restart</button>
+</div>
+
+<div id="scoreBoard">Score: <span id="score">0</span> | High: <span id="highScore">0</span></div>
+<canvas id="gameCanvas" width="360" height="600"></canvas>
+
+<audio id="coinSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+<audio id="bombSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
 <script>
-  // Particles
-  const c = document.getElementById('particles');
-  const ctx = c.getContext('2d');
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-  let particles = Array.from({length: 60}, () => ({
-    x: Math.random()*c.width,
-    y: Math.random()*c.height,
-    dx: (Math.random()-0.5)*1.5,
-    dy: (Math.random()-0.5)*1.5
-  }));
-  function animateParticles(){
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.fillRect(0,0,c.width,c.height);
-    ctx.fillStyle = 'cyan';
-    particles.forEach(p=>{
-      p.x+=p.dx; p.y+=p.dy;
-      if(p.x<0||p.x>c.width) p.dx*=-1;
-      if(p.y<0||p.y>c.height) p.dy*=-1;
-      ctx.beginPath(); ctx.arc(p.x,p.y,2,0,2*Math.PI); ctx.fill();
-    });
-    requestAnimationFrame(animateParticles);
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// bucket image (wallet)
+const bucketImg = new Image();
+bucketImg.src = "https://i.postimg.cc/N5wczBr0/image.png";
+const wallet = { x: 150, y: 540, w: 70, h: 50, speed: 6 };
+
+let objects = [];
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+let totalGames = localStorage.getItem("totalGames") || 0;
+let gameOver = false;
+
+document.getElementById("highScore").innerText = highScore;
+
+// Images
+const coinImgs = [
+  "https://i.postimg.cc/PpFgyknd/image.png",
+  "https://i.postimg.cc/Dm9Dw62p/image.png",
+  "https://i.postimg.cc/WDy8fpzY/image.png",
+  "https://i.postimg.cc/KkgfXXgG/image.png",
+  "https://i.postimg.cc/7f4VRWP4/image.png",
+  "https://i.postimg.cc/3kJZ80Db/image.png",
+  "https://i.postimg.cc/gw1yHMtf/image.png",
+  "https://i.postimg.cc/gnGVsL4k/image.png"
+];
+const bombImg = new Image();
+bombImg.src = "https://i.postimg.cc/7bhD2Krx/image.png";
+
+// controls
+let keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+// mobile touch control
+document.addEventListener("touchstart", e => {
+  let touchX = e.touches[0].clientX;
+  if (touchX < window.innerWidth/2) wallet.x -= wallet.speed*4;
+  else wallet.x += wallet.speed*4;
+});
+
+// Menu toggle
+document.getElementById("menuBtn").onclick = () => {
+  document.getElementById("sideMenu").classList.toggle("active");
+};
+
+// Game functions
+function spawnObject(){
+  const type = Math.random() < 0.8 ? "coin" : "bomb";
+  let img;
+  if(type === "coin"){
+    img = new Image();
+    img.src = coinImgs[Math.floor(Math.random()*coinImgs.length)];
+  } else {
+    img = bombImg;
   }
-  animateParticles();
+  objects.push({ x: Math.random() * 320, y: -40, w: 30, h: 30, type, img });
+}
 
-  // Blockchain simulation
-  let blockCount = 0;
-  let peers = 0;
-  let difficulty = 1.0;
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // wallet (bucket image)
+  ctx.drawImage(bucketImg, wallet.x, wallet.y, wallet.w, wallet.h);
+  // objects
+  objects.forEach(o=>{
+    ctx.drawImage(o.img, o.x, o.y, o.w, o.h);
+  });
+}
 
-  setInterval(()=>{
-    peers = Math.floor(Math.random()*20);
-    difficulty = (Math.random()*10).toFixed(2);
-    document.getElementById('peers').innerText = peers;
-    document.getElementById('difficulty').innerText = difficulty;
-  }, 3000);
+function update(){
+  if(gameOver) return;
+  if(keys["ArrowLeft"]) wallet.x -= wallet.speed;
+  if(keys["ArrowRight"]) wallet.x += wallet.speed;
+  if(wallet.x<0) wallet.x=0;
+  if(wallet.x+wallet.w>canvas.width) wallet.x=canvas.width-wallet.w;
 
-  function logConsole(text){
-    const con = document.getElementById('console');
-    let i=0;
-    let interval = setInterval(()=>{
-      con.innerHTML += text[i];
-      con.scrollTop = con.scrollHeight;
-      i++;
-      if(i>=text.length){
-        con.innerHTML += "<br>";
-        clearInterval(interval);
-      }
-    },30);
-  }
-
-  function mineBlock(){
-    blockCount++;
-    document.getElementById('blockCount').innerText = blockCount;
-    let block = document.createElement('div');
-    block.className='block';
-    block.innerText = 'Block #' + blockCount;
-    document.getElementById('timeline').appendChild(block);
-    document.getElementById('blockSound').play();
-    logConsole('⛏️ Mined Block #' + blockCount);
-  }
-
-  function sendTx(){
-    document.getElementById('txSound').play();
-    logConsole('💸 Transaction confirmed: tx_'+Math.random().toString(36).substr(2,6));
-  }
-
-  function launchToken(){
-    let div=document.createElement('div');
-    div.className='glow-card';
-    div.innerText = '🚀 New Token Launched: TKN_'+Math.random().toString(36).substr(2,4);
-    document.body.appendChild(div);
-    logConsole('🚀 Token launch successful!');
-  }
-
-  function toggleTheme(){
-    document.body.classList.toggle('alt');
-    if(document.body.classList.contains('alt')){
-      document.body.style.background = 'radial-gradient(circle at center, #1a001a, #000)';
-      document.body.style.color = 'violet';
-    } else {
-      document.body.style.background = 'radial-gradient(circle at center, #001a1a, #000)';
-      document.body.style.color = 'cyan';
+  objects.forEach(o=>{
+    o.y += 3;
+    if(o.y > canvas.height){
+      objects.splice(objects.indexOf(o),1);
     }
-  }
-</script></body>
+    // collision
+    if(o.x < wallet.x+wallet.w && o.x+o.w > wallet.x &&
+       o.y < wallet.y+wallet.h && o.y+o.h > wallet.y){
+        if(o.type==="coin"){
+          score++;
+          document.getElementById("score").innerText = score;
+          document.getElementById("coinSound").play();
+          objects.splice(objects.indexOf(o),1);
+        } else {
+          gameOver = true;
+          document.getElementById("bombSound").play();
+          totalGames++;
+          localStorage.setItem("totalGames", totalGames);
+          if(score>highScore){
+            highScore=score;
+            localStorage.setItem("highScore", highScore);
+          }
+          alert("Game Over! Final Score: "+score);
+        }
+    }
+  });
+}
+
+function gameLoop(){
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+setInterval(spawnObject, 1000);
+gameLoop();
+
+// Menu options
+function newGame(){
+  score = 0;
+  objects = [];
+  gameOver = false;
+  document.getElementById("score").innerText = score;
+}
+
+function restartGame(){
+  score = 0;
+  objects = [];
+  gameOver = false;
+  document.getElementById("score").innerText = score;
+}
+
+</script>
+</body>
 </html>
