@@ -2,89 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coin Catcher - Kingdom Blockchain</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Coin Catcher - Neon Blockchain</title>
   <style>
-    body {
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
       font-family: 'Courier New', monospace;
       background: radial-gradient(circle at center, #001a1a, #000);
       color: cyan;
       overflow: hidden;
+      touch-action: manipulation;
     }
     header {
       text-align: center;
       padding: 10px;
-      font-size: 2em;
+      font-size: 1.8em;
       font-weight: bold;
       text-shadow: 0 0 20px cyan, 0 0 30px cyan;
-      animation: glow 2s ease-in-out infinite;
+      animation: neonGlow 1.5s ease-in-out infinite;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 20, 20, 0.9);
+      z-index: 10;
     }
-    @keyframes glow {
+    @keyframes neonGlow {
       0%, 100% { text-shadow: 0 0 20px cyan, 0 0 30px cyan; }
       50% { text-shadow: 0 0 30px cyan, 0 0 40px cyan; }
     }
-    #menuBtn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: rgba(0, 20, 20, 0.9);
-      border: 2px solid cyan;
-      color: cyan;
-      font-size: 1.4em;
-      padding: 10px 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px cyan;
-      z-index: 10;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    #menuBtn:hover { transform: scale(1.1); }
     #sideMenu {
       position: fixed;
-      top: 0;
-      right: -60%;
-      width: 60%;
-      height: 100%;
-      background: rgba(0, 20, 20, 0.98);
+      top: 60px;
+      right: 0;
+      width: 40%;
+      height: calc(100% - 60px);
+      background: rgba(0, 20, 20, 0.95);
       box-shadow: -2px 0 20px cyan;
-      transition: right 0.4s ease;
-      padding: 25px;
+      padding: 15px;
       z-index: 9;
       overflow-y: auto;
+      display: block; /* Menu visible by default */
     }
-    #sideMenu.active { right: 0; }
     #sideMenu button {
       display: block;
       width: 100%;
-      margin: 15px 0;
-      padding: 14px;
+      margin: 10px 0;
+      padding: 12px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       background: rgba(0, 20, 20, 0.9);
       color: cyan;
-      font-size: 1.1em;
+      font-size: 1em;
       font-weight: bold;
       text-shadow: 0 0 10px cyan;
       box-shadow: 0 0 15px cyan;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    #sideMenu button:hover { transform: scale(1.05); }
+    #sideMenu button:active { transform: scale(0.95); box-shadow: 0 0 20px cyan; }
     #scoreBoard {
-      position: absolute;
+      position: fixed;
       top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.2em;
+      left: 10px;
+      font-size: 1em;
       text-shadow: 0 0 15px cyan;
       z-index: 10;
+      background: rgba(0, 20, 20, 0.9);
+      padding: 5px 10px;
+      border-radius: 5px;
     }
     #gameCanvas {
       display: block;
-      margin: 80px auto 0;
+      width: 100%;
+      height: calc(100vh - 60px);
       background: transparent;
-      box-shadow: 0 0 20px cyan;
+      touch-action: none;
     }
     #gameOverModal {
       display: none;
@@ -100,20 +97,27 @@
       color: cyan;
       box-shadow: 0 0 20px cyan;
       z-index: 11;
+      width: 80%;
+      max-width: 300px;
     }
-    #missionProgress {
-      margin-top: 20px;
-      font-size: 0.9em;
+    #gameOverModal button {
+      margin: 10px;
+      padding: 10px;
+      background: rgba(0, 20, 20, 0.9);
+      color: cyan;
+      border: 2px solid cyan;
+      border-radius: 8px;
+      cursor: pointer;
     }
     #missionProgress div {
-      margin: 5px 0;
-      text-align: left;
+      margin: 10px 0;
+      font-size: 0.9em;
     }
     .progress-bar {
       width: 100%;
-      height: 10px;
+      height: 8px;
       background: #333;
-      border-radius: 5px;
+      border-radius: 4px;
       overflow: hidden;
     }
     .progress-bar-fill {
@@ -122,43 +126,55 @@
       transition: width 0.3s;
     }
     #pauseBtn {
-      position: absolute;
-      top: 15px;
-      left: 15px;
+      position: fixed;
+      top: 10px;
+      left: 10px;
       background: rgba(0, 20, 20, 0.9);
       border: 2px solid cyan;
       color: cyan;
-      font-size: 1.4em;
-      padding: 10px 15px;
+      font-size: 1.2em;
+      padding: 5px 10px;
       border-radius: 8px;
       box-shadow: 0 0 15px cyan;
       z-index: 10;
       cursor: pointer;
     }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 20, 20, 0.9);
+      color: cyan;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 15px cyan;
+      display: none;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
-  <header>Coin Catcher - Kingdom Blockchain</header>
-  <button id="menuBtn">☰</button>
+  <header>Coin Catcher</header>
   <button id="pauseBtn">⏸</button>
   <div id="sideMenu">
     <button onclick="newGame()">New Game</button>
-    <button onclick="showStats()">Game Stats</button>
-    <button onclick="restartGame()">Restart</button>
+    <button onclick="showStats()">Stats</button>
     <button onclick="toggleMusic()">Toggle Music</button>
     <div id="missionProgress"></div>
   </div>
   <div id="scoreBoard">
     Score: <span id="score">0</span> | High: <span id="highScore">0</span> | XP: <span id="xp">0</span> | Level: <span id="level">1</span>
   </div>
-  <canvas id="gameCanvas" width="360" height="600"></canvas>
+  <canvas id="gameCanvas"></canvas>
   <div id="gameOverModal">
     <h2>Game Over</h2>
     <p>Score: <span id="finalScore"></span></p>
     <p>High Score: <span id="finalHighScore"></span></p>
-    <button onclick="restartGame()">Restart</button>
+    <button onclick="restartGame()">Retry</button>
     <button onclick="newGame()">New Game</button>
   </div>
+  <div id="notification" class="notification"></div>
 
   <audio id="coinSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
   <audio id="bombSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
@@ -171,33 +187,36 @@
 
     // Responsive canvas
     function resizeCanvas() {
-      const scale = Math.min(window.innerWidth / 360, window.innerHeight / 680);
-      canvas.style.width = `${360 * scale}px`;
-      canvas.style.height = `${600 * scale}px`;
+      canvas.width = window.innerWidth * 0.6; // 60% for game, 40% for menu
+      canvas.height = window.innerHeight - 60;
+      canvas.style.width = `${canvas.width}px`;
+      canvas.style.height = `${canvas.height}px`;
     }
-    window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
-    // Assets
+    // Assets (replace with blockchain-themed URLs)
     const bucketImg = new Image();
-    bucketImg.src = "https://i.postimg.cc/N5wczBr0/image.png";
+    bucketImg.src = "https://i.postimg.cc/N5wczBr0/image.png"; // Futuristic wallet
     const coinImgs = [
-      "https://i.postimg.cc/PpFgyknd/image.png",
-      "https://i.postimg.cc/Dm9Dw62p/image.png",
-      "https://i.postimg.cc/WDy8fpzY/image.png",
-      "https://i.postimg.cc/KkgfXXgG/image.png",
-      "https://i.postimg.cc/7f4VRWP4/image.png",
-      "https://i.postimg.cc/3kJZ80Db/image.png",
-      "https://i.postimg.cc/gw1yHMtf/image.png",
-      "https://i.postimg.cc/gnGVsL4k/image.png"
+      "https://i.postimg.cc/PpFgyknd/image.png", // Bitcoin
+      "https://i.postimg.cc/Dm9Dw62p/image.png", // Ethereum
+      "https://i.postimg.cc/WDy8fpzY/image.png", // Solana
+      "https://i.postimg.cc/KkgfXXgG/image.png"  // Cardano
     ];
     const bombImg = new Image();
-    bombImg.src = "https://i.postimg.cc/7bhD2Krx/image.png";
-    const powerUpImg = new Image();
-    powerUpImg.src = "https://i.postimg.cc/7f4VRWP4/image.png"; // Placeholder
+    bombImg.src = "https://i.postimg.cc/7bhD2Krx/image.png"; // Virus/hack icon
+    const powerUpImgs = {
+      magnet: new Image(),
+      shield: new Image(),
+      bonus: new Image()
+    };
+    powerUpImgs.magnet.src = "https://i.postimg.cc/7f4VRWP4/image.png"; // Magnet icon
+    powerUpImgs.shield.src = "https://i.postimg.cc/3kJZ80Db/image.png"; // Shield icon
+    powerUpImgs.bonus.src = "https://i.postimg.cc/gw1yHMtf/image.png"; // Bonus coin
 
     // Game state
-    const wallet = { x: 145, y: 530, w: 70, h: 50, speed: 6 };
+    const wallet = { x: 145, y: 0, w: 70, h: 50, speed: 8, magnet: false, shield: false };
     let objects = [];
     let score = 0;
     let highScore = localStorage.getItem("highScore") || 0;
@@ -207,32 +226,36 @@
     let gameOver = false;
     let isPaused = false;
     let coinsCollected = 0;
+    let totalCoins = parseInt(localStorage.getItem("totalCoins") || 0);
     let bombsAvoided = 0;
+    let powerUpsCollected = 0;
+    let streak = 0;
     let gameStartTime = Date.now();
+    let lastCoinTime = Date.now();
 
-    // Mission system
+    // Missions
     const missions = [
-      { id: 1, name: "Coin Collector I", goal: 10, progress: 0, type: "coins", reward: 100, completed: false },
-      { id: 2, name: "Bomb Dodger", goal: 5, progress: 0, type: "bombsAvoided", reward: 150, completed: false },
-      { id: 3, name: "Quick Catcher", goal: 5, progress: 0, type: "coins", timeLimit: 20, reward: 200, completed: false },
-      { id: 4, name: "Power-Up Pro", goal: 3, progress: 0, type: "powerUps", reward: 250, completed: false },
-      { id: 5, name: "High Roller", goal: 50, progress: 0, type: "score", reward: 300, completed: false },
-      { id: 6, name: "Streak Master", goal: 10, progress: 0, type: "streak", reward: 350, completed: false },
-      { id: 7, name: "Survival Expert", goal: 60, progress: 0, type: "survival", reward: 400, completed: false },
-      { id: 8, name: "Coin Collector II", goal: 50, progress: localStorage.getItem("totalCoins") || 0, type: "totalCoins", reward: 500, completed: false },
-      { id: 9, name: "Lucky Escape", goal: 3, progress: 0, type: "bombsAvoidedNoCoins", reward: 450, completed: false },
-      { id: 10, name: "Master Catcher", goal: 100, progress: 0, type: "score", reward: 1000, completed: false }
+      { id: 1, name: "Coin Novice", goal: 10, progress: 0, type: "coins", reward: 100, completed: false },
+      { id: 2, name: "Bomb Evader", goal: 5, progress: 0, type: "bombsAvoided", reward: 150, completed: false },
+      { id: 3, name: "Speed Catcher", goal: 5, progress: 0, type: "coins", timeLimit: 15, reward: 200, completed: false },
+      { id: 4, name: "Power-Up Hunter", goal: 3, progress: 0, type: "powerUps", reward: 250, completed: false },
+      { id: 5, name: "Score Star", goal: 50, progress: 0, type: "score", reward: 300, completed: false },
+      { id: 6, name: "Coin Streak", goal: 10, progress: 0, type: "streak", reward: 350, completed: false },
+      { id: 7, name: "Survival Pro", goal: 60, progress: 0, type: "survival", reward: 400, completed: false },
+      { id: 8, name: "Coin Master", goal: 50, progress: totalCoins, type: "totalCoins", reward: 500, completed: false },
+      { id: 9, name: "Lucky Dodger", goal: 3, progress: 0, type: "bombsAvoidedNoCoins", reward: 450, completed: false },
+      { id: 10, name: "Legendary Catcher", goal: 100, progress: 0, type: "score", reward: 1000, completed: false }
     ];
 
-    // Update mission progress display
+    // Update mission progress
     function updateMissionProgress() {
       const missionDiv = document.getElementById("missionProgress");
       missionDiv.innerHTML = "<h3>Missions</h3>";
-      missions.forEach(mission => {
-        const progress = mission.progress / mission.goal * 100;
-        const button = mission.completed ? `<button onclick="claimXP(${mission.id})">Claim ${mission.reward} XP</button>` : "";
+      missions.forEach(m => {
+        const progress = Math.min(m.progress / m.goal * 100, 100);
+        const button = m.completed ? `<button onclick="claimXP(${m.id})">Claim ${m.reward} XP</button>` : "";
         missionDiv.innerHTML += `
-          <div>${mission.name}: ${mission.progress}/${mission.goal}
+          <div>${m.name}: ${m.progress}/${m.goal}
             <div class="progress-bar"><div class="progress-bar-fill" style="width: ${progress}%"></div></div>
             ${button}
           </div>`;
@@ -246,28 +269,37 @@
         xp = parseInt(xp) + mission.reward;
         localStorage.setItem("xp", xp);
         level = Math.floor(xp / 1000) + 1;
+        wallet.speed = 8 + level * 0.5; // Speed increases with level
         document.getElementById("xp").innerText = xp;
         document.getElementById("level").innerText = level;
         mission.completed = false;
-        mission.progress = 0;
+        mission.progress = mission.type === "totalCoins" ? totalCoins : 0;
+        showNotification(`Claimed ${mission.reward} XP!`);
         updateMissionProgress();
-        alert(`Claimed ${mission.reward} XP!`);
       }
     }
 
-    // Particle system for background
+    // Notification
+    function showNotification(message) {
+      const notification = document.getElementById("notification");
+      notification.innerText = message;
+      notification.style.display = "block";
+      setTimeout(() => notification.style.display = "none", 2000);
+    }
+
+    // Particle system
     const particles = [];
     function createParticle() {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 5 + 2,
-        speedX: Math.random() * 0.5 - 0.25,
-        speedY: Math.random() * 0.5 - 0.25,
-        opacity: Math.random() * 0.5 + 0.3
+        size: Math.random() * 4 + 2,
+        speedX: Math.random() * 0.3 - 0.15,
+        speedY: Math.random() * 0.3 - 0.15,
+        opacity: Math.random() * 0.4 + 0.3
       });
     }
-    for (let i = 0; i < 50; i++) createParticle();
+    for (let i = 0; i < 30; i++) createParticle();
 
     function drawParticles() {
       ctx.save();
@@ -285,37 +317,42 @@
       ctx.restore();
     }
 
-    // Controls
+    // Grid background
+    function drawGrid() {
+      ctx.save();
+      ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 20) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 20) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Touch controls
     let isDragging = false;
     canvas.addEventListener("touchstart", e => {
+      e.preventDefault();
       if (!isPaused) isDragging = true;
     });
     canvas.addEventListener("touchend", () => isDragging = false);
     canvas.addEventListener("touchmove", e => {
+      e.preventDefault();
       if (isDragging && !isPaused) {
         let touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
         wallet.x = Math.max(0, Math.min(touchX - wallet.w / 2, canvas.width - wallet.w));
       }
     });
-    canvas.addEventListener("mousedown", () => isDragging = true);
-    canvas.addEventListener("mouseup", () => isDragging = false);
-    canvas.addEventListener("mousemove", e => {
-      if (isDragging && !isPaused) {
-        let mouseX = e.clientX - canvas.getBoundingClientRect().left;
-        wallet.x = Math.max(0, Math.min(mouseX - wallet.w / 2, canvas.width - wallet.w));
-      }
-    });
-    document.addEventListener("keydown", e => {
-      if (!isPaused) {
-        if (e.key === "ArrowLeft") wallet.x = Math.max(0, wallet.x - wallet.speed);
-        if (e.key === "ArrowRight") wallet.x = Math.min(canvas.width - wallet.w, wallet.x + wallet.speed);
-      }
-    });
 
-    // Menu and pause
-    document.getElementById("menuBtn").onclick = () => {
-      document.getElementById("sideMenu").classList.toggle("active");
-    };
+    // Pause
     document.getElementById("pauseBtn").onclick = () => {
       isPaused = !isPaused;
       document.getElementById("pauseBtn").innerText = isPaused ? "▶" : "⏸";
@@ -324,7 +361,7 @@
 
     // Spawn objects
     function spawnObject() {
-      if (isPaused) return;
+      if (isPaused || gameOver) return;
       const types = ["coin", "bomb", "powerUp"];
       const weights = [0.7, 0.2, 0.1];
       let rand = Math.random();
@@ -337,16 +374,43 @@
         rand -= weights[i];
       }
       let img = new Image();
-      img.src = type === "coin" ? coinImgs[Math.floor(Math.random() * coinImgs.length)] :
-                type === "powerUp" ? powerUpImg.src : bombImg.src;
-      objects.push({ x: Math.random() * (canvas.width - 35), y: -40, w: 35, h: 35, type, img });
+      let powerUpType = null;
+      if (type === "coin") img.src = coinImgs[Math.floor(Math.random() * coinImgs.length)];
+      else if (type === "bomb") img.src = bombImg.src;
+      else {
+        const powerUps = ["magnet", "shield", "bonus"];
+        powerUpType = powerUps[Math.floor(Math.random() * powerUps.length)];
+        img.src = powerUpImgs[powerUpType].src;
+      }
+      objects.push({
+        x: Math.random() * (canvas.width - 35),
+        y: -40,
+        w: 35,
+        h: 35,
+        type,
+        powerUpType,
+        img
+      });
     }
 
     // Draw
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGrid();
       drawParticles();
       ctx.drawImage(bucketImg, wallet.x, wallet.y, wallet.w, wallet.h);
+      if (wallet.magnet) {
+        ctx.beginPath();
+        ctx.arc(wallet.x + wallet.w / 2, wallet.y, 100, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(0, 255, 255, 0.3)";
+        ctx.stroke();
+      }
+      if (wallet.shield) {
+        ctx.beginPath();
+        ctx.arc(wallet.x + wallet.w / 2, wallet.y + wallet.h / 2, 50, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(0, 255, 255, 0.5)";
+        ctx.stroke();
+      }
       ctx.beginPath();
       ctx.strokeStyle = "cyan";
       ctx.shadowBlur = 15;
@@ -365,48 +429,74 @@
       });
       if (isPaused) {
         ctx.fillStyle = "cyan";
-        ctx.font = "30px Courier New";
-        ctx.fillText("Paused", canvas.width / 2 - 50, canvas.height / 2);
+        ctx.font = "24px Courier New";
+        ctx.fillText("Paused", canvas.width / 2 - 40, canvas.height / 2);
       }
     }
 
     // Update
     function update() {
       if (gameOver || isPaused) return;
+      wallet.y = canvas.height - 70; // Adjust bucket position dynamically
       objects.forEach((o, i) => {
-        o.y += 3 + score / 50; // Dynamic speed
+        o.y += 3 + score / 50;
         if (o.y > canvas.height) {
           if (o.type === "bomb") bombsAvoided++;
           objects.splice(i, 1);
+          return;
+        }
+        // Magnet effect
+        if (wallet.magnet && o.type === "coin") {
+          const dx = (wallet.x + wallet.w / 2) - (o.x + o.w / 2);
+          const dy = (wallet.y + wallet.h / 2) - (o.y + o.h / 2);
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            o.x += dx * 0.05;
+            o.y += dy * 0.05;
+          }
         }
         // Collision
         if (o.x < wallet.x + wallet.w && o.x + o.w > wallet.x &&
             o.y < wallet.y + wallet.h && o.y + o.h > wallet.y) {
           if (o.type === "coin") {
-            score++;
+            score += o.powerUpType === "bonus" ? 2 : 1;
             coinsCollected++;
-            localStorage.setItem("totalCoins", parseInt(localStorage.getItem("totalCoins") || 0) + 1);
-            document.getElementById("score").innerText = score;
+            totalCoins++;
+            streak++;
+            localStorage.setItem("totalCoins", totalCoins);
             document.getElementById("coinSound").play();
             objects.splice(i, 1);
           } else if (o.type === "powerUp") {
+            powerUpsCollected++;
             document.getElementById("powerUpSound").play();
-            objects.splice(i, 1);
-            // Example power-up effect
-            wallet.speed += 1;
-            setTimeout(() => wallet.speed -= 1, 10000);
-          } else {
-            gameOver = true;
-            document.getElementById("bombSound").play();
-            totalGames++;
-            localStorage.setItem("totalGames", totalGames);
-            if (score > highScore) {
-              highScore = score;
-              localStorage.setItem("highScore", highScore);
+            if (o.powerUpType === "magnet") {
+              wallet.magnet = true;
+              setTimeout(() => wallet.magnet = false, 10000);
+            } else if (o.powerUpType === "shield") {
+              wallet.shield = true;
+            } else if (o.powerUpType === "bonus") {
+              showNotification("Bonus Coin Activated!");
             }
-            document.getElementById("finalScore").innerText = score;
-            document.getElementById("finalHighScore").innerText = highScore;
-            document.getElementById("gameOverModal").style.display = "block";
+            objects.splice(i, 1);
+          } else if (o.type === "bomb") {
+            if (wallet.shield) {
+              wallet.shield = false;
+              objects.splice(i, 1);
+              bombsAvoided++;
+            } else {
+              gameOver = true;
+              document.getElementById("bombSound").play();
+              totalGames++;
+              localStorage.setItem("totalGames", totalGames);
+              if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("highScore", highScore);
+                showNotification("New High Score!");
+              }
+              document.getElementById("finalScore").innerText = score;
+              document.getElementById("finalHighScore").innerText = highScore;
+              document.getElementById("gameOverModal").style.display = "block";
+            }
           }
         }
       });
@@ -417,8 +507,19 @@
           else if (m.type === "bombsAvoided") m.progress = Math.min(bombsAvoided, m.goal);
           else if (m.type === "score") m.progress = Math.min(score, m.goal);
           else if (m.type === "powerUps") m.progress = Math.min(powerUpsCollected, m.goal);
-          else if (m.type === "totalCoins") m.progress = parseInt(localStorage.getItem("totalCoins") || 0);
-          if (m.progress >= m.goal) m.completed = true;
+          else if (m.type === "streak") m.progress = Math.min(streak, m.goal);
+          else if (m.type === "survival") m.progress = Math.min((Date.now() - gameStartTime) / 1000, m.goal);
+          else if (m.type === "totalCoins") m.progress = Math.min(totalCoins, m.goal);
+          else if (m.type === "bombsAvoidedNoCoins") {
+            if (coinsCollected === 0) m.progress = Math.min(bombsAvoided, m.goal);
+            else m.progress = 0;
+          }
+          if (m.type === "coins" && m.timeLimit && coinsCollected >= m.goal && (Date.now() - gameStartTime) / 1000 <= m.timeLimit) {
+            m.completed = true;
+          } else if (!m.timeLimit && m.progress >= m.goal) {
+            m.completed = true;
+            showNotification(`${m.name} Completed!`);
+          }
         }
       });
       updateMissionProgress();
@@ -430,7 +531,7 @@
 
     // Game loop
     function gameLoop() {
-      if (!isPaused) {
+      if (!isPaused && !gameOver) {
         update();
         draw();
         requestAnimationFrame(gameLoop);
@@ -438,8 +539,8 @@
     }
 
     // Initialize
-    setInterval(spawnObject, 800);
-    document.getElementById("bgMusic").play();
+    setInterval(spawnObject, 700 - level * 50); // Faster spawns with level
+    document.getElementById("bgMusic").play().catch(() => {});
     updateMissionProgress();
     gameLoop();
 
@@ -448,9 +549,15 @@
       score = 0;
       coinsCollected = 0;
       bombsAvoided = 0;
+      powerUpsCollected = 0;
+      streak = 0;
       objects = [];
       gameOver = false;
       isPaused = false;
+      wallet.magnet = false;
+      wallet.shield = false;
+      gameStartTime = Date.now();
+      lastCoinTime = Date.now();
       document.getElementById("score").innerText = score;
       document.getElementById("gameOverModal").style.display = "none";
       document.getElementById("pauseBtn").innerText = "⏸";
@@ -464,12 +571,17 @@
       newGame();
     }
     function showStats() {
-      alert(`Total Games: ${totalGames}\nTotal Coins: ${localStorage.getItem("totalCoins") || 0}\nBombs Avoided: ${bombsAvoided}`);
+      alert(`Total Games: ${totalGames}\nTotal Coins: ${totalCoins}\nBombs Avoided: ${bombsAvoided}\nPower-Ups: ${powerUpsCollected}`);
     }
     function toggleMusic() {
       const music = document.getElementById("bgMusic");
       music.paused ? music.play() : music.pause();
     }
+
+    // Prevent default scrolling
+    document.addEventListener("touchmove", e => {
+      if (e.target === canvas) e.preventDefault();
+    }, { passive: false });
   </script>
 </body>
 </html>
