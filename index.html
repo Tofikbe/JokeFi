@@ -102,7 +102,6 @@
       touch-action: none;
     }
     #gameOverModal, #tutorialModal, #loadingModal {
-      display: none;
       position: fixed;
       top: 50%;
       left: 50%;
@@ -118,7 +117,11 @@
       width: 80%;
       max-width: 300px;
     }
-    #gameOverModal button, #tutorialModal button, #loadingModal button {
+    #loadingModal {
+      display: block;
+      animation: pulse 1s infinite;
+    }
+    #gameOverModal button, #tutorialModal button {
       margin: 10px;
       padding: 10px;
       background: rgba(0, 20, 20, 0.9);
@@ -145,8 +148,10 @@
     .progress-bar-fill {
       height: 100%;
       background: cyan;
-      transition: width 0.3s;
+      transition: width 5s linear;
+      width: 0;
     }
+    .progress-bar-fill.loaded { width: 100%; }
     #pauseBtn {
       position: fixed;
       top: 10px;
@@ -182,10 +187,6 @@
     }
     .selected { border: 2px solid cyan; box-shadow: 0 0 20px cyan; }
     .locked { opacity: 0.5; }
-    #loadingModal {
-      display: block;
-      animation: pulse 1s infinite;
-    }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.7; }
@@ -216,7 +217,7 @@
     Score: <span id="score">0</span> | High: <span id="highScore">0</span> | XP: <span id="xp">0</span> | Level: <span id="level">1</span>
   </div>
   <canvas id="gameCanvas"></canvas>
-  <div id="gameOverModal">
+  <div id="gameOverModal" style="display: none;">
     <h2>Game Over</h2>
     <p>Score: <span id="finalScore"></span></p>
     <p>High Score: <span id="finalHighScore"></span></p>
@@ -225,13 +226,14 @@
     <button onclick="restartGame()">Retry</button>
     <button onclick="newGame()">New Game</button>
   </div>
-  <div id="tutorialModal">
+  <div id="tutorialModal" style="display: none;">
     <h2>Welcome to Coin Catcher!</h2>
     <p>Drag the bucket 🛍️ to catch 🪙 coins, avoid 💣 bombs, and grab power-ups 🧲🛡️⭐!</p>
     <button onclick="closeTutorial()">Start Playing</button>
   </div>
   <div id="loadingModal">
     <h2>Loading...</h2>
+    <div class="progress-bar"><div class="progress-bar-fill" id="loadingBar"></div></div>
   </div>
   <div id="notification" class="notification"></div>
 
@@ -264,7 +266,7 @@
     let xp = parseInt(localStorage.getItem("xp") || 0);
     let level = Math.floor(xp / 1000) + 1;
     let gameOver = false;
-    let isPaused = false;
+    let isPaused = true; // Start paused for loading
     let coinsCollected = 0;
     let totalCoins = parseInt(localStorage.getItem("totalCoins") || 0);
     let bombsAvoided = 0;
@@ -278,8 +280,6 @@
     let soundsEnabled = localStorage.getItem("soundsEnabled") !== "false";
     let hapticsEnabled = localStorage.getItem("hapticsEnabled") !== "false";
     let darkMode = localStorage.getItem("darkMode") === "true";
-    let assetsLoaded = 0;
-    const totalAssets = 4;
 
     // Missions
     const missions = JSON.parse(localStorage.getItem("missions")) || [
@@ -312,41 +312,21 @@
       { emoji: "🔒", cost: 5000, unlocked: localStorage.getItem("emoji_🔒") === "true" }
     ];
 
-    // Asset loading
-    const sounds = {
-      coin: document.getElementById("coinSound"),
-      bomb: document.getElementById("bombSound"),
-      powerUp: document.getElementById("powerUpSound"),
-      bgMusic: document.getElementById("bgMusic")
-    };
-    Object.values(sounds).forEach(sound => {
-      sound.oncanplaythrough = () => {
-        assetsLoaded++;
-        if (assetsLoaded === totalAssets) {
-          document.getElementById("loadingModal").style.display = "none";
-          if (!localStorage.getItem("tutorialShown")) {
-            document.getElementById("tutorialModal").style.display = "block";
-            isPaused = true;
-          } else {
-            gameLoop();
-            if (!sounds.bgMusic.paused) sounds.bgMusic.play().catch(() => {});
-          }
+    // Loading screen
+    setTimeout(() => {
+      document.getElementById("loadingBar").classList.add("loaded");
+      setTimeout(() => {
+        document.getElementById("loadingModal").style.display = "none";
+        if (!localStorage.getItem("tutorialShown")) {
+          document.getElementById("tutorialModal").style.display = "block";
+          isPaused = true;
+        } else {
+          isPaused = false;
+          gameLoop();
+          if (!sounds.bgMusic.paused) sounds.bgMusic.play().catch(() => {});
         }
-      };
-      sound.onerror = () => {
-        assetsLoaded++;
-        if (assetsLoaded === totalAssets) {
-          document.getElementById("loadingModal").style.display = "none";
-          if (!localStorage.getItem("tutorialShown")) {
-            document.getElementById("tutorialModal").style.display = "block";
-            isPaused = true;
-          } else {
-            gameLoop();
-            if (!sounds.bgMusic.paused) sounds.bgMusic.play().catch(() => {});
-          }
-        }
-      };
-    });
+      }, 5000);
+    }, 100);
 
     // Update UI
     function updateMissionProgress() {
@@ -538,6 +518,12 @@
     }
 
     // Sound system
+    const sounds = {
+      coin: document.getElementById("coinSound"),
+      bomb: document.getElementById("bombSound"),
+      powerUp: document.getElementById("powerUpSound"),
+      bgMusic: document.getElementById("bgMusic")
+    };
     function playSound(sound) {
       if (soundsEnabled) {
         sound.currentTime = 0;
