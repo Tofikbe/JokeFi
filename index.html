@@ -48,6 +48,7 @@
       box-shadow: 0 0 15px cyan;
       z-index: 12;
       cursor: pointer;
+      touch-action: manipulation;
     }
     #sideMenu {
       position: fixed;
@@ -77,6 +78,7 @@
       text-shadow: 0 0 10px cyan;
       box-shadow: 0 0 15px cyan;
       cursor: pointer;
+      touch-action: manipulation;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     #sideMenu button:active { transform: scale(0.95); box-shadow: 0 0 20px cyan; }
@@ -124,6 +126,7 @@
       border: 2px solid cyan;
       border-radius: 8px;
       cursor: pointer;
+      touch-action: manipulation;
     }
     #missionProgress, #marketplace, #achievements, #settings {
       margin-top: 20px;
@@ -157,6 +160,7 @@
       box-shadow: 0 0 15px cyan;
       z-index: 12;
       cursor: pointer;
+      touch-action: manipulation;
     }
     .notification {
       position: fixed;
@@ -252,7 +256,7 @@
     window.addEventListener('resize', resizeCanvas);
 
     // Game state
-    const wallet = { x: 145, y: 0, w: 50, h: 50, speed: 8, magnet: false, shield: false, emoji: localStorage.getItem("bucketEmoji") || "🛍️", angle: 0 };
+    const wallet = { x: canvas.width / 2 - 25, y: 0, w: 50, h: 50, speed: 8, magnet: false, shield: false, emoji: localStorage.getItem("bucketEmoji") || "🛍️", angle: 0 };
     let objects = [];
     let score = 0;
     let highScore = parseInt(localStorage.getItem("highScore") || 0);
@@ -325,6 +329,7 @@
             isPaused = true;
           } else {
             gameLoop();
+            if (!sounds.bgMusic.paused) sounds.bgMusic.play().catch(() => {});
           }
         }
       };
@@ -337,6 +342,7 @@
             isPaused = true;
           } else {
             gameLoop();
+            if (!sounds.bgMusic.paused) sounds.bgMusic.play().catch(() => {});
           }
         }
       };
@@ -551,8 +557,8 @@
         isDragging = true;
         lastTouchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
       }
-    });
-    canvas.addEventListener("touchend", () => isDragging = false);
+    }, { passive: false });
+    canvas.addEventListener("touchend", () => isDragging = false, { passive: false });
     canvas.addEventListener("touchmove", e => {
       e.preventDefault();
       if (isDragging && !isPaused && !gameOver) {
@@ -561,22 +567,22 @@
         wallet.angle = (touchX - lastTouchX) * 0.01;
         lastTouchX = touchX;
       }
-    });
+    }, { passive: false });
 
     // Menu and pause
-    document.getElementById("menuBtn").onclick = () => {
+    document.getElementById("menuBtn").addEventListener("click", () => {
       document.getElementById("sideMenu").classList.toggle("active");
       isPaused = document.getElementById("sideMenu").classList.contains("active");
       document.getElementById("pauseBtn").innerText = isPaused ? "▶" : "⏸";
       if (!isPaused && !gameOver) gameLoop();
-    };
-    document.getElementById("pauseBtn").onclick = () => {
+    });
+    document.getElementById("pauseBtn").addEventListener("click", () => {
       if (!document.getElementById("sideMenu").classList.contains("active")) {
         isPaused = !isPaused;
         document.getElementById("pauseBtn").innerText = isPaused ? "▶" : "⏸";
         if (!isPaused && !gameOver) gameLoop();
       }
-    };
+    });
 
     // Tutorial
     function closeTutorial() {
@@ -680,7 +686,7 @@
       wallet.y = canvas.height - 70;
       wallet.angle *= 0.9;
       if (multiplier > 1 && Date.now() - multiplierTime > 10000) multiplier = 1;
-      objects.forEach((o, i) => {
+      objects = objects.filter(o => {
         o.y += 3 + score / 50;
         if (o.y > canvas.height) {
           if (o.type === "bomb") {
@@ -694,8 +700,7 @@
               showNotification(`Achievement: Bomb Master (+100 XP)`);
             }
           }
-          objects.splice(i, 1);
-          return;
+          return false;
         }
         if (wallet.magnet && o.type === "coin") {
           const dx = (wallet.x + wallet.w / 2) - (o.x + o.w / 2);
@@ -718,7 +723,6 @@
             playSound(sounds.coin);
             vibrate();
             createSpark(o.x + o.w / 2, o.y + o.h / 2);
-            objects.splice(i, 1);
             xp++;
             localStorage.setItem("xp", xp);
             document.getElementById("xp").innerText = xp;
@@ -748,6 +752,7 @@
               localStorage.setItem("xp", xp);
               showNotification(`Achievement: Coin King (+200 XP)`);
             }
+            return false;
           } else if (o.type === "powerUp") {
             powerUpsCollected++;
             playSound(sounds.powerUp);
@@ -763,17 +768,17 @@
               showNotification("Bonus Coin Activated!");
             }
             createSpark(o.x + o.w / 2, o.y + o.h / 2);
-            objects.splice(i, 1);
+            return false;
           } else if (o.type === "bomb") {
             if (wallet.shield) {
               wallet.shield = false;
-              objects.splice(i, 1);
               bombsAvoided++;
               bombsAvoidedNoCoins++;
               playSound(sounds.bomb);
               vibrate();
               createSpark(o.x + o.w / 2, o.y + o.h / 2, true);
               showNotification("Shield Blocked Bomb!");
+              return false;
             } else {
               gameOver = true;
               playSound(sounds.bomb);
@@ -791,9 +796,11 @@
               document.getElementById("finalCoins").innerText = coinsCollected;
               document.getElementById("finalBombs").innerText = bombsAvoided;
               document.getElementById("gameOverModal").style.display = "block";
+              return false;
             }
           }
         }
+        return true;
       });
       missions.forEach(m => {
         if (!m.completed) {
@@ -911,7 +918,13 @@
       }
     }
     function toggleMusic() {
-      sounds.bgMusic.paused ? sounds.bgMusic.play() : sounds.bgMusic.pause();
+      if (sounds.bgMusic.paused) {
+        sounds.bgMusic.play().catch(() => {});
+        showNotification("Music On");
+      } else {
+        sounds.bgMusic.pause();
+        showNotification("Music Off");
+      }
     }
     function toggleSounds() {
       soundsEnabled = !soundsEnabled;
