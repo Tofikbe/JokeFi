@@ -90,8 +90,7 @@
       background: rgba(0, 20, 20, 0.9);
       padding: 5px 10px;
       border-radius: 5px;
-      width: 60%;
-      max-width: 300px;
+      max-width: calc(100% - 70px);
     }
     #gameCanvas {
       display: block;
@@ -100,7 +99,7 @@
       background: transparent;
       touch-action: none;
     }
-    #gameOverModal, #tutorialModal {
+    #gameOverModal, #tutorialModal, #loadingModal {
       display: none;
       position: fixed;
       top: 50%;
@@ -117,7 +116,7 @@
       width: 80%;
       max-width: 300px;
     }
-    #gameOverModal button, #tutorialModal button {
+    #gameOverModal button, #tutorialModal button, #loadingModal button {
       margin: 10px;
       padding: 10px;
       background: rgba(0, 20, 20, 0.9);
@@ -179,6 +178,14 @@
     }
     .selected { border: 2px solid cyan; box-shadow: 0 0 20px cyan; }
     .locked { opacity: 0.5; }
+    #loadingModal {
+      display: block;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
   </style>
 </head>
 <body>
@@ -190,6 +197,7 @@
     <button onclick="showStats()">Stats</button>
     <button onclick="shareScore()">Share Score</button>
     <button onclick="toggleSettings()">Settings</button>
+    <button onclick="resetProgress()">Reset Progress</button>
     <div id="missionProgress"></div>
     <div id="achievements"></div>
     <div id="marketplace"></div>
@@ -217,6 +225,9 @@
     <h2>Welcome to Coin Catcher!</h2>
     <p>Drag the bucket 🛍️ to catch 🪙 coins, avoid 💣 bombs, and grab power-ups 🧲🛡️⭐!</p>
     <button onclick="closeTutorial()">Start Playing</button>
+  </div>
+  <div id="loadingModal">
+    <h2>Loading...</h2>
   </div>
   <div id="notification" class="notification"></div>
 
@@ -263,6 +274,8 @@
     let soundsEnabled = localStorage.getItem("soundsEnabled") !== "false";
     let hapticsEnabled = localStorage.getItem("hapticsEnabled") !== "false";
     let darkMode = localStorage.getItem("darkMode") === "true";
+    let assetsLoaded = 0;
+    const totalAssets = 4;
 
     // Missions
     const missions = JSON.parse(localStorage.getItem("missions")) || [
@@ -294,6 +307,40 @@
       { emoji: "🎒", cost: 2000, unlocked: localStorage.getItem("emoji_🎒") === "true" },
       { emoji: "🔒", cost: 5000, unlocked: localStorage.getItem("emoji_🔒") === "true" }
     ];
+
+    // Asset loading
+    const sounds = {
+      coin: document.getElementById("coinSound"),
+      bomb: document.getElementById("bombSound"),
+      powerUp: document.getElementById("powerUpSound"),
+      bgMusic: document.getElementById("bgMusic")
+    };
+    Object.values(sounds).forEach(sound => {
+      sound.oncanplaythrough = () => {
+        assetsLoaded++;
+        if (assetsLoaded === totalAssets) {
+          document.getElementById("loadingModal").style.display = "none";
+          if (!localStorage.getItem("tutorialShown")) {
+            document.getElementById("tutorialModal").style.display = "block";
+            isPaused = true;
+          } else {
+            gameLoop();
+          }
+        }
+      };
+      sound.onerror = () => {
+        assetsLoaded++;
+        if (assetsLoaded === totalAssets) {
+          document.getElementById("loadingModal").style.display = "none";
+          if (!localStorage.getItem("tutorialShown")) {
+            document.getElementById("tutorialModal").style.display = "block";
+            isPaused = true;
+          } else {
+            gameLoop();
+          }
+        }
+      };
+    });
 
     // Update UI
     function updateMissionProgress() {
@@ -352,14 +399,11 @@
         document.getElementById("level").innerText = level;
         mission.claimed = true;
         showNotification(`Claimed ${mission.reward} XP!`);
-        if (level >= 3) {
-          const achieve = achievements.find(a => a.id === 4);
-          if (!achieve.completed) {
-            achieve.completed = true;
-            xp += achieve.reward;
-            localStorage.setItem("xp", xp);
-            showNotification(`Achievement: ${achieve.name} (+${achieve.reward} XP)`);
-          }
+        if (level >= 3 && !achievements.find(a => a.id === 4).completed) {
+          achievements.find(a => a.id === 4).completed = true;
+          xp += achievements.find(a => a.id === 4).reward;
+          localStorage.setItem("xp", xp);
+          showNotification(`Achievement: ${achievements.find(a => a.id === 4).name} (+${achievements.find(a => a.id === 4).reward} XP)`);
         }
         updateMissionProgress();
         updateAchievements();
@@ -460,14 +504,15 @@
 
     // Spark effects
     const sparks = [];
-    function createSpark(x, y) {
+    function createSpark(x, y, isBomb = false) {
       for (let i = 0; i < 5; i++) {
         sparks.push({
           x, y,
           size: Math.random() * 3 + 1,
           speedX: Math.random() * 4 - 2,
           speedY: Math.random() * 4 - 2,
-          life: 20
+          life: 20,
+          isBomb
         });
       }
     }
@@ -476,7 +521,7 @@
       sparks.forEach((s, i) => {
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fillStyle = darkMode ? "rgba(128, 0, 128, 0.7)" : "rgba(0, 255, 255, 0.7)";
+        ctx.fillStyle = s.isBomb ? "rgba(255, 0, 0, 0.7)" : (darkMode ? "rgba(128, 0, 128, 0.7)" : "rgba(0, 255, 255, 0.7)");
         ctx.fill();
         s.x += s.speedX;
         s.y += s.speedY;
@@ -487,12 +532,6 @@
     }
 
     // Sound system
-    const sounds = {
-      coin: document.getElementById("coinSound"),
-      bomb: document.getElementById("bombSound"),
-      powerUp: document.getElementById("powerUpSound"),
-      bgMusic: document.getElementById("bgMusic")
-    };
     function playSound(sound) {
       if (soundsEnabled) {
         sound.currentTime = 0;
@@ -540,10 +579,6 @@
     };
 
     // Tutorial
-    if (!localStorage.getItem("tutorialShown")) {
-      document.getElementById("tutorialModal").style.display = "block";
-      isPaused = true;
-    }
     function closeTutorial() {
       document.getElementById("tutorialModal").style.display = "none";
       localStorage.setItem("tutorialShown", "true");
@@ -581,7 +616,6 @@
 
     // Draw
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = darkMode ? "#1a001a" : "#001a1a";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       drawGrid();
@@ -645,9 +679,7 @@
       if (gameOver || isPaused) return;
       wallet.y = canvas.height - 70;
       wallet.angle *= 0.9;
-      if (multiplier > 1) {
-        if (Date.now() - multiplierTime > 10000) multiplier = 1;
-      }
+      if (multiplier > 1 && Date.now() - multiplierTime > 10000) multiplier = 1;
       objects.forEach((o, i) => {
         o.y += 3 + score / 50;
         if (o.y > canvas.height) {
@@ -740,12 +772,13 @@
               bombsAvoidedNoCoins++;
               playSound(sounds.bomb);
               vibrate();
-              createSpark(o.x + o.w / 2, o.y + o.h / 2);
+              createSpark(o.x + o.w / 2, o.y + o.h / 2, true);
               showNotification("Shield Blocked Bomb!");
             } else {
               gameOver = true;
               playSound(sounds.bomb);
               vibrate();
+              createSpark(o.x + o.w / 2, o.y + o.h / 2, true);
               totalGames++;
               localStorage.setItem("totalGames", totalGames);
               if (score > highScore) {
@@ -838,6 +871,45 @@
       const settings = document.getElementById("settings");
       settings.style.display = settings.style.display === "none" ? "block" : "none";
     }
+    function resetProgress() {
+      if (confirm("Reset all progress? This cannot be undone!")) {
+        localStorage.clear();
+        wallet.emoji = "🛍️";
+        xp = 0;
+        level = 1;
+        highScore = 0;
+        totalGames = 0;
+        totalCoins = 0;
+        bombsAvoided = 0;
+        powerUpsCollected = 0;
+        missions.forEach(m => {
+          m.progress = m.type === "totalCoins" ? 0 : 0;
+          m.completed = false;
+          m.claimed = false;
+        });
+        achievements.forEach(a => {
+          a.progress = a.type === "totalCoins" ? 0 : a.type === "bombsAvoided" ? 0 : a.type === "level" ? 1 : 0;
+          a.completed = false;
+        });
+        marketplaceItems.forEach(item => item.unlocked = false);
+        localStorage.setItem("bucketEmoji", "🛍️");
+        localStorage.setItem("xp", "0");
+        localStorage.setItem("highScore", "0");
+        localStorage.setItem("totalGames", "0");
+        localStorage.setItem("totalCoins", "0");
+        localStorage.setItem("missions", JSON.stringify(missions));
+        localStorage.setItem("achievements", JSON.stringify(achievements));
+        document.getElementById("xp").innerText = xp;
+        document.getElementById("level").innerText = level;
+        document.getElementById("score").innerText = score;
+        document.getElementById("highScore").innerText = highScore;
+        showNotification("Progress Reset!");
+        updateMissionProgress();
+        updateAchievements();
+        updateMarketplace();
+        newGame();
+      }
+    }
     function toggleMusic() {
       sounds.bgMusic.paused ? sounds.bgMusic.play() : sounds.bgMusic.pause();
     }
@@ -855,6 +927,7 @@
       darkMode = !darkMode;
       localStorage.setItem("darkMode", darkMode);
       showNotification(darkMode ? "Dark Mode On" : "Dark Mode Off");
+      document.body.style.background = darkMode ? "radial-gradient(circle at center, #1a001a, #000)" : "radial-gradient(circle at center, #001a1a, #000)";
     }
 
     // Prevent default scrolling
@@ -864,11 +937,9 @@
 
     // Initialize
     setInterval(spawnObject, 700 - Math.min(level * 50, 400));
-    sounds.bgMusic.play().catch(() => {});
     updateMissionProgress();
     updateAchievements();
     updateMarketplace();
-    gameLoop();
   </script>
 </body>
 </html>
