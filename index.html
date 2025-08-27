@@ -29,7 +29,7 @@
       top: 0;
       width: 100%;
       background: rgba(0, 20, 20, 0.9);
-      z-index: 10;
+      z-index: 12;
     }
     @keyframes neonGlow {
       0%, 100% { text-shadow: 0 0 20px cyan, 0 0 30px cyan; }
@@ -46,7 +46,7 @@
       padding: 5px 10px;
       border-radius: 8px;
       box-shadow: 0 0 15px cyan;
-      z-index: 10;
+      z-index: 12;
       cursor: pointer;
     }
     #sideMenu {
@@ -58,7 +58,7 @@
       background: rgba(0, 20, 20, 0.95);
       box-shadow: -2px 0 20px cyan;
       padding: 15px;
-      z-index: 9;
+      z-index: 11;
       overflow-y: auto;
       transition: right 0.3s ease;
     }
@@ -90,6 +90,8 @@
       background: rgba(0, 20, 20, 0.9);
       padding: 5px 10px;
       border-radius: 5px;
+      width: 60%;
+      max-width: 300px;
     }
     #gameCanvas {
       display: block;
@@ -98,7 +100,7 @@
       background: transparent;
       touch-action: none;
     }
-    #gameOverModal {
+    #gameOverModal, #tutorialModal {
       display: none;
       position: fixed;
       top: 50%;
@@ -111,11 +113,11 @@
       text-align: center;
       color: cyan;
       box-shadow: 0 0 20px cyan;
-      z-index: 11;
+      z-index: 13;
       width: 80%;
       max-width: 300px;
     }
-    #gameOverModal button {
+    #gameOverModal button, #tutorialModal button {
       margin: 10px;
       padding: 10px;
       background: rgba(0, 20, 20, 0.9);
@@ -124,11 +126,11 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    #missionProgress, #marketplace {
+    #missionProgress, #marketplace, #achievements, #settings {
       margin-top: 20px;
       font-size: 0.9em;
     }
-    #missionProgress div, #marketplace div {
+    #missionProgress div, #marketplace div, #achievements div {
       margin: 10px 0;
     }
     .progress-bar {
@@ -154,7 +156,7 @@
       padding: 5px 10px;
       border-radius: 8px;
       box-shadow: 0 0 15px cyan;
-      z-index: 10;
+      z-index: 12;
       cursor: pointer;
     }
     .notification {
@@ -168,13 +170,15 @@
       border-radius: 5px;
       box-shadow: 0 0 15px cyan;
       display: none;
-      z-index: 10;
+      z-index: 12;
     }
     .marketplace-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+    .selected { border: 2px solid cyan; box-shadow: 0 0 20px cyan; }
+    .locked { opacity: 0.5; }
   </style>
 </head>
 <body>
@@ -184,9 +188,17 @@
   <div id="sideMenu">
     <button onclick="newGame()">New Game</button>
     <button onclick="showStats()">Stats</button>
-    <button onclick="toggleMusic()">Toggle Music</button>
+    <button onclick="shareScore()">Share Score</button>
+    <button onclick="toggleSettings()">Settings</button>
     <div id="missionProgress"></div>
+    <div id="achievements"></div>
     <div id="marketplace"></div>
+    <div id="settings" style="display: none;">
+      <button onclick="toggleMusic()">Toggle Music</button>
+      <button onclick="toggleSounds()">Toggle Sounds</button>
+      <button onclick="toggleHaptics()">Toggle Haptics</button>
+      <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
   </div>
   <div id="scoreBoard">
     Score: <span id="score">0</span> | High: <span id="highScore">0</span> | XP: <span id="xp">0</span> | Level: <span id="level">1</span>
@@ -196,8 +208,15 @@
     <h2>Game Over</h2>
     <p>Score: <span id="finalScore"></span></p>
     <p>High Score: <span id="finalHighScore"></span></p>
+    <p>Coins: <span id="finalCoins"></span></p>
+    <p>Bombs Avoided: <span id="finalBombs"></span></p>
     <button onclick="restartGame()">Retry</button>
     <button onclick="newGame()">New Game</button>
+  </div>
+  <div id="tutorialModal">
+    <h2>Welcome to Coin Catcher!</h2>
+    <p>Drag the bucket 🛍️ to catch 🪙 coins, avoid 💣 bombs, and grab power-ups 🧲🛡️⭐!</p>
+    <button onclick="closeTutorial()">Start Playing</button>
   </div>
   <div id="notification" class="notification"></div>
 
@@ -216,12 +235,13 @@
       canvas.height = window.innerHeight - 60;
       canvas.style.width = `${canvas.width}px`;
       canvas.style.height = `${canvas.height}px`;
+      wallet.y = canvas.height - 70;
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
     // Game state
-    const wallet = { x: 145, y: 0, w: 50, h: 50, speed: 8, magnet: false, shield: false, emoji: localStorage.getItem("bucketEmoji") || "🛍️" };
+    const wallet = { x: 145, y: 0, w: 50, h: 50, speed: 8, magnet: false, shield: false, emoji: localStorage.getItem("bucketEmoji") || "🛍️", angle: 0 };
     let objects = [];
     let score = 0;
     let highScore = parseInt(localStorage.getItem("highScore") || 0);
@@ -236,21 +256,35 @@
     let powerUpsCollected = 0;
     let streak = 0;
     let bombsAvoidedNoCoins = 0;
+    let multiplier = 1;
+    let multiplierTime = 0;
     let gameStartTime = Date.now();
     let lastCoinTime = Date.now();
+    let soundsEnabled = localStorage.getItem("soundsEnabled") !== "false";
+    let hapticsEnabled = localStorage.getItem("hapticsEnabled") !== "false";
+    let darkMode = localStorage.getItem("darkMode") === "true";
 
     // Missions
     const missions = JSON.parse(localStorage.getItem("missions")) || [
-      { id: 1, name: "Coin Novice", goal: 10, progress: 0, type: "coins", reward: 100, completed: false },
-      { id: 2, name: "Bomb Evader", goal: 5, progress: 0, type: "bombsAvoided", reward: 150, completed: false },
-      { id: 3, name: "Speed Catcher", goal: 5, progress: 0, type: "coins", timeLimit: 15, reward: 200, completed: false },
-      { id: 4, name: "Power-Up Hunter", goal: 3, progress: 0, type: "powerUps", reward: 250, completed: false },
-      { id: 5, name: "Score Star", goal: 50, progress: 0, type: "score", reward: 300, completed: false },
-      { id: 6, name: "Coin Streak", goal: 10, progress: 0, type: "streak", reward: 350, completed: false },
-      { id: 7, name: "Survival Pro", goal: 60, progress: 0, type: "survival", reward: 400, completed: false },
-      { id: 8, name: "Coin Master", goal: 50, progress: totalCoins, type: "totalCoins", reward: 500, completed: false },
-      { id: 9, name: "Lucky Dodger", goal: 3, progress: 0, type: "bombsAvoidedNoCoins", reward: 450, completed: false },
-      { id: 10, name: "Legendary Catcher", goal: 100, progress: 0, type: "score", reward: 1000, completed: false }
+      { id: 1, name: "Coin Novice", goal: 10, progress: 0, type: "coins", reward: 100, completed: false, claimed: false },
+      { id: 2, name: "Bomb Evader", goal: 5, progress: 0, type: "bombsAvoided", reward: 150, completed: false, claimed: false },
+      { id: 3, name: "Speed Catcher", goal: 5, progress: 0, type: "coins", timeLimit: 15, reward: 200, completed: false, claimed: false },
+      { id: 4, name: "Power-Up Hunter", goal: 3, progress: 0, type: "powerUps", reward: 250, completed: false, claimed: false },
+      { id: 5, name: "Score Star", goal: 50, progress: 0, type: "score", reward: 300, completed: false, claimed: false },
+      { id: 6, name: "Coin Streak", goal: 10, progress: 0, type: "streak", reward: 350, completed: false, claimed: false },
+      { id: 7, name: "Survival Pro", goal: 60, progress: 0, type: "survival", reward: 400, completed: false, claimed: false },
+      { id: 8, name: "Coin Master", goal: 50, progress: totalCoins, type: "totalCoins", reward: 500, completed: false, claimed: false },
+      { id: 9, name: "Lucky Dodger", goal: 3, progress: 0, type: "bombsAvoidedNoCoins", reward: 450, completed: false, claimed: false },
+      { id: 10, name: "Legendary Catcher", goal: 100, progress: 0, type: "score", reward: 1000, completed: false, claimed: false }
+    ];
+
+    // Achievements
+    const achievements = JSON.parse(localStorage.getItem("achievements")) || [
+      { id: 1, name: "First Win", goal: 10, progress: 0, type: "coins", reward: 50, completed: false },
+      { id: 2, name: "Bomb Master", goal: 20, progress: bombsAvoided, type: "bombsAvoided", reward: 100, completed: false },
+      { id: 3, name: "Coin King", goal: 100, progress: totalCoins, type: "totalCoins", reward: 200, completed: false },
+      { id: 4, name: "Level Up", goal: 3, progress: level, type: "level", reward: 300, completed: false },
+      { id: 5, name: "Pro Gamer", goal: 3, progress: 0, type: "buckets", reward: 500, completed: false }
     ];
 
     // Marketplace
@@ -261,15 +295,15 @@
       { emoji: "🔒", cost: 5000, unlocked: localStorage.getItem("emoji_🔒") === "true" }
     ];
 
-    // Update mission progress
+    // Update UI
     function updateMissionProgress() {
       const missionDiv = document.getElementById("missionProgress");
       missionDiv.innerHTML = "<h3>Missions</h3>";
       missions.forEach(m => {
         const progress = Math.min(m.progress / m.goal * 100, 100);
-        const button = m.completed ? `<button onclick="claimXP(${m.id})">Claim ${m.reward} XP</button>` : "";
+        const button = m.completed && !m.claimed ? `<button onclick="claimXP(${m.id})">Claim ${m.reward} XP</button>` : m.claimed ? "<span>Collected</span>" : "";
         missionDiv.innerHTML += `
-          <div>${m.name}: ${m.progress}/${m.goal} ${m.completed ? "(Done)" : ""}
+          <div>${m.name}: ${m.progress}/${m.goal} ${m.claimed ? "(Collected)" : m.completed ? "(Done)" : ""}
             <div class="progress-bar"><div class="progress-bar-fill" style="width: ${progress}%"></div></div>
             ${button}
           </div>`;
@@ -277,16 +311,29 @@
       localStorage.setItem("missions", JSON.stringify(missions));
     }
 
-    // Update marketplace
+    function updateAchievements() {
+      const achieveDiv = document.getElementById("achievements");
+      achieveDiv.innerHTML = "<h3>Achievements</h3>";
+      achievements.forEach(a => {
+        const progress = Math.min(a.progress / a.goal * 100, 100);
+        achieveDiv.innerHTML += `
+          <div>${a.name}: ${a.progress}/${a.goal} ${a.completed ? "(Done)" : ""}
+            <div class="progress-bar"><div class="progress-bar-fill" style="width: ${progress}%"></div></div>
+          </div>`;
+      });
+      localStorage.setItem("achievements", JSON.stringify(achievements));
+    }
+
     function updateMarketplace() {
       const marketDiv = document.getElementById("marketplace");
       marketDiv.innerHTML = "<h3>Marketplace</h3>";
       marketplaceItems.forEach(item => {
+        const isSelected = wallet.emoji === item.emoji;
         const button = item.unlocked ? 
-          `<button onclick="selectEmoji('${item.emoji}')">Select</button>` : 
-          `<button onclick="unlockEmoji('${item.emoji}', ${item.cost})">${xp >= item.cost ? "Unlock" : item.cost + " XP"}</button>`;
+          `<button onclick="selectEmoji('${item.emoji}')" class="${isSelected ? 'selected' : ''}">Select</button>` : 
+          `<button class="locked" onclick="unlockEmoji('${item.emoji}', ${item.cost})">${xp >= item.cost ? "Unlock" : item.cost + " XP"}</button>`;
         marketDiv.innerHTML += `
-          <div class="marketplace-item">
+          <div class="marketplace-item ${isSelected ? 'selected' : ''}">
             <span>${item.emoji} Bucket</span>
             ${button}
           </div>`;
@@ -296,17 +343,26 @@
     // Claim XP
     function claimXP(missionId) {
       const mission = missions.find(m => m.id === missionId);
-      if (mission.completed) {
+      if (mission.completed && !mission.claimed) {
         xp += mission.reward;
         localStorage.setItem("xp", xp);
         level = Math.floor(xp / 1000) + 1;
         wallet.speed = 8 + level * 0.5;
         document.getElementById("xp").innerText = xp;
         document.getElementById("level").innerText = level;
-        mission.completed = true; // Stays completed
-        mission.progress = mission.type === "totalCoins" ? totalCoins : mission.goal;
+        mission.claimed = true;
         showNotification(`Claimed ${mission.reward} XP!`);
+        if (level >= 3) {
+          const achieve = achievements.find(a => a.id === 4);
+          if (!achieve.completed) {
+            achieve.completed = true;
+            xp += achieve.reward;
+            localStorage.setItem("xp", xp);
+            showNotification(`Achievement: ${achieve.name} (+${achieve.reward} XP)`);
+          }
+        }
         updateMissionProgress();
+        updateAchievements();
         updateMarketplace();
       }
     }
@@ -322,6 +378,16 @@
         localStorage.setItem("bucketEmoji", emoji);
         document.getElementById("xp").innerText = xp;
         showNotification(`Unlocked ${emoji} Bucket!`);
+        const bucketsUnlocked = marketplaceItems.filter(item => item.unlocked).length;
+        const achieve = achievements.find(a => a.id === 5);
+        achieve.progress = bucketsUnlocked;
+        if (bucketsUnlocked >= 3 && !achieve.completed) {
+          achieve.completed = true;
+          xp += achieve.reward;
+          localStorage.setItem("xp", xp);
+          showNotification(`Achievement: ${achieve.name} (+${achieve.reward} XP)`);
+        }
+        updateAchievements();
         updateMarketplace();
       }
     }
@@ -330,6 +396,7 @@
         wallet.emoji = emoji;
         localStorage.setItem("bucketEmoji", emoji);
         showNotification(`Selected ${emoji} Bucket!`);
+        updateMarketplace();
       }
     }
 
@@ -361,7 +428,7 @@
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 255, 255, ${p.opacity})`;
+        ctx.fillStyle = darkMode ? `rgba(128, 0, 128, ${p.opacity})` : `rgba(0, 255, 255, ${p.opacity})`;
         ctx.fill();
         p.x += p.speedX;
         p.y += p.speedY;
@@ -374,7 +441,7 @@
     // Grid background
     function drawGrid() {
       ctx.save();
-      ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
+      ctx.strokeStyle = darkMode ? "rgba(128, 0, 128, 0.2)" : "rgba(0, 255, 255, 0.2)";
       ctx.lineWidth = 1;
       for (let x = 0; x < canvas.width; x += 20) {
         ctx.beginPath();
@@ -391,7 +458,35 @@
       ctx.restore();
     }
 
-    // Sound preload
+    // Spark effects
+    const sparks = [];
+    function createSpark(x, y) {
+      for (let i = 0; i < 5; i++) {
+        sparks.push({
+          x, y,
+          size: Math.random() * 3 + 1,
+          speedX: Math.random() * 4 - 2,
+          speedY: Math.random() * 4 - 2,
+          life: 20
+        });
+      }
+    }
+    function drawSparks() {
+      ctx.save();
+      sparks.forEach((s, i) => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = darkMode ? "rgba(128, 0, 128, 0.7)" : "rgba(0, 255, 255, 0.7)";
+        ctx.fill();
+        s.x += s.speedX;
+        s.y += s.speedY;
+        s.life--;
+        if (s.life <= 0) sparks.splice(i, 1);
+      });
+      ctx.restore();
+    }
+
+    // Sound system
     const sounds = {
       coin: document.getElementById("coinSound"),
       bomb: document.getElementById("bombSound"),
@@ -399,15 +494,24 @@
       bgMusic: document.getElementById("bgMusic")
     };
     function playSound(sound) {
-      sound.currentTime = 0;
-      sound.play().catch(err => console.log("Sound play error:", err));
+      if (soundsEnabled) {
+        sound.currentTime = 0;
+        sound.play().catch(err => console.log("Sound play error:", err));
+      }
+    }
+    function vibrate() {
+      if (hapticsEnabled && navigator.vibrate) navigator.vibrate(50);
     }
 
     // Touch controls
     let isDragging = false;
+    let lastTouchX = 0;
     canvas.addEventListener("touchstart", e => {
       e.preventDefault();
-      if (!isPaused && !gameOver) isDragging = true;
+      if (!isPaused && !gameOver) {
+        isDragging = true;
+        lastTouchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+      }
     });
     canvas.addEventListener("touchend", () => isDragging = false);
     canvas.addEventListener("touchmove", e => {
@@ -415,18 +519,18 @@
       if (isDragging && !isPaused && !gameOver) {
         let touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
         wallet.x = Math.max(0, Math.min(touchX - wallet.w / 2, canvas.width - wallet.w));
+        wallet.angle = (touchX - lastTouchX) * 0.01;
+        lastTouchX = touchX;
       }
     });
 
-    // Menu toggle
+    // Menu and pause
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("sideMenu").classList.toggle("active");
       isPaused = document.getElementById("sideMenu").classList.contains("active");
       document.getElementById("pauseBtn").innerText = isPaused ? "▶" : "⏸";
       if (!isPaused && !gameOver) gameLoop();
     };
-
-    // Pause
     document.getElementById("pauseBtn").onclick = () => {
       if (!document.getElementById("sideMenu").classList.contains("active")) {
         isPaused = !isPaused;
@@ -434,6 +538,18 @@
         if (!isPaused && !gameOver) gameLoop();
       }
     };
+
+    // Tutorial
+    if (!localStorage.getItem("tutorialShown")) {
+      document.getElementById("tutorialModal").style.display = "block";
+      isPaused = true;
+    }
+    function closeTutorial() {
+      document.getElementById("tutorialModal").style.display = "none";
+      localStorage.setItem("tutorialShown", "true");
+      isPaused = false;
+      gameLoop();
+    }
 
     // Spawn objects
     function spawnObject() {
@@ -458,35 +574,43 @@
         h: 35,
         type,
         powerUpType,
-        emoji
+        emoji,
+        angle: 0
       });
     }
 
     // Draw
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = darkMode ? "#1a001a" : "#001a1a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       drawGrid();
       drawParticles();
+      drawSparks();
+      ctx.save();
       ctx.font = "40px Arial";
-      ctx.fillStyle = "cyan";
+      ctx.fillStyle = darkMode ? "purple" : "cyan";
       ctx.textAlign = "center";
-      ctx.fillText(wallet.emoji, wallet.x + wallet.w / 2, wallet.y + wallet.h);
+      ctx.translate(wallet.x + wallet.w / 2, wallet.y + wallet.h / 2);
+      ctx.rotate(wallet.angle);
+      ctx.fillText(wallet.emoji, 0, 0);
+      ctx.restore();
       if (wallet.magnet) {
         ctx.beginPath();
         ctx.arc(wallet.x + wallet.w / 2, wallet.y + wallet.h / 2, 100, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(0, 255, 255, 0.3)";
+        ctx.strokeStyle = darkMode ? "rgba(128, 0, 128, 0.3)" : "rgba(0, 255, 255, 0.3)";
         ctx.stroke();
       }
       if (wallet.shield) {
         ctx.beginPath();
         ctx.arc(wallet.x + wallet.w / 2, wallet.y + wallet.h / 2, 50, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(0, 255, 255, 0.5)";
+        ctx.strokeStyle = darkMode ? "rgba(128, 0, 128, 0.5)" : "rgba(0, 255, 255, 0.5)";
         ctx.stroke();
       }
       ctx.beginPath();
-      ctx.strokeStyle = "cyan";
+      ctx.strokeStyle = darkMode ? "purple" : "cyan";
       ctx.shadowBlur = 15;
-      ctx.shadowColor = "cyan";
+      ctx.shadowColor = darkMode ? "purple" : "cyan";
       ctx.moveTo(wallet.x, wallet.y);
       ctx.lineTo(wallet.x + wallet.w, wallet.y);
       ctx.lineWidth = 2;
@@ -495,16 +619,24 @@
       objects.forEach(o => {
         ctx.save();
         ctx.font = "30px Arial";
-        ctx.fillStyle = "cyan";
+        ctx.fillStyle = darkMode ? "purple" : "cyan";
         ctx.shadowBlur = 15;
-        ctx.shadowColor = "cyan";
-        ctx.fillText(o.emoji, o.x + o.w / 2, o.y + o.h);
+        ctx.shadowColor = darkMode ? "purple" : "cyan";
+        ctx.translate(o.x + o.w / 2, o.y + o.h / 2);
+        ctx.rotate(o.angle);
+        ctx.fillText(o.emoji, 0, 0);
         ctx.restore();
+        o.angle += 0.05;
       });
       if (isPaused) {
-        ctx.fillStyle = "cyan";
+        ctx.fillStyle = darkMode ? "purple" : "cyan";
         ctx.font = "24px Courier New";
         ctx.fillText("Paused", canvas.width / 2, canvas.height / 2);
+      }
+      if (multiplier > 1) {
+        ctx.fillStyle = darkMode ? "purple" : "cyan";
+        ctx.font = "20px Courier New";
+        ctx.fillText(`x${multiplier} Multiplier`, canvas.width / 2, 30);
       }
     }
 
@@ -512,12 +644,23 @@
     function update() {
       if (gameOver || isPaused) return;
       wallet.y = canvas.height - 70;
+      wallet.angle *= 0.9;
+      if (multiplier > 1) {
+        if (Date.now() - multiplierTime > 10000) multiplier = 1;
+      }
       objects.forEach((o, i) => {
         o.y += 3 + score / 50;
         if (o.y > canvas.height) {
           if (o.type === "bomb") {
             bombsAvoided++;
             if (coinsCollected === 0) bombsAvoidedNoCoins++;
+            achievements.find(a => a.id === 2).progress = bombsAvoided;
+            if (bombsAvoided >= 20 && !achievements.find(a => a.id === 2).completed) {
+              achievements.find(a => a.id === 2).completed = true;
+              xp += achievements.find(a => a.id === 2).reward;
+              localStorage.setItem("xp", xp);
+              showNotification(`Achievement: Bomb Master (+100 XP)`);
+            }
           }
           objects.splice(i, 1);
           return;
@@ -534,22 +677,49 @@
         if (o.x < wallet.x + wallet.w && o.x + o.w > wallet.x &&
             o.y < wallet.y + wallet.h && o.y + o.h > wallet.y) {
           if (o.type === "coin") {
-            score += o.powerUpType === "bonus" ? 2 : 1;
+            score += (o.powerUpType === "bonus" ? 2 : 1) * multiplier;
             coinsCollected++;
             totalCoins++;
             streak++;
             bombsAvoidedNoCoins = 0;
             localStorage.setItem("totalCoins", totalCoins);
             playSound(sounds.coin);
+            vibrate();
+            createSpark(o.x + o.w / 2, o.y + o.h / 2);
             objects.splice(i, 1);
             xp++;
             localStorage.setItem("xp", xp);
             document.getElementById("xp").innerText = xp;
-            level = Math.floor(xp / 1000) + 1;
-            document.getElementById("level").innerText = level;
+            const newLevel = Math.floor(xp / 1000) + 1;
+            if (newLevel > level) {
+              level = newLevel;
+              wallet.speed = 8 + level * 0.5;
+              document.getElementById("level").innerText = level;
+              showNotification(`Level Up! Level ${level}`);
+            }
+            if (streak >= 5 && multiplier === 1) {
+              multiplier = 2;
+              multiplierTime = Date.now();
+              showNotification("x2 Multiplier Activated!");
+            }
+            achievements.find(a => a.id === 1).progress = coinsCollected;
+            achievements.find(a => a.id === 3).progress = totalCoins;
+            if (coinsCollected >= 10 && !achievements.find(a => a.id === 1).completed) {
+              achievements.find(a => a.id === 1).completed = true;
+              xp += achievements.find(a => a.id === 1).reward;
+              localStorage.setItem("xp", xp);
+              showNotification(`Achievement: First Win (+50 XP)`);
+            }
+            if (totalCoins >= 100 && !achievements.find(a => a.id === 3).completed) {
+              achievements.find(a => a.id === 3).completed = true;
+              xp += achievements.find(a => a.id === 3).reward;
+              localStorage.setItem("xp", xp);
+              showNotification(`Achievement: Coin King (+200 XP)`);
+            }
           } else if (o.type === "powerUp") {
             powerUpsCollected++;
             playSound(sounds.powerUp);
+            vibrate();
             if (o.powerUpType === "magnet") {
               wallet.magnet = true;
               setTimeout(() => wallet.magnet = false, 10000);
@@ -560,6 +730,7 @@
             } else if (o.powerUpType === "bonus") {
               showNotification("Bonus Coin Activated!");
             }
+            createSpark(o.x + o.w / 2, o.y + o.h / 2);
             objects.splice(i, 1);
           } else if (o.type === "bomb") {
             if (wallet.shield) {
@@ -567,10 +738,14 @@
               objects.splice(i, 1);
               bombsAvoided++;
               bombsAvoidedNoCoins++;
+              playSound(sounds.bomb);
+              vibrate();
+              createSpark(o.x + o.w / 2, o.y + o.h / 2);
               showNotification("Shield Blocked Bomb!");
             } else {
               gameOver = true;
               playSound(sounds.bomb);
+              vibrate();
               totalGames++;
               localStorage.setItem("totalGames", totalGames);
               if (score > highScore) {
@@ -580,6 +755,8 @@
               }
               document.getElementById("finalScore").innerText = score;
               document.getElementById("finalHighScore").innerText = highScore;
+              document.getElementById("finalCoins").innerText = coinsCollected;
+              document.getElementById("finalBombs").innerText = bombsAvoided;
               document.getElementById("gameOverModal").style.display = "block";
             }
           }
@@ -605,6 +782,7 @@
         }
       });
       updateMissionProgress();
+      updateAchievements();
       updateMarketplace();
       document.getElementById("score").innerText = score;
       document.getElementById("highScore").innerText = highScore;
@@ -619,13 +797,6 @@
       }
     }
 
-    // Initialize
-    setInterval(spawnObject, 700 - Math.min(level * 50, 400));
-    sounds.bgMusic.play().catch(() => {});
-    updateMissionProgress();
-    updateMarketplace();
-    gameLoop();
-
     // Menu options
     function newGame() {
       score = 0;
@@ -634,6 +805,7 @@
       powerUpsCollected = 0;
       streak = 0;
       bombsAvoidedNoCoins = 0;
+      multiplier = 1;
       objects = [];
       gameOver = false;
       isPaused = false;
@@ -649,7 +821,9 @@
         if (!m.completed && m.type !== "totalCoins") m.progress = 0;
       });
       updateMissionProgress();
+      updateAchievements();
       updateMarketplace();
+      if (!isPaused && !gameOver) gameLoop();
     }
     function restartGame() {
       newGame();
@@ -657,14 +831,44 @@
     function showStats() {
       showNotification(`Games: ${totalGames}, Coins: ${totalCoins}, Bombs Avoided: ${bombsAvoided}, Power-Ups: ${powerUpsCollected}`);
     }
+    function shareScore() {
+      window.open(`https://x.com/intent/post?text=I scored ${score} in Coin Catcher! Can you beat it?`);
+    }
+    function toggleSettings() {
+      const settings = document.getElementById("settings");
+      settings.style.display = settings.style.display === "none" ? "block" : "none";
+    }
     function toggleMusic() {
       sounds.bgMusic.paused ? sounds.bgMusic.play() : sounds.bgMusic.pause();
+    }
+    function toggleSounds() {
+      soundsEnabled = !soundsEnabled;
+      localStorage.setItem("soundsEnabled", soundsEnabled);
+      showNotification(soundsEnabled ? "Sounds On" : "Sounds Off");
+    }
+    function toggleHaptics() {
+      hapticsEnabled = !hapticsEnabled;
+      localStorage.setItem("hapticsEnabled", hapticsEnabled);
+      showNotification(hapticsEnabled ? "Haptics On" : "Haptics Off");
+    }
+    function toggleTheme() {
+      darkMode = !darkMode;
+      localStorage.setItem("darkMode", darkMode);
+      showNotification(darkMode ? "Dark Mode On" : "Dark Mode Off");
     }
 
     // Prevent default scrolling
     document.addEventListener("touchmove", e => {
       if (e.target === canvas) e.preventDefault();
     }, { passive: false });
+
+    // Initialize
+    setInterval(spawnObject, 700 - Math.min(level * 50, 400));
+    sounds.bgMusic.play().catch(() => {});
+    updateMissionProgress();
+    updateAchievements();
+    updateMarketplace();
+    gameLoop();
   </script>
 </body>
 </html>
