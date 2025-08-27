@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Coin Catcher - Neon Blockchain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -12,44 +13,46 @@
       user-select: none;
     }
     body {
-      font-family: 'Courier New', monospace;
-      background: radial-gradient(circle at center, #001a1a, #000);
-      color: cyan;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #001a1a, #000);
+      color: #00ffff;
       overflow: hidden;
       touch-action: manipulation;
     }
     header {
       text-align: center;
-      padding: 10px;
+      padding: 12px;
       font-size: 1.8em;
-      font-weight: bold;
-      text-shadow: 0 0 20px cyan, 0 0 30px cyan;
+      font-weight: 700;
+      text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff;
       animation: neonGlow 1.5s ease-in-out infinite;
       position: fixed;
       top: 0;
       width: 100%;
-      background: rgba(0, 20, 20, 0.9);
+      background: rgba(0, 20, 20, 0.95);
       z-index: 12;
     }
     @keyframes neonGlow {
-      0%, 100% { text-shadow: 0 0 20px cyan, 0 0 30px cyan; }
-      50% { text-shadow: 0 0 30px cyan, 0 0 40px cyan; }
+      0%, 100% { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+      50% { text-shadow: 0 0 30px #00ffff, 0 0 40px #00ffff; }
     }
     #menuBtn {
       position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 20, 20, 0.9);
-      border: 2px solid cyan;
-      color: cyan;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 20, 20, 0.95);
+      border: 2px solid #00ffff;
+      color: #00ffff;
       font-size: 1.2em;
-      padding: 5px 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px cyan;
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffff;
       z-index: 12;
       cursor: pointer;
       touch-action: manipulation;
+      transition: transform 0.2s;
     }
+    #menuBtn:active { transform: scale(0.95); }
     #sideMenu {
       position: fixed;
       top: 60px;
@@ -57,7 +60,7 @@
       width: 80%;
       height: calc(100% - 60px);
       background: rgba(0, 20, 20, 0.95);
-      box-shadow: -2px 0 20px cyan;
+      box-shadow: -2px 0 20px #00ffff;
       padding: 15px;
       z-index: 11;
       overflow-y: auto;
@@ -70,29 +73,29 @@
       margin: 10px 0;
       padding: 12px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: rgba(0, 20, 20, 0.9);
-      color: cyan;
+      color: #00ffff;
       font-size: 1em;
-      font-weight: bold;
-      text-shadow: 0 0 10px cyan;
-      box-shadow: 0 0 15px cyan;
+      font-weight: 700;
+      text-shadow: 0 0 10px #00ffff;
+      box-shadow: 0 0 15px #00ffff;
       cursor: pointer;
       touch-action: manipulation;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    #sideMenu button:active { transform: scale(0.95); box-shadow: 0 0 20px cyan; }
+    #sideMenu button:active { transform: scale(0.95); box-shadow: 0 0 20px #00ffff; }
     #scoreBoard {
       position: fixed;
       top: 60px;
-      left: 10px;
+      left: 12px;
       font-size: 1em;
-      text-shadow: 0 0 15px cyan;
+      text-shadow: 0 0 15px #00ffff;
       z-index: 10;
       background: rgba(0, 20, 20, 0.9);
-      padding: 5px 10px;
-      border-radius: 5px;
-      max-width: calc(100% - 70px);
+      padding: 8px 12px;
+      border-radius: 10px;
+      max-width: calc(100% - 80px);
     }
     #gameCanvas {
       display: block;
@@ -108,11 +111,11 @@
       transform: translate(-50%, -50%);
       background: rgba(0, 20, 20, 0.95);
       padding: 20px;
-      border: 2px solid cyan;
+      border: 2px solid #00ffff;
       border-radius: 10px;
       text-align: center;
-      color: cyan;
-      box-shadow: 0 0 20px cyan;
+      color: #00ffff;
+      box-shadow: 0 0 20px #00ffff;
       z-index: 13;
       width: 80%;
       max-width: 300px;
@@ -125,11 +128,12 @@
       margin: 10px;
       padding: 10px;
       background: rgba(0, 20, 20, 0.9);
-      color: cyan;
-      border: 2px solid cyan;
-      border-radius: 8px;
+      color: #00ffff;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
       cursor: pointer;
       touch-action: manipulation;
+      font-family: 'Orbitron', sans-serif;
     }
     #missionProgress, #marketplace, #achievements, #settings {
       margin-top: 20px;
@@ -147,45 +151,48 @@
     }
     .progress-bar-fill {
       height: 100%;
-      background: cyan;
+      background: #00ffff;
       transition: width 5s linear;
       width: 0;
     }
     .progress-bar-fill.loaded { width: 100%; }
     #pauseBtn {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 12px;
+      left: 12px;
       background: rgba(0, 20, 20, 0.9);
-      border: 2px solid cyan;
-      color: cyan;
+      border: 2px solid #00ffff;
+      color: #00ffff;
       font-size: 1.2em;
-      padding: 5px 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px cyan;
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffff;
       z-index: 12;
       cursor: pointer;
       touch-action: manipulation;
+      transition: transform 0.2s;
     }
+    #pauseBtn:active { transform: scale(0.95); }
     .notification {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 20, 20, 0.9);
-      color: cyan;
+      color: #00ffff;
       padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 0 15px cyan;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffff;
       display: none;
       z-index: 12;
+      font-family: 'Orbitron', sans-serif;
     }
     .marketplace-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .selected { border: 2px solid cyan; box-shadow: 0 0 20px cyan; }
+    .selected { border: 2px solid #00ffff; box-shadow: 0 0 20px #00ffff; }
     .locked { opacity: 0.5; }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
@@ -323,7 +330,7 @@
         } else {
           isPaused = false;
           gameLoop();
-          if (!sounds.bgMusic.paused) sounds.bgMusic.play().catch(() => {});
+          if (soundsEnabled) sounds.bgMusic.play().catch(() => {});
         }
       }, 5000);
     }, 100);
@@ -615,7 +622,7 @@
       drawSparks();
       ctx.save();
       ctx.font = "40px Arial";
-      ctx.fillStyle = darkMode ? "purple" : "cyan";
+      ctx.fillStyle = darkMode ? "#800080" : "#00ffff";
       ctx.textAlign = "center";
       ctx.translate(wallet.x + wallet.w / 2, wallet.y + wallet.h / 2);
       ctx.rotate(wallet.angle);
@@ -634,9 +641,9 @@
         ctx.stroke();
       }
       ctx.beginPath();
-      ctx.strokeStyle = darkMode ? "purple" : "cyan";
+      ctx.strokeStyle = darkMode ? "#800080" : "#00ffff";
       ctx.shadowBlur = 15;
-      ctx.shadowColor = darkMode ? "purple" : "cyan";
+      ctx.shadowColor = darkMode ? "#800080" : "#00ffff";
       ctx.moveTo(wallet.x, wallet.y);
       ctx.lineTo(wallet.x + wallet.w, wallet.y);
       ctx.lineWidth = 2;
@@ -645,9 +652,9 @@
       objects.forEach(o => {
         ctx.save();
         ctx.font = "30px Arial";
-        ctx.fillStyle = darkMode ? "purple" : "cyan";
+        ctx.fillStyle = darkMode ? "#800080" : "#00ffff";
         ctx.shadowBlur = 15;
-        ctx.shadowColor = darkMode ? "purple" : "cyan";
+        ctx.shadowColor = darkMode ? "#800080" : "#00ffff";
         ctx.translate(o.x + o.w / 2, o.y + o.h / 2);
         ctx.rotate(o.angle);
         ctx.fillText(o.emoji, 0, 0);
@@ -655,13 +662,13 @@
         o.angle += 0.05;
       });
       if (isPaused) {
-        ctx.fillStyle = darkMode ? "purple" : "cyan";
-        ctx.font = "24px Courier New";
+        ctx.fillStyle = darkMode ? "#800080" : "#00ffff";
+        ctx.font = "24px Orbitron";
         ctx.fillText("Paused", canvas.width / 2, canvas.height / 2);
       }
       if (multiplier > 1) {
-        ctx.fillStyle = darkMode ? "purple" : "cyan";
-        ctx.font = "20px Courier New";
+        ctx.fillStyle = darkMode ? "#800080" : "#00ffff";
+        ctx.font = "20px Orbitron";
         ctx.fillText(`x${multiplier} Multiplier`, canvas.width / 2, 30);
       }
     }
@@ -926,7 +933,7 @@
       darkMode = !darkMode;
       localStorage.setItem("darkMode", darkMode);
       showNotification(darkMode ? "Dark Mode On" : "Dark Mode Off");
-      document.body.style.background = darkMode ? "radial-gradient(circle at center, #1a001a, #000)" : "radial-gradient(circle at center, #001a1a, #000)";
+      document.body.style.background = darkMode ? "linear-gradient(135deg, #1a001a, #000)" : "linear-gradient(135deg, #001a1a, #000)";
     }
 
     // Prevent default scrolling
