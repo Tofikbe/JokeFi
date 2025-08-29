@@ -3,195 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro Edit Tool</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Pro Mobile Editor</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Oswald&family=Pacifico&family=Lobster&family=Anton&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
+      background: #0d1117;
+      color: white;
+      font-family: 'Roboto', sans-serif;
       display: flex;
+      flex-direction: column;
       height: 100vh;
-      background: #111;
-      color: #fff;
+      overflow: hidden;
     }
-    #sidebar {
-      width: 220px;
-      background: #1c1c1c;
-      padding: 10px;
-      overflow-y: auto;
-      border-right: 2px solid #333;
-    }
-    #sidebar h3 {
+    header {
+      background: #161b22;
+      padding: 12px;
       text-align: center;
-      margin: 10px 0;
-    }
-    #layers {
-      margin-top: 10px;
-    }
-    .layer {
-      background: #333;
-      padding: 6px;
-      margin: 5px 0;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .layer:hover {
-      background: #555;
+      font-size: 18px;
+      font-weight: bold;
+      border-bottom: 1px solid #30363d;
     }
     #canvas-container {
       flex: 1;
       display: flex;
-      align-items: center;
       justify-content: center;
-      background: #222;
-      position: relative;
+      align-items: center;
+      background: #0d1117;
     }
     canvas {
-      border: 1px solid #444;
-      background: #fff;
-    }
-    #toolbar {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1c1c1c;
-      display: flex;
-      gap: 12px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 1px solid #333;
-    }
-    #toolbar button {
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 8px;
+      border: 1px solid #30363d;
       border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
     }
-    #toolbar button:hover {
-      background: #555;
+    .toolbar {
+      display: flex;
+      justify-content: space-around;
+      background: #161b22;
+      padding: 8px;
+      border-top: 1px solid #30363d;
+    }
+    .toolbar button, .toolbar input, .toolbar select {
+      background: #21262d;
+      border: none;
+      color: white;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .sticker-bar {
+      overflow-x: auto;
+      white-space: nowrap;
+      background: #0d1117;
+      padding: 6px;
+      border-top: 1px solid #30363d;
+    }
+    .sticker-bar img {
+      width: 48px;
+      height: 48px;
+      margin: 0 4px;
+      border-radius: 6px;
+      background: #161b22;
+      padding: 4px;
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar Layers -->
-  <div id="sidebar">
-    <h3>Layers</h3>
-    <div id="layers"></div>
+  <header>🔥 Mobile Pro Editor</header>
+
+  <div id="canvas-container">
+    <canvas id="c" width="320" height="480"></canvas>
   </div>
 
-  <!-- Canvas Area -->
-  <div id="canvas-container">
-    <canvas id="editorCanvas" width="800" height="500"></canvas>
+  <!-- Sticker bar -->
+  <div class="sticker-bar" id="stickers">
+    <!-- Stickers will load here -->
+  </div>
 
-    <!-- Toolbar -->
-    <div id="toolbar">
-      <label for="upload"><i class="fas fa-image"></i></label>
-      <input type="file" id="upload" accept="image/*" style="display:none" multiple>
-      <button id="addText"><i class="fas fa-font"></i></button>
-      <button id="delete"><i class="fas fa-trash"></i></button>
-      <button id="bringFront"><i class="fas fa-layer-group"></i></button>
-      <button id="sendBack"><i class="fas fa-arrow-down"></i></button>
-      <button id="download"><i class="fas fa-download"></i></button>
-    </div>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input type="file" id="upload" accept="image/*">
+    <button onclick="addText()">Text</button>
+    <select id="fontSelect" onchange="changeFont(this.value)">
+      <option value="Roboto">Roboto</option>
+      <option value="Oswald">Oswald</option>
+      <option value="Pacifico">Pacifico</option>
+      <option value="Lobster">Lobster</option>
+      <option value="Anton">Anton</option>
+    </select>
+    <label>Bright <input type="range" id="brightness" min="-1" max="1" step="0.1" value="0"></label>
+    <label>Contrast <input type="range" id="contrast" min="-1" max="1" step="0.1" value="0"></label>
+    <button onclick="removeSelected()">Delete</button>
+    <button onclick="exportCanvas()">Save</button>
   </div>
 
   <script>
-    const canvas = new fabric.Canvas("editorCanvas", {
-      backgroundColor: "#fff",
-      preserveObjectStacking: true
+    const canvas = new fabric.Canvas('c', {
+      backgroundColor: '#fff',
+      selection: true
     });
 
-    const layersDiv = document.getElementById("layers");
+    // Image upload
+    document.getElementById('upload').onchange = function(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(f) {
+        fabric.Image.fromURL(f.target.result, function(img) {
+          img.scaleToWidth(200);
+          canvas.add(img).setActiveObject(img);
+        });
+      };
+      reader.readAsDataURL(file);
+    };
 
-    function updateLayers() {
-      layersDiv.innerHTML = "";
-      canvas.getObjects().forEach((obj, index) => {
-        const div = document.createElement("div");
-        div.classList.add("layer");
-        div.innerText = obj.type === "image" ? `Image ${index+1}` : `Text: ${obj.text}`;
-        div.onclick = () => {
-          canvas.setActiveObject(obj);
-          canvas.renderAll();
-        };
-        layersDiv.appendChild(div);
-      });
-    }
-
-    // Add Image
-    document.getElementById("upload").addEventListener("change", (e) => {
-      [...e.target.files].forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(f) {
-          fabric.Image.fromURL(f.target.result, (img) => {
-            img.scaleToWidth(300);
-            canvas.add(img).setActiveObject(img);
-            updateLayers();
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    // Add Text
-    document.getElementById("addText").onclick = () => {
-      const text = new fabric.IText("Edit me", {
-        left: 100,
-        top: 100,
-        fontSize: 30,
-        fill: "#000",
-        editable: true
+    // Add text
+    function addText() {
+      const text = new fabric.IText("Edit Me", {
+        left: 50, top: 50,
+        fill: "#000", fontFamily: "Roboto",
+        fontSize: 24
       });
       canvas.add(text).setActiveObject(text);
-      updateLayers();
-    };
+    }
 
-    // Delete Selected
-    document.getElementById("delete").onclick = () => {
-      const active = canvas.getActiveObject();
-      if (active) {
-        canvas.remove(active);
-        updateLayers();
+    // Change font
+    function changeFont(font) {
+      const obj = canvas.getActiveObject();
+      if (obj && obj.type === 'i-text') {
+        obj.set("fontFamily", font);
+        canvas.renderAll();
       }
-    };
+    }
 
-    // Bring to Front
-    document.getElementById("bringFront").onclick = () => {
-      const active = canvas.getActiveObject();
-      if (active) {
-        canvas.bringToFront(active);
-        updateLayers();
-      }
-    };
+    // Delete
+    function removeSelected() {
+      canvas.remove(canvas.getActiveObject());
+    }
 
-    // Send to Back
-    document.getElementById("sendBack").onclick = () => {
-      const active = canvas.getActiveObject();
-      if (active) {
-        canvas.sendToBack(active);
-        updateLayers();
-      }
-    };
-
-    // Download
-    document.getElementById("download").onclick = () => {
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL({ format: "png" });
+    // Save
+    function exportCanvas() {
+      const dataURL = canvas.toDataURL({
+        format: 'png',
+        quality: 1
+      });
+      const link = document.createElement('a');
+      link.href = dataURL;
       link.download = "edited.png";
       link.click();
+    }
+
+    // Brightness/Contrast
+    let activeFilter = {};
+    function applyFilters() {
+      const obj = canvas.getActiveObject();
+      if (obj && obj.type === "image") {
+        obj.filters = [];
+        if (activeFilter.brightness) {
+          obj.filters.push(new fabric.Image.filters.Brightness({brightness: activeFilter.brightness}));
+        }
+        if (activeFilter.contrast) {
+          obj.filters.push(new fabric.Image.filters.Contrast({contrast: activeFilter.contrast}));
+        }
+        obj.applyFilters();
+        canvas.renderAll();
+      }
+    }
+    document.getElementById("brightness").oninput = function() {
+      activeFilter.brightness = parseFloat(this.value);
+      applyFilters();
+    };
+    document.getElementById("contrast").oninput = function() {
+      activeFilter.contrast = parseFloat(this.value);
+      applyFilters();
     };
 
-    // Update layers on change
-    canvas.on("object:added", updateLayers);
-    canvas.on("object:removed", updateLayers);
-    canvas.on("object:modified", updateLayers);
+    // Stickers (Crypto + X logos)
+    const stickers = [
+      "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
+      "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+      "https://cryptologos.cc/logos/aptos-apt-logo.png",
+      "https://cryptologos.cc/logos/solana-sol-logo.png",
+      "https://cryptologos.cc/logos/cardano-ada-logo.png",
+      "https://cryptologos.cc/logos/tether-usdt-logo.png",
+      "https://cryptologos.cc/logos/dogecoin-doge-logo.png",
+      "https://cryptologos.cc/logos/xrp-xrp-logo.png",
+      "https://cryptologos.cc/logos/shiba-inu-shib-logo.png",
+      "https://cryptologos.cc/logos/polkadot-new-dot-logo.png",
+      "https://cryptologos.cc/logos/tron-trx-logo.png",
+      "https://cryptologos.cc/logos/chainlink-link-logo.png",
+      "https://cryptologos.cc/logos/litecoin-ltc-logo.png",
+      "https://cryptologos.cc/logos/uniswap-uni-logo.png",
+      "https://cryptologos.cc/logos/near-protocol-near-logo.png",
+      "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
+      "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
+      "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+      "https://cryptologos.cc/logos/twitter-x-logo.png",
+      "https://cryptologos.cc/logos/base-base-logo.png"
+    ];
 
+    const stickerBar = document.getElementById("stickers");
+    stickers.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.onclick = () => {
+        fabric.Image.fromURL(url, function(sticker) {
+          sticker.scaleToWidth(60);
+          canvas.add(sticker).setActiveObject(sticker);
+        });
+      };
+      stickerBar.appendChild(img);
+    });
   </script>
 </body>
 </html>
