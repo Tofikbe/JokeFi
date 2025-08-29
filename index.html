@@ -10,16 +10,17 @@
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #e0e0e0, #ffffff);
+            background: linear-gradient(to bottom, #333, #000);
             font-family: 'Roboto', sans-serif;
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
             touch-action: none;
+            color: #fff;
         }
         #header {
-            background: #333;
+            background: #222;
             color: #fff;
             text-align: center;
             padding: 10px;
@@ -32,11 +33,11 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%23ccc" d="M0 0h10v10H0zM10 10h10v10H10z"/></svg>') repeat;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%23444" d="M0 0h10v10H0zM10 10h10v10H10z"/></svg>') repeat;
             overflow: hidden;
         }
         #canvas {
-            border: 1px solid #ccc;
+            border: 1px solid #555;
             background: transparent;
             touch-action: manipulation;
             max-width: 100%;
@@ -47,7 +48,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: #333;
+            background: #222;
             color: #fff;
             display: flex;
             flex-direction: row;
@@ -57,7 +58,7 @@
             overflow-x: auto;
             z-index: 10;
         }
-        button, select, input[type="range"], label {
+        button, select, input[type="range"], label, input[type="color"] {
             background: transparent;
             color: #fff;
             border: none;
@@ -71,7 +72,7 @@
             flex-direction: column;
         }
         button:hover, select:hover, label:hover {
-            background: #555;
+            background: #444;
         }
         input[type="file"] {
             display: none;
@@ -85,7 +86,8 @@
         }
         #fontSelect {
             max-width: 100px;
-            background: #555;
+            background: #444;
+            color: #fff;
         }
         .handle {
             position: absolute;
@@ -95,28 +97,21 @@
             border: 2px solid #000;
             border-radius: 50%;
             display: none;
+            z-index: 20;
         }
-        #filter-panel {
+        #filter-panel, #text-panel {
             display: none;
             position: fixed;
             bottom: 60px;
             left: 0;
             right: 0;
-            background: #444;
+            background: #333;
             padding: 10px;
             overflow-x: auto;
+            display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
-        }
-        #text-panel {
-            display: none;
-            position: fixed;
-            bottom: 60px;
-            left: 0;
-            right: 0;
-            background: #444;
-            padding: 10px;
-            overflow-x: auto;
+            z-index: 9;
         }
     </style>
 </head>
@@ -132,10 +127,12 @@
         <label><i class="fas fa-palette"></i><span class="tool-label">Saturation</span><input type="range" id="saturation" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
         <label><i class="fas fa-tint"></i><span class="tool-label">Hue</span><input type="range" id="hue" min="-180" max="180" value="0" oninput="applyFilters(selected)"></label>
         <label><i class="fas fa-eye-dropper"></i><span class="tool-label">Blur</span><input type="range" id="blur" min="0" max="10" value="0" step="0.1" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-star"></i><span class="tool-label">Sharpen</span><input type="range" id="sharpen" min="0" max="100" value="0" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-image"></i><span class="tool-label">Grayscale</span><input type="range" id="grayscale" min="0" max="100" value="0" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-search-plus"></i><span class="tool-label">Scale</span><input type="range" id="scale" min="0.1" max="5" step="0.1" value="1" oninput="applyScale(selected)"></label>
+        <label><i class="fas fa-low-vision"></i><span class="tool-label">Opacity</span><input type="range" id="opacity" min="0" max="100" value="100" oninput="applyFilters(selected)"></label>
     </div>
     <div id="text-panel">
-        <select id="fontSelect">
+        <select id="fontSelect" onchange="applyTextStyle(selected)">
             <option>Open Sans</option>
             <option>Roboto</option>
             <option>Lato</option>
@@ -177,16 +174,29 @@
             <option>Syne</option>
             <option>Arial</option>
         </select>
-        <label><i class="fas fa-text-height"></i><span class="tool-label">Size</span><input type="range" id="textSize" min="10" max="100" value="40" oninput="applyTextStyle(selected)"></label>
-        <label><i class="fas fa-palette"></i><span class="tool-label">Color</span><input type="color" id="textColor" value="#000000" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-text-height"></i><span class="tool-label">Size</span><input type="range" id="textSize" min="10" max="200" value="40" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-palette"></i><span class="tool-label">Color</span><input type="color" id="textColor" value="#ffffff" oninput="applyTextStyle(selected)"></label>
+        <button onclick="toggleBold(selected)"><i class="fas fa-bold"></i><span class="tool-label">Bold</span></button>
+        <button onclick="toggleItalic(selected)"><i class="fas fa-italic"></i><span class="tool-label">Italic</span></button>
+        <select id="textAlign" onchange="applyTextStyle(selected)">
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+        </select>
+        <label><i class="fas fa-shadow"></i><span class="tool-label">Shadow Color</span><input type="color" id="shadowColor" value="#000000" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-arrows-alt-h"></i><span class="tool-label">Shadow X</span><input type="range" id="shadowX" min="-50" max="50" value="0" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-arrows-alt-v"></i><span class="tool-label">Shadow Y</span><input type="range" id="shadowY" min="-50" max="50" value="0" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-eye-dropper"></i><span class="tool-label">Shadow Blur</span><input type="range" id="shadowBlur" min="0" max="50" value="0" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-low-vision"></i><span class="tool-label">Opacity</span><input type="range" id="textOpacity" min="0" max="100" value="100" oninput="applyTextStyle(selected)"></label>
     </div>
     <div id="tools">
         <label for="upload"><i class="fas fa-image"></i><span class="tool-label">Add Image</span></label>
         <input type="file" id="upload" accept="image/*" multiple>
         <button onclick="addText()"><i class="fas fa-font"></i><span class="tool-label">Add Text</span></button>
-        <button onclick="toggleTextPanel()"><i class="fas fa-text"></i><span class="tool-label">Text Style</span></button>
+        <button onclick="toggleTextPanel()"><i class="fas fa-text"></i><span class="tool-label">Text</span></button>
         <button onclick="toggleFilterPanel()"><i class="fas fa-sliders-h"></i><span class="tool-label">Filters</span></button>
-        <button onclick="applyRotation(selected)"><i class="fas fa-sync-alt"></i><span class="tool-label">Rotate</span></button>
+        <button onclick="flipHorizontal()"><i class="fas fa-arrows-alt-h"></i><span class="tool-label">Flip H</span></button>
+        <button onclick="flipVertical()"><i class="fas fa-arrows-alt-v"></i><span class="tool-label">Flip V</span></button>
         <button onclick="enterCropMode()"><i class="fas fa-crop"></i><span class="tool-label">Crop</span></button>
         <select id="ratio">
             <option value="1">1:1</option>
@@ -197,9 +207,13 @@
             <option value="0.5">1:2</option>
             <option value="1.414">A4 (P)</option>
             <option value="0.707">A4 (L)</option>
+            <option value="1.618">Golden</option>
+            <option value="0.618">Golden (L)</option>
         </select>
         <button onclick="applyRatio()"><i class="fas fa-expand"></i><span class="tool-label">Ratio</span></button>
         <button onclick="deleteSelected()"><i class="fas fa-trash"></i><span class="tool-label">Delete</span></button>
+        <button onclick="bringToFront()"><i class="fas fa-layer-group"></i><span class="tool-label">Front</span></button>
+        <button onclick="sendToBack()"><i class="fas fa-layer-group"></i><span class="tool-label">Back</span></button>
         <button onclick="download('png')"><i class="fas fa-download"></i><span class="tool-label">PNG</span></button>
         <button onclick="download('jpeg')"><i class="fas fa-download"></i><span class="tool-label">JPG</span></button>
     </div>
@@ -210,10 +224,13 @@
         let selected = null;
         let isDragging = false;
         let isRotating = false;
-        let startX, startY, startAngle;
+        let isScaling = false;
+        let isPinchRotating = false;
+        let startX, startY, startAngle, startDist, startScale, startPinchAngle;
         let cropMode = false;
         let cropStartX, cropStartY, cropEndX, cropEndY;
         let rotateHandle = document.getElementById('rotate-handle');
+        let history = []; // For undo
 
         function initCanvas() {
             canvas.width = window.innerWidth * 0.9;
@@ -221,22 +238,56 @@
             redraw();
         }
 
+        function saveState() {
+            // Clone layers without img (store data URL)
+            let clone = layers.map(layer => {
+                let c = {...layer};
+                if (layer.type === 'image') c.imgData = layer.img.src;
+                return c;
+            });
+            history.push(clone);
+            if (history.length > 20) history.shift(); // Limit history
+        }
+
+        function undo() {
+            if (history.length) {
+                let state = history.pop();
+                layers = state.map(layer => {
+                    if (layer.type === 'image') {
+                        let img = new Image();
+                        img.src = layer.imgData;
+                        layer.img = img;
+                    }
+                    return layer;
+                });
+                redraw();
+            }
+        }
+
         function redraw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let layer of layers) {
                 ctx.save();
+                ctx.globalAlpha = (layer.opacity || 100) / 100;
+                ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
+                ctx.rotate(layer.rotation * Math.PI / 180);
+                ctx.scale(layer.flipX ? -1 : 1, layer.flipY ? -1 : 1);
                 if (layer.type === 'image') {
-                    ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
-                    ctx.rotate(layer.rotation * Math.PI / 180);
-                    ctx.filter = `brightness(${layer.brightness}%) contrast(${layer.contrast}%) saturate(${layer.saturation}%) hue-rotate(${layer.hue}deg) blur(${layer.blur}px)`;
-                    // Sharpen is approximate using contrast or other, but canvas filter doesn't have sharpen, so simulate if needed
+                    ctx.filter = `brightness(${layer.brightness}%) contrast(${layer.contrast}%) saturate(${layer.saturation}%) hue-rotate(${layer.hue}deg) blur(${layer.blur}px) grayscale(${layer.grayscale}%)`;
                     ctx.drawImage(layer.img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
                 } else if (layer.type === 'text') {
-                    ctx.translate(layer.x, layer.y);
-                    ctx.rotate(layer.rotation * Math.PI / 180);
-                    ctx.font = `${layer.size}px ${layer.font}`;
+                    ctx.shadowColor = layer.shadowColor;
+                    ctx.shadowOffsetX = layer.shadowOffsetX;
+                    ctx.shadowOffsetY = layer.shadowOffsetY;
+                    ctx.shadowBlur = layer.shadowBlur;
+                    ctx.font = `${layer.bold ? 'bold ' : ''}${layer.italic ? 'italic ' : ''}${layer.size}px ${layer.font}`;
                     ctx.fillStyle = layer.color;
-                    ctx.fillText(layer.text, 0, 0);
+                    ctx.textAlign = layer.align || 'left';
+                    let textX = 0;
+                    if (layer.align === 'center') textX = -ctx.measureText(layer.text).width / 2;
+                    if (layer.align === 'right') textX = -ctx.measureText(layer.text).width;
+                    ctx.fillText(layer.text, textX, 0);
+                    layer.width = ctx.measureText(layer.text).width; // Update width for selection
                 }
                 ctx.restore();
             }
@@ -249,18 +300,17 @@
         }
 
         function drawHandles(layer) {
-            if (layer.type === 'image' || layer.type === 'text') {
-                let handleX = layer.x + layer.width;
-                let handleY = layer.y + layer.height;
-                rotateHandle.style.left = `${canvas.offsetLeft + handleX}px`;
-                rotateHandle.style.top = `${canvas.offsetTop + handleY}px`;
-                rotateHandle.style.display = 'block';
-            }
+            // Approximate position for rotate handle
+            let handleX = layer.x + layer.width * Math.cos(layer.rotation * Math.PI / 180) - layer.height * Math.sin(layer.rotation * Math.PI / 180) / 2;
+            let handleY = layer.y + layer.width * Math.sin(layer.rotation * Math.PI / 180) + layer.height * Math.cos(layer.rotation * Math.PI / 180) / 2;
+            rotateHandle.style.left = `${canvas.offsetLeft + handleX}px`;
+            rotateHandle.style.top = `${canvas.offsetTop + handleY}px`;
+            rotateHandle.style.display = 'block';
         }
 
         function drawCropRect() {
             if (cropStartX !== undefined) {
-                ctx.strokeStyle = '#000';
+                ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([5, 5]);
                 ctx.strokeRect(cropStartX, cropStartY, cropEndX - cropStartX, cropEndY - cropStartY);
@@ -271,16 +321,9 @@
         function getLayerAt(x, y) {
             for (let i = layers.length - 1; i >= 0; i--) {
                 let layer = layers[i];
-                if (layer.type === 'image') {
-                    if (x > layer.x && x < layer.x + layer.width && y > layer.y && y < layer.y + layer.height) {
-                        return layer;
-                    }
-                } else if (layer.type === 'text') {
-                    ctx.font = `${layer.size}px ${layer.font}`;
-                    let width = ctx.measureText(layer.text).width;
-                    if (x > layer.x && x < layer.x + width && y > layer.y - layer.size && y < layer.y) {
-                        return layer;
-                    }
+                // Simple check, improve with rotation matrix if needed
+                if (x > layer.x && x < layer.x + layer.width && y > layer.y && y < layer.y + layer.height) {
+                    return layer;
                 }
             }
             return null;
@@ -288,57 +331,71 @@
 
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            let touch = e.touches[0];
-            let rect = canvas.getBoundingClientRect();
-            let x = touch.clientX - rect.left;
-            let y = touch.clientY - rect.top;
-            if (cropMode) {
-                cropStartX = x;
-                cropStartY = y;
-                cropEndX = x;
-                cropEndY = y;
-            } else {
-                selected = getLayerAt(x, y);
-                if (selected) {
-                    isDragging = true;
-                    startX = x - selected.x;
-                    startY = y - selected.y;
-                    if (selected.type === 'image') {
-                        document.getElementById('brightness').value = selected.brightness || 100;
-                        document.getElementById('contrast').value = selected.contrast || 100;
-                        document.getElementById('saturation').value = selected.saturation || 100;
-                        document.getElementById('hue').value = selected.hue || 0;
-                        document.getElementById('blur').value = selected.blur || 0;
-                        document.getElementById('sharpen').value = selected.sharpen || 0;
-                    } else if (selected.type === 'text') {
-                        document.getElementById('fontSelect').value = selected.font;
-                        document.getElementById('textSize').value = selected.size;
-                        document.getElementById('textColor').value = selected.color;
+            if (e.touches.length === 1) {
+                let touch = e.touches[0];
+                let rect = canvas.getBoundingClientRect();
+                let x = touch.clientX - rect.left;
+                let y = touch.clientY - rect.top;
+                if (cropMode) {
+                    cropStartX = x;
+                    cropStartY = y;
+                    cropEndX = x;
+                    cropEndY = y;
+                } else {
+                    selected = getLayerAt(x, y);
+                    if (selected) {
+                        saveState();
+                        isDragging = true;
+                        startX = x - selected.x;
+                        startY = y - selected.y;
+                        updatePanels(selected);
+                        redraw();
                     }
-                    redraw();
                 }
+            } else if (e.touches.length === 2 && selected) {
+                saveState();
+                isScaling = true;
+                let touch1 = e.touches[0], touch2 = e.touches[1];
+                startDist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+                startScale = selected.scale || 1;
+                startPinchAngle = Math.atan2(touch1.clientY - touch2.clientY, touch1.clientX - touch2.clientX);
+                startAngle = selected.rotation || 0;
             }
         });
 
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            let touch = e.touches[0];
-            let rect = canvas.getBoundingClientRect();
-            let x = touch.clientX - rect.left;
-            let y = touch.clientY - rect.top;
-            if (cropMode) {
-                cropEndX = x;
-                cropEndY = y;
-                redraw();
-            } else if (isDragging && selected) {
+            if (e.touches.length === 1 && isDragging) {
+                let touch = e.touches[0];
+                let rect = canvas.getBoundingClientRect();
+                let x = touch.clientX - rect.left;
+                let y = touch.clientY - rect.top;
                 selected.x = x - startX;
                 selected.y = y - startY;
+                redraw();
+            } else if (e.touches.length === 2 && isScaling) {
+                let touch1 = e.touches[0], touch2 = e.touches[1];
+                let rect = canvas.getBoundingClientRect();
+                let newDist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+                let ratio = newDist / startDist;
+                selected.scale = startScale * ratio;
+                applyScale(selected);
+                let newAngle = Math.atan2(touch1.clientY - touch2.clientY, touch1.clientX - touch2.clientX);
+                let deltaAngle = newAngle - startPinchAngle;
+                selected.rotation = startAngle + deltaAngle * 180 / Math.PI;
+                redraw();
+            } else if (cropMode) {
+                let touch = e.touches[0];
+                let rect = canvas.getBoundingClientRect();
+                cropEndX = touch.clientX - rect.left;
+                cropEndY = touch.clientY - rect.top;
                 redraw();
             }
         });
 
         canvas.addEventListener('touchend', (e) => {
             isDragging = false;
+            isScaling = false;
             if (cropMode && selected && cropStartX !== undefined) {
                 applyCrop(selected);
                 cropMode = false;
@@ -349,6 +406,7 @@
 
         rotateHandle.addEventListener('touchstart', (e) => {
             e.stopPropagation();
+            saveState();
             isRotating = true;
             let rect = canvas.getBoundingClientRect();
             startX = e.touches[0].clientX - rect.left;
@@ -382,23 +440,30 @@
                 reader.onload = (ev) => {
                     let img = new Image();
                     img.onload = () => {
-                        let scale = Math.min(canvas.width / img.width, canvas.height / img.height, 0.8);
+                        let maxScale = Math.min(canvas.width / img.width, canvas.height / img.height, 0.8);
                         let layer = {
                             type: 'image',
                             img,
-                            x: (canvas.width - img.width * scale) / 2,
-                            y: (canvas.height - img.height * scale) / 2,
-                            width: img.width * scale,
-                            height: img.height * scale,
+                            x: (canvas.width - img.width * maxScale) / 2,
+                            y: (canvas.height - img.height * maxScale) / 2,
+                            baseWidth: img.width * maxScale,
+                            baseHeight: img.height * maxScale,
+                            width: img.width * maxScale,
+                            height: img.height * maxScale,
+                            scale: 1,
                             rotation: 0,
+                            flipX: false,
+                            flipY: false,
                             brightness: 100,
                             contrast: 100,
                             saturation: 100,
                             hue: 0,
                             blur: 0,
-                            sharpen: 0
+                            grayscale: 0,
+                            opacity: 100
                         };
                         layers.push(layer);
+                        saveState();
                         redraw();
                     };
                     img.src = ev.target.result;
@@ -416,13 +481,53 @@
                     text,
                     x: canvas.width / 2,
                     y: canvas.height / 2,
+                    baseSize: 40,
                     size: 40,
+                    scale: 1,
                     font: font,
-                    color: '#000',
-                    rotation: 0
+                    color: '#ffffff',
+                    align: 'left',
+                    bold: false,
+                    italic: false,
+                    rotation: 0,
+                    flipX: false,
+                    flipY: false,
+                    shadowColor: '#000000',
+                    shadowOffsetX: 0,
+                    shadowOffsetY: 0,
+                    shadowBlur: 0,
+                    opacity: 100
                 };
                 layers.push(layer);
+                saveState();
                 redraw();
+            }
+        }
+
+        function updatePanels(layer) {
+            if (layer.type === 'image') {
+                toggleFilterPanel(true);
+                toggleTextPanel(false);
+                document.getElementById('brightness').value = layer.brightness;
+                document.getElementById('contrast').value = layer.contrast;
+                document.getElementById('saturation').value = layer.saturation;
+                document.getElementById('hue').value = layer.hue;
+                document.getElementById('blur').value = layer.blur;
+                document.getElementById('grayscale').value = layer.grayscale;
+                document.getElementById('scale').value = layer.scale;
+                document.getElementById('opacity').value = layer.opacity;
+            } else if (layer.type === 'text') {
+                toggleTextPanel(true);
+                toggleFilterPanel(false);
+                document.getElementById('fontSelect').value = layer.font;
+                document.getElementById('textSize').value = layer.baseSize;
+                document.getElementById('textColor').value = layer.color;
+                document.getElementById('textAlign').value = layer.align;
+                document.getElementById('shadowColor').value = layer.shadowColor;
+                document.getElementById('shadowX').value = layer.shadowOffsetX;
+                document.getElementById('shadowY').value = layer.shadowOffsetY;
+                document.getElementById('shadowBlur').value = layer.shadowBlur;
+                document.getElementById('textOpacity').value = layer.opacity;
             }
         }
 
@@ -433,7 +538,22 @@
                 layer.saturation = document.getElementById('saturation').value;
                 layer.hue = document.getElementById('hue').value;
                 layer.blur = document.getElementById('blur').value;
-                layer.sharpen = document.getElementById('sharpen').value; // Note: Sharpen not directly supported, can approximate
+                layer.grayscale = document.getElementById('grayscale').value;
+                layer.opacity = document.getElementById('opacity').value;
+                redraw();
+            }
+        }
+
+        function applyScale(layer) {
+            if (layer) {
+                let newScale = layer.type === 'image' ? document.getElementById('scale').value : layer.scale; // For text, use pinch only or separate
+                layer.scale = newScale;
+                if (layer.type === 'image') {
+                    layer.width = layer.baseWidth * layer.scale;
+                    layer.height = layer.baseHeight * layer.scale;
+                } else if (layer.type === 'text') {
+                    layer.size = layer.baseSize * layer.scale;
+                }
                 redraw();
             }
         }
@@ -441,22 +561,55 @@
         function applyTextStyle(layer) {
             if (layer && layer.type === 'text') {
                 layer.font = document.getElementById('fontSelect').value;
-                layer.size = document.getElementById('textSize').value;
+                layer.baseSize = document.getElementById('textSize').value;
+                layer.size = layer.baseSize * (layer.scale || 1);
                 layer.color = document.getElementById('textColor').value;
+                layer.align = document.getElementById('textAlign').value;
+                layer.shadowColor = document.getElementById('shadowColor').value;
+                layer.shadowOffsetX = document.getElementById('shadowX').value;
+                layer.shadowOffsetY = document.getElementById('shadowY').value;
+                layer.shadowBlur = document.getElementById('shadowBlur').value;
+                layer.opacity = document.getElementById('textOpacity').value;
                 redraw();
             }
         }
 
-        function toggleFilterPanel() {
-            let panel = document.getElementById('filter-panel');
-            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
-            document.getElementById('text-panel').style.display = 'none';
+        function toggleBold(layer) {
+            if (layer && layer.type === 'text') {
+                layer.bold = !layer.bold;
+                redraw();
+            }
         }
 
-        function toggleTextPanel() {
+        function toggleItalic(layer) {
+            if (layer && layer.type === 'text') {
+                layer.italic = !layer.italic;
+                redraw();
+            }
+        }
+
+        function flipHorizontal() {
+            if (selected) {
+                selected.flipX = !selected.flipX;
+                redraw();
+            }
+        }
+
+        function flipVertical() {
+            if (selected) {
+                selected.flipY = !selected.flipY;
+                redraw();
+            }
+        }
+
+        function toggleFilterPanel(force = null) {
+            let panel = document.getElementById('filter-panel');
+            panel.style.display = force !== null ? (force ? 'flex' : 'none') : (panel.style.display === 'flex' ? 'none' : 'flex');
+        }
+
+        function toggleTextPanel(force = null) {
             let panel = document.getElementById('text-panel');
-            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
-            document.getElementById('filter-panel').style.display = 'none';
+            panel.style.display = force !== null ? (force ? 'flex' : 'none') : (panel.style.display === 'flex' ? 'none' : 'flex');
         }
 
         function enterCropMode() {
@@ -478,8 +631,10 @@
             let tempCtx = tempCanvas.getContext('2d');
             tempCtx.drawImage(layer.img, cropX * (layer.img.width / layer.width), cropY * (layer.img.height / layer.height), cropWidth * (layer.img.width / layer.width), cropHeight * (layer.img.height / layer.height), 0, 0, cropWidth, cropHeight);
             layer.img.src = tempCanvas.toDataURL();
-            layer.width = cropWidth;
-            layer.height = cropHeight;
+            layer.baseWidth = cropWidth;
+            layer.baseHeight = cropHeight;
+            layer.width = cropWidth * layer.scale;
+            layer.height = cropHeight * layer.scale;
             layer.x = Math.min(cropStartX, cropEndX);
             layer.y = Math.min(cropStartY, cropEndY);
             redraw();
@@ -500,321 +655,18 @@
             }
         }
 
-        function download(format) {
-            let link = document.createElement('a');
-            link.download = `edited.${format}`;
-            link.href = canvas.toDataURL(`image/${format}`);
-            link.click();
-        }
-
-        initCanvas();
-        window.addEventListener('resize', initCanvas);
-    </script>
-</body>
-</html>            <option>DM Sans</option>
-            <option>Archivo</option>
-            <option>Libre Franklin</option>
-            <option>Space Grotesk</option>
-            <option>Manrope</option>
-            <option>Karla</option>
-            <option>Rubik</option>
-            <option>Overpass</option>
-            <option>Public Sans</option>
-            <option>Figtree</option>
-            <option>Outfit</option>
-            <option>Red Hat Display</option>
-            <option>Sen</option>
-            <option>Lexend</option>
-            <option>Chivo</option>
-            <option>Plus Jakarta Sans</option>
-            <option>Epilogue</option>
-            <option>Syne</option>
-            <option>Arial</option> <!-- Added one more to make 40 -->
-        </select>
-        <label>Brightness: <input type="range" id="brightness" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
-        <label>Contrast: <input type="range" id="contrast" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
-        <label>Rotation: <input type="range" id="rotation" min="0" max="360" value="0" oninput="applyRotation(selected)"></label>
-        <button onclick="enterCropMode()">Crop</button>
-        <select id="ratio">
-            <option value="1">1:1</option>
-            <option value="1.333">4:3</option>
-            <option value="1.777">16:9</option>
-            <option value="0.562">9:16</option>
-            <option value="2">2:1</option>
-            <option value="0.5">1:2</option>
-            <option value="1.414">A4 (Portrait)</option>
-            <option value="0.707">A4 (Landscape)</option>
-        </select>
-        <button onclick="applyRatio()">Apply Ratio</button>
-        <button onclick="deleteSelected()">Delete</button>
-        <button onclick="download('png')">Download PNG</button>
-        <button onclick="download('jpeg')">Download JPG</button>
-    </div>
-    <script>
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let layers = [];
-        let selected = null;
-        let isDragging = false;
-        let isRotating = false;
-        let startX, startY, startAngle;
-        let cropMode = false;
-        let cropStartX, cropStartY, cropEndX, cropEndY;
-        let rotateHandle = document.getElementById('rotate-handle');
-
-        function initCanvas() {
-            canvas.width = window.innerWidth * 0.8;
-            canvas.height = canvas.width;
-            redraw();
-        }
-
-        function redraw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let layer of layers) {
-                ctx.save();
-                if (layer.type === 'image') {
-                    ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
-                    ctx.rotate(layer.rotation * Math.PI / 180);
-                    ctx.filter = `brightness(${layer.brightness}%) contrast(${layer.contrast}%)`;
-                    ctx.drawImage(layer.img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
-                } else if (layer.type === 'text') {
-                    ctx.translate(layer.x, layer.y);
-                    ctx.rotate(layer.rotation * Math.PI / 180);
-                    ctx.font = `${layer.size}px ${layer.font}`;
-                    ctx.fillStyle = layer.color;
-                    ctx.fillText(layer.text, 0, 0);
-                }
-                ctx.restore();
-            }
-            if (selected) {
-                drawHandles(selected);
-            }
-            if (cropMode) {
-                drawCropRect();
-            }
-        }
-
-        function drawHandles(layer) {
-            if (layer.type === 'image' || layer.type === 'text') {
-                // Position rotate handle at bottom-right corner
-                let handleX = layer.x + layer.width;
-                let handleY = layer.y + layer.height;
-                // Adjust for rotation if needed, but for simplicity, approximate
-                rotateHandle.style.left = `${canvas.offsetLeft + handleX}px`;
-                rotateHandle.style.top = `${canvas.offsetTop + handleY}px`;
-                rotateHandle.style.display = 'block';
-            }
-        }
-
-        function drawCropRect() {
-            if (cropStartX !== undefined) {
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 5]);
-                ctx.strokeRect(cropStartX, cropStartY, cropEndX - cropStartX, cropEndY - cropStartY);
-                ctx.setLineDash([]);
-            }
-        }
-
-        function getLayerAt(x, y) {
-            for (let i = layers.length - 1; i >= 0; i--) {
-                let layer = layers[i];
-                if (layer.type === 'image') {
-                    // Simple bounding box check, ignoring rotation for simplicity
-                    if (x > layer.x && x < layer.x + layer.width && y > layer.y && y < layer.y + layer.height) {
-                        return layer;
-                    }
-                } else if (layer.type === 'text') {
-                    ctx.font = `${layer.size}px ${layer.font}`;
-                    let width = ctx.measureText(layer.text).width;
-                    if (x > layer.x && x < layer.x + width && y > layer.y - layer.size && y < layer.y) {
-                        return layer;
-                    }
-                }
-            }
-            return null;
-        }
-
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            let touch = e.touches[0];
-            let rect = canvas.getBoundingClientRect();
-            let x = touch.clientX - rect.left;
-            let y = touch.clientY - rect.top;
-            if (cropMode) {
-                cropStartX = x;
-                cropStartY = y;
-                cropEndX = x;
-                cropEndY = y;
-            } else {
-                selected = getLayerAt(x, y);
-                if (selected) {
-                    isDragging = true;
-                    startX = x - selected.x;
-                    startY = y - selected.y;
-                    document.getElementById('brightness').value = selected.brightness || 100;
-                    document.getElementById('contrast').value = selected.contrast || 100;
-                    document.getElementById('rotation').value = selected.rotation || 0;
-                    redraw();
-                }
-            }
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            let touch = e.touches[0];
-            let rect = canvas.getBoundingClientRect();
-            let x = touch.clientX - rect.left;
-            let y = touch.clientY - rect.top;
-            if (cropMode) {
-                cropEndX = x;
-                cropEndY = y;
-                redraw();
-            } else if (isDragging && selected) {
-                selected.x = x - startX;
-                selected.y = y - startY;
-                redraw();
-            }
-        });
-
-        canvas.addEventListener('touchend', (e) => {
-            isDragging = false;
-            if (cropMode && selected && cropStartX !== undefined) {
-                applyCrop(selected);
-                cropMode = false;
-                cropStartX = undefined;
-            }
-            redraw();
-        });
-
-        rotateHandle.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            isRotating = true;
-            let rect = canvas.getBoundingClientRect();
-            startX = e.touches[0].clientX - rect.left;
-            startY = e.touches[0].clientY - rect.top;
-            let centerX = selected.x + selected.width / 2;
-            let centerY = selected.y + selected.height / 2;
-            startAngle = Math.atan2(startY - centerY, startX - centerX);
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (isRotating) {
-                e.preventDefault();
-                let rect = canvas.getBoundingClientRect();
-                let x = e.touches[0].clientX - rect.left;
-                let y = e.touches[0].clientY - rect.top;
-                let centerX = selected.x + selected.width / 2;
-                let centerY = selected.y + selected.height / 2;
-                let angle = Math.atan2(y - centerY, x - centerX);
-                selected.rotation = (angle - startAngle) * 180 / Math.PI + (selected.rotation || 0);
-                redraw();
-            }
-        });
-
-        document.addEventListener('touchend', () => {
-            isRotating = false;
-        });
-
-        document.getElementById('upload').addEventListener('change', (e) => {
-            for (let file of e.target.files) {
-                let reader = new FileReader();
-                reader.onload = (ev) => {
-                    let img = new Image();
-                    img.onload = () => {
-                        let scale = Math.min(canvas.width / img.width, canvas.height / img.height, 0.5);
-                        let layer = {
-                            type: 'image',
-                            img,
-                            x: (canvas.width - img.width * scale) / 2,
-                            y: (canvas.height - img.height * scale) / 2,
-                            width: img.width * scale,
-                            height: img.height * scale,
-                            rotation: 0,
-                            brightness: 100,
-                            contrast: 100
-                        };
-                        layers.push(layer);
-                        redraw();
-                    };
-                    img.src = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function addText() {
-            let text = prompt('Enter text');
-            if (text) {
-                let font = document.getElementById('fontSelect').value;
-                let layer = {
-                    type: 'text',
-                    text,
-                    x: canvas.width / 2,
-                    y: canvas.height / 2,
-                    size: 40,
-                    font: font,
-                    color: '#000',
-                    rotation: 0
-                };
-                layers.push(layer);
-                redraw();
-            }
-        }
-
-        function applyFilters(layer) {
-            if (layer) {
-                layer.brightness = document.getElementById('brightness').value;
-                layer.contrast = document.getElementById('contrast').value;
-                redraw();
-            }
-        }
-
-        function applyRotation(layer) {
-            if (layer) {
-                layer.rotation = document.getElementById('rotation').value;
-                redraw();
-            }
-        }
-
-        function enterCropMode() {
-            if (selected && selected.type === 'image') {
-                cropMode = true;
-            } else {
-                alert('Select an image layer first.');
-            }
-        }
-
-        function applyCrop(layer) {
-            let cropWidth = Math.abs(cropEndX - cropStartX);
-            let cropHeight = Math.abs(cropEndY - cropStartY);
-            let cropX = Math.min(cropStartX, cropEndX) - layer.x;
-            let cropY = Math.min(cropStartY, cropEndY) - layer.y;
-            // Create temp canvas for crop
-            let tempCanvas = document.createElement('canvas');
-            tempCanvas.width = cropWidth;
-            tempCanvas.height = cropHeight;
-            let tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(layer.img, cropX * (layer.img.width / layer.width), cropY * (layer.img.height / layer.height), cropWidth * (layer.img.width / layer.width), cropHeight * (layer.img.height / layer.height), 0, 0, cropWidth, cropHeight);
-            layer.img.src = tempCanvas.toDataURL();
-            layer.width = cropWidth;
-            layer.height = cropHeight;
-            layer.x = Math.min(cropStartX, cropEndX);
-            layer.y = Math.min(cropStartY, cropEndY);
-            redraw();
-        }
-
-        function applyRatio() {
-            let ratio = parseFloat(document.getElementById('ratio').value);
-            canvas.height = canvas.width / ratio;
-            redraw();
-        }
-
-        function deleteSelected() {
+        function bringToFront() {
             if (selected) {
                 layers = layers.filter(l => l !== selected);
-                selected = null;
-                rotateHandle.style.display = 'none';
+                layers.push(selected);
+                redraw();
+            }
+        }
+
+        function sendToBack() {
+            if (selected) {
+                layers = layers.filter(l => l !== selected);
+                layers.unshift(selected);
                 redraw();
             }
         }
@@ -822,7 +674,7 @@
         function download(format) {
             let link = document.createElement('a');
             link.download = `edited.${format}`;
-            link.href = canvas.toDataURL(`image/${format}`);
+            link.href = canvas.toDataURL(`image/${format}`, 1.0);
             link.click();
         }
 
