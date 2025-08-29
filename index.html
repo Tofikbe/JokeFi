@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>JokeFi Edit Tool</title>
+
+  <!-- Google Fonts (40) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Oswald&family=Montserrat&family=Lobster&family=Poppins&family=Raleway&family=Pacifico&family=Playfair+Display&family=Merriweather&family=Indie+Flower&family=Inconsolata&family=PT+Sans&family=Noto+Sans&family=Josefin+Sans&family=Ubuntu&family=Fira+Sans&family=Kalam&family=Amatic+SC&family=Varela+Round&family=Fredoka+One&family=Teko&family=Righteous&family=Concert+One&family=Baloo+2&family=Shadows+Into+Light&family=Bebas+Neue&family=Great+Vibes&family=Quicksand&family=Cabin&family=Arvo&family=Zilla+Slab&family=Orbitron&family=Permanent+Marker&family=Russo+One&family=Exo+2&family=Cinzel&family=Courgette&family=Sacramento&display=swap" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
@@ -37,17 +41,16 @@
     footer {
       background: #1c1c1c;
       display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      flex-wrap: wrap;
+      justify-content: center;
       padding: 8px;
+      gap: 6px;
     }
-    footer button, footer select, label {
-      flex-shrink: 0;
+    footer button, footer select, footer input, label {
       background: #333;
       border: none;
       border-radius: 8px;
       padding: 8px 12px;
-      margin: 0 4px;
       color: white;
       font-size: 14px;
     }
@@ -56,6 +59,12 @@
     }
     input[type=file] {
       display: none;
+    }
+    .slider-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #ccc;
     }
   </style>
 </head>
@@ -68,64 +77,100 @@
   </main>
 
   <footer>
-    <label for="uploadImage">Upload</label>
-    <input type="file" id="uploadImage" accept="image/*">
-    <button onclick="addText()">Text</button>
+    <label for="uploadImage">+Image</label>
+    <input type="file" id="uploadImage" accept="image/*" multiple>
+    <button onclick="addText()">+Text</button>
+
     <select id="fontSelect" onchange="changeFont(this.value)">
-      <option value="Arial">Arial</option>
-      <option value="Times New Roman">Times</option>
-      <option value="Courier">Courier</option>
-      <option value="Impact">Impact</option>
+      <option value="">Fonts</option>
+      <option value="Roboto">Roboto</option>
+      <option value="Oswald">Oswald</option>
+      <option value="Montserrat">Montserrat</option>
+      <option value="Lobster">Lobster</option>
+      <option value="Poppins">Poppins</option>
+      <option value="Raleway">Raleway</option>
+      <option value="Pacifico">Pacifico</option>
+      <option value="Playfair Display">Playfair</option>
+      <option value="Merriweather">Merriweather</option>
+      <option value="Indie Flower">Indie</option>
+      <option value="Inconsolata">Inconsolata</option>
+      <option value="PT Sans">PT Sans</option>
+      <option value="Noto Sans">Noto Sans</option>
+      <option value="Josefin Sans">Josefin</option>
+      <option value="Ubuntu">Ubuntu</option>
+      <option value="Fira Sans">Fira</option>
+      <option value="Kalam">Kalam</option>
+      <option value="Amatic SC">Amatic</option>
+      <option value="Varela Round">Varela</option>
+      <option value="Fredoka One">Fredoka</option>
+      <option value="Teko">Teko</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Concert One">Concert One</option>
+      <option value="Baloo 2">Baloo</option>
+      <option value="Shadows Into Light">Shadows</option>
+      <option value="Bebas Neue">Bebas Neue</option>
+      <option value="Great Vibes">Great Vibes</option>
+      <option value="Quicksand">Quicksand</option>
+      <option value="Cabin">Cabin</option>
+      <option value="Arvo">Arvo</option>
+      <option value="Zilla Slab">Zilla Slab</option>
+      <option value="Orbitron">Orbitron</option>
+      <option value="Permanent Marker">Permanent Marker</option>
+      <option value="Russo One">Russo</option>
+      <option value="Exo 2">Exo 2</option>
+      <option value="Cinzel">Cinzel</option>
+      <option value="Courgette">Courgette</option>
+      <option value="Sacramento">Sacramento</option>
     </select>
-    <button onclick="applyFilter('brightness', 20)">Bright+</button>
-    <button onclick="applyFilter('contrast', 20)">Contrast+</button>
+
+    <div class="slider-box">
+      Bright <input type="range" id="brightRange" min="-100" max="100" value="0" step="10" onchange="adjustFilters()">
+    </div>
+    <div class="slider-box">
+      Contrast <input type="range" id="contrastRange" min="-100" max="100" value="0" step="10" onchange="adjustFilters()">
+    </div>
+
+    <select onchange="setRatio(this.value)">
+      <option value="">Ratio</option>
+      <option value="1:1">1:1</option>
+      <option value="16:9">16:9</option>
+      <option value="9:16">9:16</option>
+      <option value="4:3">4:3</option>
+    </select>
+
     <button onclick="rotate()">Rotate</button>
     <button onclick="flip()">Flip</button>
+    <button onclick="deleteObj()">Delete</button>
     <button onclick="download('png')">Save PNG</button>
     <button onclick="download('jpg')">Save JPG</button>
   </footer>
 
   <!-- Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js"></script>
 
 <script>
-let canvas = new fabric.Canvas('editorCanvas', {
-  backgroundColor: '#fff'
-});
+let canvas = new fabric.Canvas('editorCanvas', { backgroundColor: '#fff' });
 
-// Upload image
+// Multi image upload
 document.getElementById('uploadImage').addEventListener('change', function(e){
-  let reader = new FileReader();
-  reader.onload = function(f){
-    fabric.Image.fromURL(f.target.result, function(img){
-      img.set({
-        left: 50,
-        top: 50,
-        scaleX: 0.5,
-        scaleY: 0.5,
-        hasControls: true,
-        selectable: true
+  [...e.target.files].forEach(file => {
+    let reader = new FileReader();
+    reader.onload = function(f){
+      fabric.Image.fromURL(f.target.result, function(img){
+        img.set({ left: 50, top: 50, scaleX: 0.3, scaleY: 0.3 });
+        canvas.add(img).setActiveObject(img);
       });
-      canvas.add(img);
-      canvas.setActiveObject(img);
-    });
-  }
-  reader.readAsDataURL(e.target.files[0]);
+    }
+    reader.readAsDataURL(file);
+  });
 });
 
 // Add text
 function addText(){
   let text = prompt("Enter text:");
   if(text){
-    let textbox = new fabric.Textbox(text, {
-      left: 100,
-      top: 100,
-      fontSize: 24,
-      fill: 'red'
-    });
-    canvas.add(textbox);
-    canvas.setActiveObject(textbox);
+    let textbox = new fabric.Textbox(text, { left: 100, top: 100, fontSize: 24, fill: 'red' });
+    canvas.add(textbox).setActiveObject(textbox);
   }
 }
 
@@ -136,6 +181,12 @@ function changeFont(font){
     obj.set("fontFamily", font);
     canvas.renderAll();
   }
+}
+
+// Delete
+function deleteObj(){
+  let obj = canvas.getActiveObject();
+  if(obj) canvas.remove(obj);
 }
 
 // Rotate
@@ -150,35 +201,41 @@ function rotate(){
 // Flip
 function flip(){
   let obj = canvas.getActiveObject();
-  if(obj && obj.type === 'image'){
+  if(obj){
     obj.toggle('flipX');
     canvas.renderAll();
   }
 }
 
-// Filters (using Caman)
-function applyFilter(type, value){
-  let active = canvas.getActiveObject();
-  if(active && active.type === 'image'){
-    let el = active.getElement();
-    Caman(el, function(){
-      if(type === 'brightness') this.brightness(value);
-      if(type === 'contrast') this.contrast(value);
-      this.render(function(){
-        active.setSrc(el.toDataURL(), function(){
-          canvas.renderAll();
-        });
-      });
-    });
+// Filters (brightness/contrast)
+function adjustFilters(){
+  let obj = canvas.getActiveObject();
+  if(obj && obj.type === 'image'){
+    let bright = parseInt(document.getElementById("brightRange").value);
+    let contrast = parseInt(document.getElementById("contrastRange").value);
+
+    obj.filters = [];
+    obj.filters.push(new fabric.Image.filters.Brightness({ brightness: bright/100 }));
+    obj.filters.push(new fabric.Image.filters.Contrast({ contrast: contrast/100 }));
+    obj.applyFilters();
+    canvas.renderAll();
   }
+}
+
+// Ratio change
+function setRatio(val){
+  if(!val) return;
+  let [w,h] = val.split(":").map(Number);
+  let newW = 320;
+  let newH = (newW*h)/w;
+  canvas.setWidth(newW);
+  canvas.setHeight(newH);
+  canvas.renderAll();
 }
 
 // Download
 function download(format){
-  let dataURL = canvas.toDataURL({
-    format: format,
-    quality: 1
-  });
+  let dataURL = canvas.toDataURL({ format: format, quality: 1 });
   let link = document.createElement("a");
   link.download = "edited." + format;
   link.href = dataURL;
