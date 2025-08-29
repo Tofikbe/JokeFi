@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>JokeFi Edit Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Raleway:wght@400;700&family=PT+Sans:wght@400;700&family=Ubuntu:wght@400;700&family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Playfair+Display:wght@400;700&family=Roboto+Slab:wght@400;700&family=Lora:wght@400;700&family=Work+Sans:wght@400;700&family=Quicksand:wght@400;700&family=Nunito:wght@400;700&family=Heebo:wght@400;700&family=Barlow:wght@400;700&family=Inter:wght@400;700&family=DM+Sans:wght@400;700&family=Archivo:wght@400;700&family=Libre+Franklin:wght@400;700&family=Space+Grotesk:wght@400;700&family=Manrope:wght@400;700&family=Karla:wght@400;700&family=Rubik:wght@400;700&family=Overpass:wght@400;700&family=Public+Sans:wght@400;700&family=Figtree:wght@400;700&family=Outfit:wght@400;700&family=Red+Hat+Display:wght@400;700&family=Sen:wght@400;700&family=Lexend:wght@400;700&family=Chivo:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700&family=Epilogue:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -15,7 +16,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            touch-action: none; /* For better touch handling */
+            touch-action: none;
         }
         #header {
             background: #333;
@@ -31,40 +32,60 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%23ccc" d="M0 0h10v10H0zM10 10h10v10H10z"/></svg>') repeat; /* Checkerboard for edit feel */
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%23ccc" d="M0 0h10v10H0zM10 10h10v10H10z"/></svg>') repeat;
+            overflow: hidden;
         }
         #canvas {
             border: 1px solid #ccc;
             background: transparent;
             touch-action: manipulation;
+            max-width: 100%;
+            max-height: 100%;
         }
         #tools {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: #333;
             color: #fff;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row;
             justify-content: space-around;
-            padding: 10px;
+            align-items: center;
+            padding: 5px;
             overflow-x: auto;
+            z-index: 10;
         }
         button, select, input[type="range"], label {
-            background: #555;
+            background: transparent;
             color: #fff;
             border: none;
-            padding: 8px 12px;
-            margin: 5px;
+            padding: 8px;
+            margin: 2px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        button:hover, select:hover, label:hover {
+            background: #555;
         }
         input[type="file"] {
             display: none;
         }
-        button:hover, select:hover {
-            background: #666;
+        i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .tool-label {
+            font-size: 10px;
         }
         #fontSelect {
-            max-width: 150px;
+            max-width: 100px;
+            background: #555;
         }
         .handle {
             position: absolute;
@@ -75,18 +96,45 @@
             border-radius: 50%;
             display: none;
         }
+        #filter-panel {
+            display: none;
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+            background: #444;
+            padding: 10px;
+            overflow-x: auto;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        #text-panel {
+            display: none;
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+            background: #444;
+            padding: 10px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
     <div id="header">JokeFi Edit Tool</div>
     <div id="editor">
         <canvas id="canvas"></canvas>
-        <div id="rotate-handle" class="handle"></div> <!-- For rotate handle -->
+        <div id="rotate-handle" class="handle"></div>
     </div>
-    <div id="tools">
-        <label for="upload">Add Image</label>
-        <input type="file" id="upload" accept="image/*" multiple>
-        <button onclick="addText()">Add Text</button>
+    <div id="filter-panel">
+        <label><i class="fas fa-sun"></i><span class="tool-label">Brightness</span><input type="range" id="brightness" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-adjust"></i><span class="tool-label">Contrast</span><input type="range" id="contrast" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-palette"></i><span class="tool-label">Saturation</span><input type="range" id="saturation" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-tint"></i><span class="tool-label">Hue</span><input type="range" id="hue" min="-180" max="180" value="0" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-eye-dropper"></i><span class="tool-label">Blur</span><input type="range" id="blur" min="0" max="10" value="0" step="0.1" oninput="applyFilters(selected)"></label>
+        <label><i class="fas fa-star"></i><span class="tool-label">Sharpen</span><input type="range" id="sharpen" min="0" max="100" value="0" oninput="applyFilters(selected)"></label>
+    </div>
+    <div id="text-panel">
         <select id="fontSelect">
             <option>Open Sans</option>
             <option>Roboto</option>
@@ -110,6 +158,360 @@
             <option>Barlow</option>
             <option>Inter</option>
             <option>DM Sans</option>
+            <option>Archivo</option>
+            <option>Libre Franklin</option>
+            <option>Space Grotesk</option>
+            <option>Manrope</option>
+            <option>Karla</option>
+            <option>Rubik</option>
+            <option>Overpass</option>
+            <option>Public Sans</option>
+            <option>Figtree</option>
+            <option>Outfit</option>
+            <option>Red Hat Display</option>
+            <option>Sen</option>
+            <option>Lexend</option>
+            <option>Chivo</option>
+            <option>Plus Jakarta Sans</option>
+            <option>Epilogue</option>
+            <option>Syne</option>
+            <option>Arial</option>
+        </select>
+        <label><i class="fas fa-text-height"></i><span class="tool-label">Size</span><input type="range" id="textSize" min="10" max="100" value="40" oninput="applyTextStyle(selected)"></label>
+        <label><i class="fas fa-palette"></i><span class="tool-label">Color</span><input type="color" id="textColor" value="#000000" oninput="applyTextStyle(selected)"></label>
+    </div>
+    <div id="tools">
+        <label for="upload"><i class="fas fa-image"></i><span class="tool-label">Add Image</span></label>
+        <input type="file" id="upload" accept="image/*" multiple>
+        <button onclick="addText()"><i class="fas fa-font"></i><span class="tool-label">Add Text</span></button>
+        <button onclick="toggleTextPanel()"><i class="fas fa-text"></i><span class="tool-label">Text Style</span></button>
+        <button onclick="toggleFilterPanel()"><i class="fas fa-sliders-h"></i><span class="tool-label">Filters</span></button>
+        <button onclick="applyRotation(selected)"><i class="fas fa-sync-alt"></i><span class="tool-label">Rotate</span></button>
+        <button onclick="enterCropMode()"><i class="fas fa-crop"></i><span class="tool-label">Crop</span></button>
+        <select id="ratio">
+            <option value="1">1:1</option>
+            <option value="1.333">4:3</option>
+            <option value="1.777">16:9</option>
+            <option value="0.562">9:16</option>
+            <option value="2">2:1</option>
+            <option value="0.5">1:2</option>
+            <option value="1.414">A4 (P)</option>
+            <option value="0.707">A4 (L)</option>
+        </select>
+        <button onclick="applyRatio()"><i class="fas fa-expand"></i><span class="tool-label">Ratio</span></button>
+        <button onclick="deleteSelected()"><i class="fas fa-trash"></i><span class="tool-label">Delete</span></button>
+        <button onclick="download('png')"><i class="fas fa-download"></i><span class="tool-label">PNG</span></button>
+        <button onclick="download('jpeg')"><i class="fas fa-download"></i><span class="tool-label">JPG</span></button>
+    </div>
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let layers = [];
+        let selected = null;
+        let isDragging = false;
+        let isRotating = false;
+        let startX, startY, startAngle;
+        let cropMode = false;
+        let cropStartX, cropStartY, cropEndX, cropEndY;
+        let rotateHandle = document.getElementById('rotate-handle');
+
+        function initCanvas() {
+            canvas.width = window.innerWidth * 0.9;
+            canvas.height = window.innerHeight * 0.6;
+            redraw();
+        }
+
+        function redraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let layer of layers) {
+                ctx.save();
+                if (layer.type === 'image') {
+                    ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
+                    ctx.rotate(layer.rotation * Math.PI / 180);
+                    ctx.filter = `brightness(${layer.brightness}%) contrast(${layer.contrast}%) saturate(${layer.saturation}%) hue-rotate(${layer.hue}deg) blur(${layer.blur}px)`;
+                    // Sharpen is approximate using contrast or other, but canvas filter doesn't have sharpen, so simulate if needed
+                    ctx.drawImage(layer.img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
+                } else if (layer.type === 'text') {
+                    ctx.translate(layer.x, layer.y);
+                    ctx.rotate(layer.rotation * Math.PI / 180);
+                    ctx.font = `${layer.size}px ${layer.font}`;
+                    ctx.fillStyle = layer.color;
+                    ctx.fillText(layer.text, 0, 0);
+                }
+                ctx.restore();
+            }
+            if (selected) {
+                drawHandles(selected);
+            }
+            if (cropMode) {
+                drawCropRect();
+            }
+        }
+
+        function drawHandles(layer) {
+            if (layer.type === 'image' || layer.type === 'text') {
+                let handleX = layer.x + layer.width;
+                let handleY = layer.y + layer.height;
+                rotateHandle.style.left = `${canvas.offsetLeft + handleX}px`;
+                rotateHandle.style.top = `${canvas.offsetTop + handleY}px`;
+                rotateHandle.style.display = 'block';
+            }
+        }
+
+        function drawCropRect() {
+            if (cropStartX !== undefined) {
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(cropStartX, cropStartY, cropEndX - cropStartX, cropEndY - cropStartY);
+                ctx.setLineDash([]);
+            }
+        }
+
+        function getLayerAt(x, y) {
+            for (let i = layers.length - 1; i >= 0; i--) {
+                let layer = layers[i];
+                if (layer.type === 'image') {
+                    if (x > layer.x && x < layer.x + layer.width && y > layer.y && y < layer.y + layer.height) {
+                        return layer;
+                    }
+                } else if (layer.type === 'text') {
+                    ctx.font = `${layer.size}px ${layer.font}`;
+                    let width = ctx.measureText(layer.text).width;
+                    if (x > layer.x && x < layer.x + width && y > layer.y - layer.size && y < layer.y) {
+                        return layer;
+                    }
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let rect = canvas.getBoundingClientRect();
+            let x = touch.clientX - rect.left;
+            let y = touch.clientY - rect.top;
+            if (cropMode) {
+                cropStartX = x;
+                cropStartY = y;
+                cropEndX = x;
+                cropEndY = y;
+            } else {
+                selected = getLayerAt(x, y);
+                if (selected) {
+                    isDragging = true;
+                    startX = x - selected.x;
+                    startY = y - selected.y;
+                    if (selected.type === 'image') {
+                        document.getElementById('brightness').value = selected.brightness || 100;
+                        document.getElementById('contrast').value = selected.contrast || 100;
+                        document.getElementById('saturation').value = selected.saturation || 100;
+                        document.getElementById('hue').value = selected.hue || 0;
+                        document.getElementById('blur').value = selected.blur || 0;
+                        document.getElementById('sharpen').value = selected.sharpen || 0;
+                    } else if (selected.type === 'text') {
+                        document.getElementById('fontSelect').value = selected.font;
+                        document.getElementById('textSize').value = selected.size;
+                        document.getElementById('textColor').value = selected.color;
+                    }
+                    redraw();
+                }
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let rect = canvas.getBoundingClientRect();
+            let x = touch.clientX - rect.left;
+            let y = touch.clientY - rect.top;
+            if (cropMode) {
+                cropEndX = x;
+                cropEndY = y;
+                redraw();
+            } else if (isDragging && selected) {
+                selected.x = x - startX;
+                selected.y = y - startY;
+                redraw();
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            isDragging = false;
+            if (cropMode && selected && cropStartX !== undefined) {
+                applyCrop(selected);
+                cropMode = false;
+                cropStartX = undefined;
+            }
+            redraw();
+        });
+
+        rotateHandle.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            isRotating = true;
+            let rect = canvas.getBoundingClientRect();
+            startX = e.touches[0].clientX - rect.left;
+            startY = e.touches[0].clientY - rect.top;
+            let centerX = selected.x + selected.width / 2;
+            let centerY = selected.y + selected.height / 2;
+            startAngle = Math.atan2(startY - centerY, startX - centerX);
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isRotating) {
+                e.preventDefault();
+                let rect = canvas.getBoundingClientRect();
+                let x = e.touches[0].clientX - rect.left;
+                let y = e.touches[0].clientY - rect.top;
+                let centerX = selected.x + selected.width / 2;
+                let centerY = selected.y + selected.height / 2;
+                let angle = Math.atan2(y - centerY, x - centerX);
+                selected.rotation = (angle - startAngle) * 180 / Math.PI + (selected.rotation || 0);
+                redraw();
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            isRotating = false;
+        });
+
+        document.getElementById('upload').addEventListener('change', (e) => {
+            for (let file of e.target.files) {
+                let reader = new FileReader();
+                reader.onload = (ev) => {
+                    let img = new Image();
+                    img.onload = () => {
+                        let scale = Math.min(canvas.width / img.width, canvas.height / img.height, 0.8);
+                        let layer = {
+                            type: 'image',
+                            img,
+                            x: (canvas.width - img.width * scale) / 2,
+                            y: (canvas.height - img.height * scale) / 2,
+                            width: img.width * scale,
+                            height: img.height * scale,
+                            rotation: 0,
+                            brightness: 100,
+                            contrast: 100,
+                            saturation: 100,
+                            hue: 0,
+                            blur: 0,
+                            sharpen: 0
+                        };
+                        layers.push(layer);
+                        redraw();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addText() {
+            let text = prompt('Enter text');
+            if (text) {
+                let font = document.getElementById('fontSelect').value;
+                let layer = {
+                    type: 'text',
+                    text,
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    size: 40,
+                    font: font,
+                    color: '#000',
+                    rotation: 0
+                };
+                layers.push(layer);
+                redraw();
+            }
+        }
+
+        function applyFilters(layer) {
+            if (layer && layer.type === 'image') {
+                layer.brightness = document.getElementById('brightness').value;
+                layer.contrast = document.getElementById('contrast').value;
+                layer.saturation = document.getElementById('saturation').value;
+                layer.hue = document.getElementById('hue').value;
+                layer.blur = document.getElementById('blur').value;
+                layer.sharpen = document.getElementById('sharpen').value; // Note: Sharpen not directly supported, can approximate
+                redraw();
+            }
+        }
+
+        function applyTextStyle(layer) {
+            if (layer && layer.type === 'text') {
+                layer.font = document.getElementById('fontSelect').value;
+                layer.size = document.getElementById('textSize').value;
+                layer.color = document.getElementById('textColor').value;
+                redraw();
+            }
+        }
+
+        function toggleFilterPanel() {
+            let panel = document.getElementById('filter-panel');
+            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+            document.getElementById('text-panel').style.display = 'none';
+        }
+
+        function toggleTextPanel() {
+            let panel = document.getElementById('text-panel');
+            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+            document.getElementById('filter-panel').style.display = 'none';
+        }
+
+        function enterCropMode() {
+            if (selected && selected.type === 'image') {
+                cropMode = true;
+            } else {
+                alert('Select an image first.');
+            }
+        }
+
+        function applyCrop(layer) {
+            let cropWidth = Math.abs(cropEndX - cropStartX);
+            let cropHeight = Math.abs(cropEndY - cropStartY);
+            let cropX = Math.min(cropStartX, cropEndX) - layer.x;
+            let cropY = Math.min(cropStartY, cropEndY) - layer.y;
+            let tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cropWidth;
+            tempCanvas.height = cropHeight;
+            let tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(layer.img, cropX * (layer.img.width / layer.width), cropY * (layer.img.height / layer.height), cropWidth * (layer.img.width / layer.width), cropHeight * (layer.img.height / layer.height), 0, 0, cropWidth, cropHeight);
+            layer.img.src = tempCanvas.toDataURL();
+            layer.width = cropWidth;
+            layer.height = cropHeight;
+            layer.x = Math.min(cropStartX, cropEndX);
+            layer.y = Math.min(cropStartY, cropEndY);
+            redraw();
+        }
+
+        function applyRatio() {
+            let ratio = parseFloat(document.getElementById('ratio').value);
+            canvas.height = canvas.width / ratio;
+            redraw();
+        }
+
+        function deleteSelected() {
+            if (selected) {
+                layers = layers.filter(l => l !== selected);
+                selected = null;
+                rotateHandle.style.display = 'none';
+                redraw();
+            }
+        }
+
+        function download(format) {
+            let link = document.createElement('a');
+            link.download = `edited.${format}`;
+            link.href = canvas.toDataURL(`image/${format}`);
+            link.click();
+        }
+
+        initCanvas();
+        window.addEventListener('resize', initCanvas);
+    </script>
+</body>
+</html>            <option>DM Sans</option>
             <option>Archivo</option>
             <option>Libre Franklin</option>
             <option>Space Grotesk</option>
