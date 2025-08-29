@@ -1,247 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>JokeFi Edit Tool</title>
-
-  <!-- Google Fonts (40) -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Oswald&family=Montserrat&family=Lobster&family=Poppins&family=Raleway&family=Pacifico&family=Playfair+Display&family=Merriweather&family=Indie+Flower&family=Inconsolata&family=PT+Sans&family=Noto+Sans&family=Josefin+Sans&family=Ubuntu&family=Fira+Sans&family=Kalam&family=Amatic+SC&family=Varela+Round&family=Fredoka+One&family=Teko&family=Righteous&family=Concert+One&family=Baloo+2&family=Shadows+Into+Light&family=Bebas+Neue&family=Great+Vibes&family=Quicksand&family=Cabin&family=Arvo&family=Zilla+Slab&family=Orbitron&family=Permanent+Marker&family=Russo+One&family=Exo+2&family=Cinzel&family=Courgette&family=Sacramento&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(160deg, #1a1a1a, #000);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-    header {
-      background: #222;
-      padding: 10px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #111;
-    }
-    canvas {
-      border: 1px solid #444;
-      border-radius: 8px;
-      touch-action: none;
-    }
-    footer {
-      background: #1c1c1c;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 8px;
-      gap: 6px;
-    }
-    footer button, footer select, footer input, label {
-      background: #333;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      color: white;
-      font-size: 14px;
-    }
-    footer button:hover {
-      background: #555;
-    }
-    input[type=file] {
-      display: none;
-    }
-    .slider-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #ccc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>JokeFi Edit Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Raleway:wght@400;700&family=PT+Sans:wght@400;700&family=Ubuntu:wght@400;700&family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Playfair+Display:wght@400;700&family=Roboto+Slab:wght@400;700&family=Lora:wght@400;700&family=Work+Sans:wght@400;700&family=Quicksand:wght@400;700&family=Nunito:wght@400;700&family=Heebo:wght@400;700&family=Barlow:wght@400;700&family=Inter:wght@400;700&family=DM+Sans:wght@400;700&family=Archivo:wght@400;700&family=Libre+Franklin:wght@400;700&family=Space+Grotesk:wght@400;700&family=Manrope:wght@400;700&family=Karla:wght@400;700&family=Rubik:wght@400;700&family=Overpass:wght@400;700&family=Public+Sans:wght@400;700&family=Figtree:wght@400;700&family=Outfit:wght@400;700&family=Red+Hat+Display:wght@400;700&family=Sen:wght@400;700&family=Lexend:wght@400;700&family=Chivo:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700&family=Epilogue:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #e0e0e0, #ffffff);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none; /* For better touch handling */
+        }
+        #header {
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #editor {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%23ccc" d="M0 0h10v10H0zM10 10h10v10H10z"/></svg>') repeat; /* Checkerboard for edit feel */
+        }
+        #canvas {
+            border: 1px solid #ccc;
+            background: transparent;
+            touch-action: manipulation;
+        }
+        #tools {
+            background: #333;
+            color: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        button, select, input[type="range"], label {
+            background: #555;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        button:hover, select:hover {
+            background: #666;
+        }
+        #fontSelect {
+            max-width: 150px;
+        }
+        .handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-
-  <header>JokeFi Edit Tool</header>
-
-  <main>
-    <canvas id="editorCanvas" width="320" height="480"></canvas>
-  </main>
-
-  <footer>
-    <label for="uploadImage">+Image</label>
-    <input type="file" id="uploadImage" accept="image/*" multiple>
-    <button onclick="addText()">+Text</button>
-
-    <select id="fontSelect" onchange="changeFont(this.value)">
-      <option value="">Fonts</option>
-      <option value="Roboto">Roboto</option>
-      <option value="Oswald">Oswald</option>
-      <option value="Montserrat">Montserrat</option>
-      <option value="Lobster">Lobster</option>
-      <option value="Poppins">Poppins</option>
-      <option value="Raleway">Raleway</option>
-      <option value="Pacifico">Pacifico</option>
-      <option value="Playfair Display">Playfair</option>
-      <option value="Merriweather">Merriweather</option>
-      <option value="Indie Flower">Indie</option>
-      <option value="Inconsolata">Inconsolata</option>
-      <option value="PT Sans">PT Sans</option>
-      <option value="Noto Sans">Noto Sans</option>
-      <option value="Josefin Sans">Josefin</option>
-      <option value="Ubuntu">Ubuntu</option>
-      <option value="Fira Sans">Fira</option>
-      <option value="Kalam">Kalam</option>
-      <option value="Amatic SC">Amatic</option>
-      <option value="Varela Round">Varela</option>
-      <option value="Fredoka One">Fredoka</option>
-      <option value="Teko">Teko</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Concert One">Concert One</option>
-      <option value="Baloo 2">Baloo</option>
-      <option value="Shadows Into Light">Shadows</option>
-      <option value="Bebas Neue">Bebas Neue</option>
-      <option value="Great Vibes">Great Vibes</option>
-      <option value="Quicksand">Quicksand</option>
-      <option value="Cabin">Cabin</option>
-      <option value="Arvo">Arvo</option>
-      <option value="Zilla Slab">Zilla Slab</option>
-      <option value="Orbitron">Orbitron</option>
-      <option value="Permanent Marker">Permanent Marker</option>
-      <option value="Russo One">Russo</option>
-      <option value="Exo 2">Exo 2</option>
-      <option value="Cinzel">Cinzel</option>
-      <option value="Courgette">Courgette</option>
-      <option value="Sacramento">Sacramento</option>
-    </select>
-
-    <div class="slider-box">
-      Bright <input type="range" id="brightRange" min="-100" max="100" value="0" step="10" onchange="adjustFilters()">
+    <div id="header">JokeFi Edit Tool</div>
+    <div id="editor">
+        <canvas id="canvas"></canvas>
+        <div id="rotate-handle" class="handle"></div> <!-- For rotate handle -->
     </div>
-    <div class="slider-box">
-      Contrast <input type="range" id="contrastRange" min="-100" max="100" value="0" step="10" onchange="adjustFilters()">
+    <div id="tools">
+        <label for="upload">Add Image</label>
+        <input type="file" id="upload" accept="image/*" multiple>
+        <button onclick="addText()">Add Text</button>
+        <select id="fontSelect">
+            <option>Open Sans</option>
+            <option>Roboto</option>
+            <option>Lato</option>
+            <option>Montserrat</option>
+            <option>Oswald</option>
+            <option>Raleway</option>
+            <option>PT Sans</option>
+            <option>Ubuntu</option>
+            <option>Merriweather</option>
+            <option>Noto Sans</option>
+            <option>Poppins</option>
+            <option>Source Sans Pro</option>
+            <option>Playfair Display</option>
+            <option>Roboto Slab</option>
+            <option>Lora</option>
+            <option>Work Sans</option>
+            <option>Quicksand</option>
+            <option>Nunito</option>
+            <option>Heebo</option>
+            <option>Barlow</option>
+            <option>Inter</option>
+            <option>DM Sans</option>
+            <option>Archivo</option>
+            <option>Libre Franklin</option>
+            <option>Space Grotesk</option>
+            <option>Manrope</option>
+            <option>Karla</option>
+            <option>Rubik</option>
+            <option>Overpass</option>
+            <option>Public Sans</option>
+            <option>Figtree</option>
+            <option>Outfit</option>
+            <option>Red Hat Display</option>
+            <option>Sen</option>
+            <option>Lexend</option>
+            <option>Chivo</option>
+            <option>Plus Jakarta Sans</option>
+            <option>Epilogue</option>
+            <option>Syne</option>
+            <option>Arial</option> <!-- Added one more to make 40 -->
+        </select>
+        <label>Brightness: <input type="range" id="brightness" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
+        <label>Contrast: <input type="range" id="contrast" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
+        <label>Rotation: <input type="range" id="rotation" min="0" max="360" value="0" oninput="applyRotation(selected)"></label>
+        <button onclick="enterCropMode()">Crop</button>
+        <select id="ratio">
+            <option value="1">1:1</option>
+            <option value="1.333">4:3</option>
+            <option value="1.777">16:9</option>
+            <option value="0.562">9:16</option>
+            <option value="2">2:1</option>
+            <option value="0.5">1:2</option>
+            <option value="1.414">A4 (Portrait)</option>
+            <option value="0.707">A4 (Landscape)</option>
+        </select>
+        <button onclick="applyRatio()">Apply Ratio</button>
+        <button onclick="deleteSelected()">Delete</button>
+        <button onclick="download('png')">Download PNG</button>
+        <button onclick="download('jpeg')">Download JPG</button>
     </div>
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let layers = [];
+        let selected = null;
+        let isDragging = false;
+        let isRotating = false;
+        let startX, startY, startAngle;
+        let cropMode = false;
+        let cropStartX, cropStartY, cropEndX, cropEndY;
+        let rotateHandle = document.getElementById('rotate-handle');
 
-    <select onchange="setRatio(this.value)">
-      <option value="">Ratio</option>
-      <option value="1:1">1:1</option>
-      <option value="16:9">16:9</option>
-      <option value="9:16">9:16</option>
-      <option value="4:3">4:3</option>
-    </select>
+        function initCanvas() {
+            canvas.width = window.innerWidth * 0.8;
+            canvas.height = canvas.width;
+            redraw();
+        }
 
-    <button onclick="rotate()">Rotate</button>
-    <button onclick="flip()">Flip</button>
-    <button onclick="deleteObj()">Delete</button>
-    <button onclick="download('png')">Save PNG</button>
-    <button onclick="download('jpg')">Save JPG</button>
-  </footer>
+        function redraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let layer of layers) {
+                ctx.save();
+                if (layer.type === 'image') {
+                    ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
+                    ctx.rotate(layer.rotation * Math.PI / 180);
+                    ctx.filter = `brightness(${layer.brightness}%) contrast(${layer.contrast}%)`;
+                    ctx.drawImage(layer.img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
+                } else if (layer.type === 'text') {
+                    ctx.translate(layer.x, layer.y);
+                    ctx.rotate(layer.rotation * Math.PI / 180);
+                    ctx.font = `${layer.size}px ${layer.font}`;
+                    ctx.fillStyle = layer.color;
+                    ctx.fillText(layer.text, 0, 0);
+                }
+                ctx.restore();
+            }
+            if (selected) {
+                drawHandles(selected);
+            }
+            if (cropMode) {
+                drawCropRect();
+            }
+        }
 
-  <!-- Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+        function drawHandles(layer) {
+            if (layer.type === 'image' || layer.type === 'text') {
+                // Position rotate handle at bottom-right corner
+                let handleX = layer.x + layer.width;
+                let handleY = layer.y + layer.height;
+                // Adjust for rotation if needed, but for simplicity, approximate
+                rotateHandle.style.left = `${canvas.offsetLeft + handleX}px`;
+                rotateHandle.style.top = `${canvas.offsetTop + handleY}px`;
+                rotateHandle.style.display = 'block';
+            }
+        }
 
-<script>
-let canvas = new fabric.Canvas('editorCanvas', { backgroundColor: '#fff' });
+        function drawCropRect() {
+            if (cropStartX !== undefined) {
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(cropStartX, cropStartY, cropEndX - cropStartX, cropEndY - cropStartY);
+                ctx.setLineDash([]);
+            }
+        }
 
-// Multi image upload
-document.getElementById('uploadImage').addEventListener('change', function(e){
-  [...e.target.files].forEach(file => {
-    let reader = new FileReader();
-    reader.onload = function(f){
-      fabric.Image.fromURL(f.target.result, function(img){
-        img.set({ left: 50, top: 50, scaleX: 0.3, scaleY: 0.3 });
-        canvas.add(img).setActiveObject(img);
-      });
-    }
-    reader.readAsDataURL(file);
-  });
-});
+        function getLayerAt(x, y) {
+            for (let i = layers.length - 1; i >= 0; i--) {
+                let layer = layers[i];
+                if (layer.type === 'image') {
+                    // Simple bounding box check, ignoring rotation for simplicity
+                    if (x > layer.x && x < layer.x + layer.width && y > layer.y && y < layer.y + layer.height) {
+                        return layer;
+                    }
+                } else if (layer.type === 'text') {
+                    ctx.font = `${layer.size}px ${layer.font}`;
+                    let width = ctx.measureText(layer.text).width;
+                    if (x > layer.x && x < layer.x + width && y > layer.y - layer.size && y < layer.y) {
+                        return layer;
+                    }
+                }
+            }
+            return null;
+        }
 
-// Add text
-function addText(){
-  let text = prompt("Enter text:");
-  if(text){
-    let textbox = new fabric.Textbox(text, { left: 100, top: 100, fontSize: 24, fill: 'red' });
-    canvas.add(textbox).setActiveObject(textbox);
-  }
-}
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let rect = canvas.getBoundingClientRect();
+            let x = touch.clientX - rect.left;
+            let y = touch.clientY - rect.top;
+            if (cropMode) {
+                cropStartX = x;
+                cropStartY = y;
+                cropEndX = x;
+                cropEndY = y;
+            } else {
+                selected = getLayerAt(x, y);
+                if (selected) {
+                    isDragging = true;
+                    startX = x - selected.x;
+                    startY = y - selected.y;
+                    document.getElementById('brightness').value = selected.brightness || 100;
+                    document.getElementById('contrast').value = selected.contrast || 100;
+                    document.getElementById('rotation').value = selected.rotation || 0;
+                    redraw();
+                }
+            }
+        });
 
-// Change font
-function changeFont(font){
-  let obj = canvas.getActiveObject();
-  if(obj && obj.type === 'textbox'){
-    obj.set("fontFamily", font);
-    canvas.renderAll();
-  }
-}
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let rect = canvas.getBoundingClientRect();
+            let x = touch.clientX - rect.left;
+            let y = touch.clientY - rect.top;
+            if (cropMode) {
+                cropEndX = x;
+                cropEndY = y;
+                redraw();
+            } else if (isDragging && selected) {
+                selected.x = x - startX;
+                selected.y = y - startY;
+                redraw();
+            }
+        });
 
-// Delete
-function deleteObj(){
-  let obj = canvas.getActiveObject();
-  if(obj) canvas.remove(obj);
-}
+        canvas.addEventListener('touchend', (e) => {
+            isDragging = false;
+            if (cropMode && selected && cropStartX !== undefined) {
+                applyCrop(selected);
+                cropMode = false;
+                cropStartX = undefined;
+            }
+            redraw();
+        });
 
-// Rotate
-function rotate(){
-  let obj = canvas.getActiveObject();
-  if(obj){
-    obj.rotate(obj.angle + 45);
-    canvas.renderAll();
-  }
-}
+        rotateHandle.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            isRotating = true;
+            let rect = canvas.getBoundingClientRect();
+            startX = e.touches[0].clientX - rect.left;
+            startY = e.touches[0].clientY - rect.top;
+            let centerX = selected.x + selected.width / 2;
+            let centerY = selected.y + selected.height / 2;
+            startAngle = Math.atan2(startY - centerY, startX - centerX);
+        });
 
-// Flip
-function flip(){
-  let obj = canvas.getActiveObject();
-  if(obj){
-    obj.toggle('flipX');
-    canvas.renderAll();
-  }
-}
+        document.addEventListener('touchmove', (e) => {
+            if (isRotating) {
+                e.preventDefault();
+                let rect = canvas.getBoundingClientRect();
+                let x = e.touches[0].clientX - rect.left;
+                let y = e.touches[0].clientY - rect.top;
+                let centerX = selected.x + selected.width / 2;
+                let centerY = selected.y + selected.height / 2;
+                let angle = Math.atan2(y - centerY, x - centerX);
+                selected.rotation = (angle - startAngle) * 180 / Math.PI + (selected.rotation || 0);
+                redraw();
+            }
+        });
 
-// Filters (brightness/contrast)
-function adjustFilters(){
-  let obj = canvas.getActiveObject();
-  if(obj && obj.type === 'image'){
-    let bright = parseInt(document.getElementById("brightRange").value);
-    let contrast = parseInt(document.getElementById("contrastRange").value);
+        document.addEventListener('touchend', () => {
+            isRotating = false;
+        });
 
-    obj.filters = [];
-    obj.filters.push(new fabric.Image.filters.Brightness({ brightness: bright/100 }));
-    obj.filters.push(new fabric.Image.filters.Contrast({ contrast: contrast/100 }));
-    obj.applyFilters();
-    canvas.renderAll();
-  }
-}
+        document.getElementById('upload').addEventListener('change', (e) => {
+            for (let file of e.target.files) {
+                let reader = new FileReader();
+                reader.onload = (ev) => {
+                    let img = new Image();
+                    img.onload = () => {
+                        let scale = Math.min(canvas.width / img.width, canvas.height / img.height, 0.5);
+                        let layer = {
+                            type: 'image',
+                            img,
+                            x: (canvas.width - img.width * scale) / 2,
+                            y: (canvas.height - img.height * scale) / 2,
+                            width: img.width * scale,
+                            height: img.height * scale,
+                            rotation: 0,
+                            brightness: 100,
+                            contrast: 100
+                        };
+                        layers.push(layer);
+                        redraw();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-// Ratio change
-function setRatio(val){
-  if(!val) return;
-  let [w,h] = val.split(":").map(Number);
-  let newW = 320;
-  let newH = (newW*h)/w;
-  canvas.setWidth(newW);
-  canvas.setHeight(newH);
-  canvas.renderAll();
-}
+        function addText() {
+            let text = prompt('Enter text');
+            if (text) {
+                let font = document.getElementById('fontSelect').value;
+                let layer = {
+                    type: 'text',
+                    text,
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    size: 40,
+                    font: font,
+                    color: '#000',
+                    rotation: 0
+                };
+                layers.push(layer);
+                redraw();
+            }
+        }
 
-// Download
-function download(format){
-  let dataURL = canvas.toDataURL({ format: format, quality: 1 });
-  let link = document.createElement("a");
-  link.download = "edited." + format;
-  link.href = dataURL;
-  link.click();
-}
-</script>
+        function applyFilters(layer) {
+            if (layer) {
+                layer.brightness = document.getElementById('brightness').value;
+                layer.contrast = document.getElementById('contrast').value;
+                redraw();
+            }
+        }
 
+        function applyRotation(layer) {
+            if (layer) {
+                layer.rotation = document.getElementById('rotation').value;
+                redraw();
+            }
+        }
+
+        function enterCropMode() {
+            if (selected && selected.type === 'image') {
+                cropMode = true;
+            } else {
+                alert('Select an image layer first.');
+            }
+        }
+
+        function applyCrop(layer) {
+            let cropWidth = Math.abs(cropEndX - cropStartX);
+            let cropHeight = Math.abs(cropEndY - cropStartY);
+            let cropX = Math.min(cropStartX, cropEndX) - layer.x;
+            let cropY = Math.min(cropStartY, cropEndY) - layer.y;
+            // Create temp canvas for crop
+            let tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cropWidth;
+            tempCanvas.height = cropHeight;
+            let tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(layer.img, cropX * (layer.img.width / layer.width), cropY * (layer.img.height / layer.height), cropWidth * (layer.img.width / layer.width), cropHeight * (layer.img.height / layer.height), 0, 0, cropWidth, cropHeight);
+            layer.img.src = tempCanvas.toDataURL();
+            layer.width = cropWidth;
+            layer.height = cropHeight;
+            layer.x = Math.min(cropStartX, cropEndX);
+            layer.y = Math.min(cropStartY, cropEndY);
+            redraw();
+        }
+
+        function applyRatio() {
+            let ratio = parseFloat(document.getElementById('ratio').value);
+            canvas.height = canvas.width / ratio;
+            redraw();
+        }
+
+        function deleteSelected() {
+            if (selected) {
+                layers = layers.filter(l => l !== selected);
+                selected = null;
+                rotateHandle.style.display = 'none';
+                redraw();
+            }
+        }
+
+        function download(format) {
+            let link = document.createElement('a');
+            link.download = `edited.${format}`;
+            link.href = canvas.toDataURL(`image/${format}`);
+            link.click();
+        }
+
+        initCanvas();
+        window.addEventListener('resize', initCanvas);
+    </script>
 </body>
 </html>
