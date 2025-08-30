@@ -1,315 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JokeFI AI Agent</title>
   <style>
+    /* Futuristic background animation */
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
       height: 100vh;
+      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
       display: flex;
       flex-direction: column;
-      background: #000;
-      overflow: hidden;
-      color: #fff;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    /* Background Animation */
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-
-    .chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
-
-    .message {
-      max-width: 75%;
-      padding: 10px 14px;
-      margin: 8px 0;
-      border-radius: 16px;
-      line-height: 1.4;
-      animation: fadeIn 0.3s ease;
-      white-space: pre-wrap;
-    }
-
-    .user {
-      align-self: flex-end;
-      background: linear-gradient(45deg,#06b6d4,#3b82f6);
-    }
-
-    .ai {
-      align-self: flex-start;
-      background: linear-gradient(45deg,#9333ea,#e11d48);
-    }
-
-    .thinking {
-      font-style: italic;
-      opacity: 0.8;
-    }
-
-    .input-container {
-      display: flex;
+    header {
+      background: rgba(0,0,0,0.6);
       padding: 10px;
-      background: rgba(0,0,0,0.8);
-      border-top: 1px solid #222;
-    }
-
-    input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
-
-    button {
-      margin-left: 8px;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 12px;
-      background: #3b82f6;
-      color: #fff;
-      cursor: pointer;
+      text-align: center;
+      font-size: 20px;
       font-weight: bold;
+      border-bottom: 1px solid #444;
     }
 
+    #chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .msg {
+      max-width: 80%;
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      border-radius: 12px;
+      animation: fadeIn 0.5s ease;
+    }
+    .user { background: #00c6ff; color: #000; margin-left: auto; }
+    .ai { background: #111; border: 1px solid #00c6ff; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media(max-width:600px) {
-      .message { max-width: 90%; font-size: 14px; }
-      input { font-size: 14px; }
+    #input-area {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #444;
+      background: rgba(0,0,0,0.7);
+    }
+    #user-input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      margin-left: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #00c6ff;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #00ffff; }
+
+    /* Settings + About Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #111;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 400px;
+    }
+    .modal-content h2 { margin-top: 0; }
+    .close {
+      float: right;
+      cursor: pointer;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <canvas id="bg"></canvas>
-  <div class="chat-container" id="chat"></div>
-  <div class="input-container">
-    <input id="userInput" placeholder="Ask JokeFI AI Agent..." />
+  <header>
+    🤖 JokeFI AI Agent
+    <button onclick="openModal('about')">About</button>
+    <button onclick="openModal('settings')">Settings</button>
+    <button onclick="clearChat()">Clear Chat</button>
+    <button onclick="saveChat()">Save Chat</button>
+  </header>
+
+  <div id="chat-container"></div>
+
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Type your question...">
     <button onclick="sendMessage()">Send</button>
-    <button onclick="clearChat()">Clear</button>
+  </div>
+
+  <!-- About Modal -->
+  <div id="about" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('about')">&times;</span>
+      <h2>About JokeFI</h2>
+      <p>JokeFI AI Agent is a futuristic assistant inspired by ChatGPT, Grok, and Gemini. 
+      It answers common daily questions and falls back to ChatGPT API when needed.</p>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('settings')">&times;</span>
+      <h2>Settings</h2>
+      <button onclick="toggleTheme()">Toggle Dark/Light</button>
+    </div>
   </div>
 
   <script>
-    // Background animation
-    const canvas = document.getElementById("bg");
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    let particles = [];
-    for (let i=0;i<120;i++){
-      particles.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        r: Math.random()*2+1,
-        dx: (Math.random()-0.5)*1,
-        dy: (Math.random()-0.5)*1
-      });
-    }
-    function animate(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle="#0ff";
-      particles.forEach(p=>{
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fill();
-        p.x+=p.dx; p.y+=p.dy;
-        if(p.x<0||p.x>canvas.width) p.dx*=-1;
-        if(p.y<0||p.y>canvas.height) p.dy*=-1;
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
+    const chatContainer = document.getElementById("chat-container");
+    const userInput = document.getElementById("user-input");
 
-    // ==== Predefined 100 Q&A ====
+    // Predefined 100 Q&A
     const qa = {
       "what is ai": "AI stands for Artificial Intelligence, which is the simulation of human intelligence in machines.",
-      "who is elon musk": "Elon Musk is a entrepreneur and CEO of companies like Tesla, SpaceX, and xAI.",
-      "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
-      "what is the weather today": "It's sunny with a chance of rain. Check your local forecast for accuracy.",
-      "how are you": "I'm doing great, thanks for asking!",
-      "what is python": "Python is a popular programming language known for its simplicity.",
-      "who is albert einstein": "Albert Einstein was a physicist who developed the theory of relativity.",
-      "what is the capital of france": "The capital of France is Paris.",
-      "tell me about coffee": "Coffee is a brewed drink prepared from roasted coffee beans.",
-      "what is blockchain": "Blockchain is a decentralized digital ledger technology.",
-      "who is steve jobs": "Steve Jobs was the co-founder of Apple Inc.",
-      "what is quantum computing": "Quantum computing uses quantum bits to perform computations faster than classical computers.",
-      "tell me a fun fact": "Octopuses have three hearts!",
-      "what is machine learning": "Machine learning is a subset of AI where machines learn from data.",
-      "who is bill gates": "Bill Gates is the co-founder of Microsoft.",
-      "what is the meaning of life": "42, according to The Hitchhiker's Guide to the Galaxy.",
-      "how to make tea": "Boil water, add tea bag, steep for 3-5 minutes.",
-      "what is nft": "NFT stands for Non-Fungible Token, a unique digital asset.",
-      "who is marie curie": "Marie Curie was a physicist and chemist who researched radioactivity.",
-      "what is global warming": "Global warming is the long-term heating of Earth's climate system.",
-      "tell me about dogs": "Dogs are loyal animals and man's best friend.",
-      "what is cryptocurrency": "Cryptocurrency is digital money using cryptography for security.",
-      "who is leonardo da vinci": "Leonardo da Vinci was a Renaissance artist and inventor.",
-      "what is photosynthesis": "Photosynthesis is the process by which plants make food using sunlight.",
-      "how to tie a tie": "Use the Windsor knot for a formal look.",
-      "what is the internet": "The internet is a global network of computers.",
-      "who is william shakespeare": "William Shakespeare was an English playwright and poet.",
-      "what is dna": "DNA is the molecule that carries genetic information.",
-      "tell me about cats": "Cats are independent and agile animals.",
-      "what is relativity": "Relativity is Einstein's theory explaining space, time, and gravity.",
-      "who is isaac newton": "Isaac Newton was a mathematician and physicist who formulated laws of motion.",
-      "what is evolution": "Evolution is the process by which species change over time.",
-      "how to cook pasta": "Boil water, add pasta, cook for 8-10 minutes.",
-      "what is big bang": "The Big Bang is the theory of the universe's origin.",
-      "who is charles darwin": "Charles Darwin proposed the theory of natural selection.",
-      "what is gravity": "Gravity is the force that attracts objects toward each other.",
-      "tell me a riddle": "What has keys but can't open locks? A piano.",
-      "what is electricity": "Electricity is the flow of electric charge.",
-      "who is thomas edison": "Thomas Edison invented the light bulb.",
-      "what is solar system": "The solar system consists of the sun and eight planets.",
-      "how to plant a tree": "Dig a hole, place the tree, cover with soil, water it.",
-      "what is recycling": "Recycling is processing waste into new materials.",
-      "who is nelson mandela": "Nelson Mandela was a South African anti-apartheid leader.",
-      "what is democracy": "Democracy is a government by the people.",
-      "tell me about music": "Music is an art form using sound and rhythm.",
-      "what is philosophy": "Philosophy is the study of fundamental questions about existence.",
-      "who is socrates": "Socrates was a Greek philosopher.",
-      "what is meditation": "Meditation is a practice for mental clarity and relaxation.",
-      "how to exercise": "Start with warm-up, do cardio or strength training, cool down.",
-      "what is yoga": "Yoga is a physical and mental practice originating from India.",
-      "who is buddha": "Buddha was a spiritual leader who founded Buddhism.",
-      "what is buddhism": "Buddhism is a religion based on the teachings of Buddha.",
-      "tell me about books": "Books are sources of knowledge and entertainment.",
-      "what is history": "History is the study of past events.",
-      "who is cleopatra": "Cleopatra was the last pharaoh of Ancient Egypt.",
-      "what is ancient egypt": "Ancient Egypt was a civilization along the Nile River.",
-      "how to learn a language": "Practice daily, use apps like Duolingo.",
-      "what is spanish": "Spanish is a Romance language spoken in Spain and Latin America.",
-      "who is pablo picasso": "Pablo Picasso was a Spanish painter and sculptor.",
-      "what is art": "Art is the expression of human creativity.",
-      "tell me about movies": "Movies are visual stories told through film.",
-      "what is hollywood": "Hollywood is the center of the American film industry.",
-      "who is alfred hitchcock": "Alfred Hitchcock was a film director known for suspense.",
-      "what is psychology": "Psychology is the study of the mind and behavior.",
-      "how to be happy": "Practice gratitude, exercise, connect with others.",
-      "what is love": "Love is a deep affection for someone or something.",
-      "who is romeo and juliet": "Romeo and Juliet is a play by Shakespeare about tragic lovers.",
-      "what is shakespearean tragedy": "A Shakespearean tragedy involves a hero with a fatal flaw.",
-      "tell me about space": "Space is the vast expanse beyond Earth's atmosphere.",
-      "what is mars": "Mars is the fourth planet from the sun, known as the Red Planet.",
-      "who is neil armstrong": "Neil Armstrong was the first man to walk on the moon.",
-      "what is moon landing": "The moon landing was in 1969 by Apollo 11.",
-      "how to stargaze": "Find a dark spot, use a telescope or binoculars.",
-      "what is black hole": "A black hole is a region where gravity pulls so much that light can't escape.",
-      "who is stephen hawking": "Stephen Hawking was a theoretical physicist known for black hole research.",
-      "what is time travel": "Time travel is a hypothetical concept of moving between points in time.",
-      "tell me about dinosaurs": "Dinosaurs were reptiles that lived millions of years ago.",
-      "what is extinction": "Extinction is when a species dies out completely.",
-      "who is jurassic park": "Jurassic Park is a movie about cloned dinosaurs.",
-      "what is ocean": "The ocean covers over 70% of Earth's surface.",
-      "how to swim": "Learn basic strokes like freestyle and breaststroke.",
-      "what is coral reef": "Coral reefs are underwater ecosystems made of coral.",
-      "who is jacques cousteau": "Jacques Cousteau was an ocean explorer and filmmaker.",
-      "what is climate change": "Climate change is the alteration of global weather patterns.",
-      "tell me about trees": "Trees produce oxygen and provide habitat for wildlife.",
-      "what is deforestation": "Deforestation is the removal of forests for other uses.",
-      "who is greta thunberg": "Greta Thunberg is a climate activist.",
-      "what is renewable energy": "Renewable energy comes from sources like sun and wind.",
-      "how to save energy": "Turn off lights, use efficient appliances.",
-      "what is solar power": "Solar power harnesses energy from the sun.",
-      "who is nikola tesla": "Nikola Tesla was an inventor known for AC electricity.",
-      "what is invention": "An invention is a new device or process.",
-      "tell me about robots": "Robots are machines that can perform tasks autonomously.",
-      "what is automation": "Automation is using technology to perform tasks without human intervention.",
-      "who is isaac asimov": "Isaac Asimov was a science fiction writer who created the Three Laws of Robotics.",
-      "what is science fiction": "Science fiction is a genre exploring futuristic concepts."
+"who is elon musk": "Elon Musk is a entrepreneur and CEO of companies like Tesla, SpaceX, and xAI.",
+"tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
+"what is the weather today": "It's sunny with a chance of rain. Check your local forecast for accuracy.",
+"how are you": "I'm doing great, thanks for asking!",
+"what is python": "Python is a popular programming language known for its simplicity.",
+"who is albert einstein": "Albert Einstein was a physicist who developed the theory of relativity.",
+"what is the capital of france": "The capital of France is Paris.",
+"tell me about coffee": "Coffee is a brewed drink prepared from roasted coffee beans.",
+"what is blockchain": "Blockchain is a decentralized digital ledger technology.",
+"who is steve jobs": "Steve Jobs was the co-founder of Apple Inc.",
+"what is quantum computing": "Quantum computing uses quantum bits to perform computations faster than classical computers.",
+"tell me a fun fact": "Octopuses have three hearts!",
+"what is machine learning": "Machine learning is a subset of AI where machines learn from data.",
+"who is bill gates": "Bill Gates is the co-founder of Microsoft.",
+"what is the meaning of life": "42, according to The Hitchhiker's Guide to the Galaxy.",
+"how to make tea": "Boil water, add tea bag, steep for 3-5 minutes.",
+"what is nft": "NFT stands for Non-Fungible Token, a unique digital asset.",
+"who is marie curie": "Marie Curie was a physicist and chemist who researched radioactivity.",
+"what is global warming": "Global warming is the long-term heating of Earth's climate system.",
+"tell me about dogs": "Dogs are loyal animals and man's best friend.",
+"what is cryptocurrency": "Cryptocurrency is digital money using cryptography for security.",
+"who is leonardo da vinci": "Leonardo da Vinci was a Renaissance artist and inventor.",
+"what is photosynthesis": "Photosynthesis is the process by which plants make food using sunlight.",
+"how to tie a tie": "Use the Windsor knot for a formal look.",
+"what is the internet": "The internet is a global network of computers.",
+"who is william shakespeare": "William Shakespeare was an English playwright and poet.",
+"what is dna": "DNA is the molecule that carries genetic information.",
+"tell me about cats": "Cats are independent and agile animals.",
+"what is relativity": "Relativity is Einstein's theory explaining space, time, and gravity.",
+"who is isaac newton": "Isaac Newton was a mathematician and physicist who formulated laws of motion.",
+"what is evolution": "Evolution is the process by which species change over time.",
+"how to cook pasta": "Boil water, add pasta, cook for 8-10 minutes.",
+"what is big bang": "The Big Bang is the theory of the universe's origin.",
+"who is charles darwin": "Charles Darwin proposed the theory of natural selection.",
+"what is gravity": "Gravity is the force that attracts objects toward each other.",
+"tell me a riddle": "What has keys but can't open locks? A piano.",
+"what is electricity": "Electricity is the flow of electric charge.",
+"who is thomas edison": "Thomas Edison invented the light bulb.",
+"what is solar system": "The solar system consists of the sun and eight planets.",
+"how to plant a tree": "Dig a hole, place the tree, cover with soil, water it.",
+"what is recycling": "Recycling is processing waste into new materials.",
+"who is nelson mandela": "Nelson Mandela was a South African anti-apartheid leader.",
+"what is democracy": "Democracy is a government by the people.",
+"tell me about music": "Music is an art form using sound and rhythm.",
+"what is philosophy": "Philosophy is the study of fundamental questions about existence.",
+"who is socrates": "Socrates was a Greek philosopher.",
+"what is meditation": "Meditation is a practice for mental clarity and relaxation.",
+"how to exercise": "Start with warm-up, do cardio or strength training, cool down.",
+"what is yoga": "Yoga is a physical and mental practice originating from India.",
+"who is buddha": "Buddha was a spiritual leader who founded Buddhism.",
+"what is buddhism": "Buddhism is a religion based on the teachings of Buddha.",
+"tell me about books": "Books are sources of knowledge and entertainment.",
+"what is history": "History is the study of past events.",
+"who is cleopatra": "Cleopatra was the last pharaoh of Ancient Egypt.",
+"what is ancient egypt": "Ancient Egypt was a civilization along the Nile River.",
+"how to learn a language": "Practice daily, use apps like Duolingo.",
+"what is spanish": "Spanish is a Romance language spoken in Spain and Latin America.",
+"who is pablo picasso": "Pablo Picasso was a Spanish painter and sculptor.",
+"what is art": "Art is the expression of human creativity.",
+"tell me about movies": "Movies are visual stories told through film.",
+"what is hollywood": "Hollywood is the center of the American film industry.",
+"who is alfred hitchcock": "Alfred Hitchcock was a film director known for suspense.",
+"what is psychology": "Psychology is the study of the mind and behavior.",
+"how to be happy": "Practice gratitude, exercise, connect with others.",
+"what is love": "Love is a deep affection for someone or something.",
+"who is romeo and juliet": "Romeo and Juliet is a play by Shakespeare about tragic lovers.",
+"what is shakespearean tragedy": "A Shakespearean tragedy involves a hero with a fatal flaw.",
+"tell me about space": "Space is the vast expanse beyond Earth's atmosphere.",
+"what is mars": "Mars is the fourth planet from the sun, known as the Red Planet.",
+"who is neil armstrong": "Neil Armstrong was the first man to walk on the moon.",
+"what is moon landing": "The moon landing was in 1969 by Apollo 11.",
+"how to stargaze": "Find a dark spot, use a telescope or binoculars.",
+"what is black hole": "A black hole is a region where gravity pulls so much that light can't escape.",
+"who is stephen hawking": "Stephen Hawking was a theoretical physicist known for black hole research.",
+"what is time travel": "Time travel is a hypothetical concept of moving between points in time.",
+"tell me about dinosaurs": "Dinosaurs were reptiles that lived millions of years ago.",
+"what is extinction": "Extinction is when a species dies out completely.",
+"who is jurassic park": "Jurassic Park is a movie about cloned dinosaurs.",
+"what is ocean": "The ocean covers over 70% of Earth's surface.",
+"how to swim": "Learn basic strokes like freestyle and breaststroke.",
+"what is coral reef": "Coral reefs are underwater ecosystems made of coral.",
+"who is jacques cousteau": "Jacques Cousteau was an ocean explorer and filmmaker.",
+"what is climate change": "Climate change is the alteration of global weather patterns.",
+"tell me about trees": "Trees produce oxygen and provide habitat for wildlife.",
+"what is deforestation": "Deforestation is the removal of forests for other uses.",
+"who is greta thunberg": "Greta Thunberg is a climate activist.",
+"what is renewable energy": "Renewable energy comes from sources like sun and wind.",
+"how to save energy": "Turn off lights, use efficient appliances.",
+"what is solar power": "Solar power harnesses energy from the sun.",
+"who is nikola tesla": "Nikola Tesla was an inventor known for AC electricity.",
+"what is invention": "An invention is a new device or process.",
+"tell me about robots": "Robots are machines that can perform tasks autonomously.",
+"what is automation": "Automation is using technology to perform tasks without human intervention.",
+"who is isaac asimov": "Isaac Asimov was a science fiction writer who created the Three Laws of Robotics.",
+"what is science fiction": "Science fiction is a genre exploring futuristic concepts."
     };
 
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("userInput");
+    // Load saved chat
+    window.onload = () => {
+      const saved = localStorage.getItem("chat");
+      if (saved) chatContainer.innerHTML = saved;
+    };
 
-    function addMessage(text, cls){
-      const div=document.createElement("div");
-      div.className="message "+cls;
-      div.innerText=text;
-      chat.appendChild(div);
-      chat.scrollTop=chat.scrollHeight;
-      return div;
+    function appendMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.classList.add("msg", sender);
+      msg.innerText = text;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    async function sendMessage(){
-      const text=input.value.trim();
-      if(!text) return;
-      addMessage(text,"user");
-      input.value="";
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      appendMessage(text, "user");
+      userInput.value = "";
 
-      // Thinking message
-      const thinking=addMessage("Thinking...","ai thinking");
+      // Thinking
+      const thinkingMsg = document.createElement("div");
+      thinkingMsg.classList.add("msg", "ai");
+      thinkingMsg.innerText = "Thinking...";
+      chatContainer.appendChild(thinkingMsg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      setTimeout(async()=>{
-        thinking.remove();
-        const key=text.toLowerCase();
-        if(qa[key]){
-          typeMessage(qa[key],"ai");
+      setTimeout(async () => {
+        thinkingMsg.remove();
+        const lower = text.toLowerCase();
+        if (qa[lower]) {
+          appendMessage(qa[lower], "ai");
         } else {
-          // Fallback to ChatGPT
-          const reply=await fetchChatGPT(text);
-          typeMessage(reply,"ai");
+          // ChatGPT API fallback
+          const reply = await fetchGPT(text);
+          appendMessage(reply, "ai");
         }
-      },5000);
+      }, 5000);
     }
 
-    function typeMessage(message,cls){
-      const div=document.createElement("div");
-      div.className="message "+cls;
-      chat.appendChild(div);
-      let i=0;
-      function typing(){
-        if(i<message.length){
-          div.innerText+=message.charAt(i);
-          i++;
-          setTimeout(typing,30);
-        }
-      }
-      typing();
-      chat.scrollTop=chat.scrollHeight;
-    }
-
-    async function fetchChatGPT(question){
-      try{
-        const res=await fetch("https://api.openai.com/v1/chat/completions",{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json",
-            "Authorization":"Bearer YOUR_API_KEY_HERE"
+    async function fetchGPT(query) {
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_API_KEY"
           },
-          body:JSON.stringify({
-            model:"gpt-3.5-turbo",
-            messages:[{role:"user",content:question}]
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [{role: "user", content: query}]
           })
         });
-        const data=await res.json();
+        const data = await res.json();
         return data.choices[0].message.content;
-      }catch(e){
-        return "I couldn’t fetch an answer right now.";
+      } catch (e) {
+        return "Error fetching response from ChatGPT API.";
       }
     }
 
-    function clearChat(){
-      chat.innerHTML="";
+    function clearChat() {
+      chatContainer.innerHTML = "";
+      localStorage.removeItem("chat");
     }
+
+    function saveChat() {
+      localStorage.setItem("chat", chatContainer.innerHTML);
+      alert("Chat saved!");
+    }
+
+    function openModal(id) {
+      document.getElementById(id).style.display = "flex";
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+    }
+
+    userInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
   </script>
 </body>
 </html>
