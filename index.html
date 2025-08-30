@@ -1,174 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JokeFI AI Agent</title>
-    <style>
-        /* Futuristic styles with glowing effects */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(270deg, #0f0c29, #302b63, #24243e);
-            background-size: 600% 600%;
-            animation: gradientAnimation 15s ease infinite;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JokeFI AI Agent</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      overflow: hidden;
+      color: #fff;
+    }
 
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    /* Background Animation */
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
 
-        #chat-container {
-            width: 100%;
-            max-width: 800px;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glowing effect */
-            display: flex;
-            flex-direction: column;
-        }
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
 
-        #chat-header {
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            text-align: center;
-            font-size: 1.2em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .message {
+      max-width: 75%;
+      padding: 10px 14px;
+      margin: 8px 0;
+      border-radius: 16px;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
 
-        #chat-header button {
-            background: transparent;
-            border: 1px solid #00ffff;
-            color: #00ffff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    .user {
+      align-self: flex-end;
+      background: linear-gradient(45deg,#06b6d4,#3b82f6);
+    }
 
-        #chat-header button:hover {
-            background: #00ffff;
-            color: #000;
-            box-shadow: 0 0 10px #00ffff;
-        }
+    .ai {
+      align-self: flex-start;
+      background: linear-gradient(45deg,#9333ea,#e11d48);
+    }
 
-        #chat-history {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
+    .thinking {
+      font-style: italic;
+      opacity: 0.8;
+    }
 
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 20px;
-            animation: fadeIn 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2); /* Glowing */
-        }
+    .input-container {
+      display: flex;
+      padding: 10px;
+      background: rgba(0,0,0,0.8);
+      border-top: 1px solid #222;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
 
-        .user {
-            align-self: flex-end;
-            background: #00ffff;
-            color: #000;
-        }
+    button {
+      margin-left: 8px;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 12px;
+      background: #3b82f6;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-        .ai {
-            align-self: flex-start;
-            background: #ffffff22;
-            color: #ffffff;
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .thinking {
-            align-self: flex-start;
-            background: #ffffff22;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-        }
-
-        .thinking::after {
-            content: '...';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            80%, 100% { content: ''; }
-        }
-
-        #user-input {
-            padding: 15px;
-            border: none;
-            background: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
-            font-size: 1em;
-            outline: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        #user-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Mobile-first responsive */
-        @media (max-width: 600px) {
-            #chat-container {
-                border-radius: 0;
-            }
-            #chat-history {
-                padding: 10px;
-            }
-            .message {
-                max-width: 95%;
-            }
-        }
-    </style>
+    @media(max-width:600px) {
+      .message { max-width: 90%; font-size: 14px; }
+      input { font-size: 14px; }
+    }
+  </style>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-header">
-            JokeFI AI Agent
-            <button id="clear-chat">Clear Chat</button>
-        </div>
-        <div id="chat-history"></div>
-        <input id="user-input" placeholder="Type your question..." />
-    </div>
+  <canvas id="bg"></canvas>
+  <div class="chat-container" id="chat"></div>
+  <div class="input-container">
+    <input id="userInput" placeholder="Ask JokeFI AI Agent..." />
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="clearChat()">Clear</button>
+  </div>
 
-    <script>
-        const chatHistory = document.getElementById('chat-history');
-        const userInput = document.getElementById('user-input');
-        const clearChatBtn = document.getElementById('clear-chat');
+  <script>
+    // Background animation
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
+    for (let i=0;i<120;i++){
+      particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*2+1,
+        dx: (Math.random()-0.5)*1,
+        dy: (Math.random()-0.5)*1
+      });
+    }
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="#0ff";
+      particles.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+        p.x+=p.dx; p.y+=p.dy;
+        if(p.x<0||p.x>canvas.width) p.dx*=-1;
+        if(p.y<0||p.y>canvas.height) p.dy*=-1;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
 
-        // Placeholder for OpenAI API key
-        const apiKey = 'your-openai-api-key-here'; // Replace with your actual OpenAI API key
-
-        // Pre-defined Q&A pairs (100 questions)
-        const qaPairs = {
-            "what is ai": "AI stands for Artificial Intelligence, which is the simulation of human intelligence in machines.",
+    // Predefined Q&A
+    const qa = {
+      "what is ai": "AI stands for Artificial Intelligence, which is the simulation of human intelligence in machines.",
             "who is elon musk": "Elon Musk is a entrepreneur and CEO of companies like Tesla, SpaceX, and xAI.",
             "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
             "what is the weather today": "It's sunny with a chance of rain. Check your local forecast for accuracy.",
@@ -264,95 +234,81 @@
             "what is automation": "Automation is using technology to perform tasks without human intervention.",
             "who is isaac asimov": "Isaac Asimov was a science fiction writer who created the Three Laws of Robotics.",
             "what is science fiction": "Science fiction is a genre exploring futuristic concepts."
-        };
+    };
 
-        // Function to add message to chat
-        function addMessage(text, type) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', type);
-            messageDiv.textContent = type === 'ai' ? 'JokeFI AI Agent: ' : 'You: ';
-            chatHistory.appendChild(messageDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("userInput");
 
-            // Typing animation for AI responses
-            if (type === 'ai') {
-                let i = 0;
-                const fullText = 'JokeFI AI Agent: ' + text;
-                messageDiv.textContent = '';
-                const typingInterval = setInterval(() => {
-                    if (i < fullText.length) {
-                        messageDiv.textContent += fullText.charAt(i);
-                        i++;
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
-                    } else {
-                        clearInterval(typingInterval);
-                    }
-                }, 50);
-            } else {
-                messageDiv.textContent += text;
-            }
+    function addMessage(text, cls){
+      const div=document.createElement("div");
+      div.className="message "+cls;
+      div.innerText=text;
+      chat.appendChild(div);
+      chat.scrollTop=chat.scrollHeight;
+      return div;
+    }
+
+    async function sendMessage(){
+      const text=input.value.trim();
+      if(!text) return;
+      addMessage(text,"user");
+      input.value="";
+
+      // Thinking message
+      const thinking=addMessage("Thinking...","ai thinking");
+
+      setTimeout(async()=>{
+        thinking.remove();
+        const key=text.toLowerCase();
+        if(qa[key]){
+          typeMessage(qa[key],"ai");
+        } else {
+          // Fallback to ChatGPT
+          const reply=await fetchChatGPT(text);
+          typeMessage(reply,"ai");
         }
+      },5000);
+    }
 
-        // Function to show thinking animation
-        function showThinking() {
-            const thinkingDiv = document.createElement('div');
-            thinkingDiv.classList.add('message', 'ai', 'thinking');
-            thinkingDiv.textContent = 'JokeFI AI Agent: Thinking';
-            chatHistory.appendChild(thinkingDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-            return thinkingDiv;
+    function typeMessage(message,cls){
+      const div=document.createElement("div");
+      div.className="message "+cls;
+      chat.appendChild(div);
+      let i=0;
+      function typing(){
+        if(i<message.length){
+          div.innerText+=message.charAt(i);
+          i++;
+          setTimeout(typing,30);
         }
+      }
+      typing();
+      chat.scrollTop=chat.scrollHeight;
+    }
 
-        // Function to remove thinking
-        function removeThinking(thinkingDiv) {
-            chatHistory.removeChild(thinkingDiv);
-        }
-
-        // Handle user input
-        userInput.addEventListener('keydown', async (e) => {
-            if (e.key === 'Enter' && userInput.value.trim()) {
-                const question = userInput.value.trim();
-                addMessage(question, 'user');
-                userInput.value = '';
-
-                const thinkingDiv = showThinking();
-
-                setTimeout(async () => {
-                    removeThinking(thinkingDiv);
-
-                    const normalizedQuestion = question.toLowerCase().replace(/[.?!,]/g, '').trim();
-                    let answer = qaPairs[normalizedQuestion];
-
-                    if (!answer) {
-                        // Fallback to OpenAI API
-                        try {
-                            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${apiKey}`
-                                },
-                                body: JSON.stringify({
-                                    model: 'gpt-3.5-turbo',
-                                    messages: [{ role: 'user', content: question }]
-                                })
-                            });
-                            const data = await response.json();
-                            answer = data.choices[0].message.content.trim();
-                        } catch (error) {
-                            answer = 'Sorry, I couldn\'t fetch a response. Check your API key.';
-                        }
-                    }
-
-                    addMessage(answer, 'ai');
-                }, 5000); // 5 seconds delay
-            }
+    async function fetchChatGPT(question){
+      try{
+        const res=await fetch("https://api.openai.com/v1/chat/completions",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer YOUR_API_KEY_HERE"
+          },
+          body:JSON.stringify({
+            model:"gpt-3.5-turbo",
+            messages:[{role:"user",content:question}]
+          })
         });
+        const data=await res.json();
+        return data.choices[0].message.content;
+      }catch(e){
+        return "I couldn’t fetch an answer right now.";
+      }
+    }
 
-        // Clear chat
-        clearChatBtn.addEventListener('click', () => {
-            chatHistory.innerHTML = '';
-        });
-    </script>
+    function clearChat(){
+      chat.innerHTML="";
+    }
+  </script>
 </body>
 </html>
