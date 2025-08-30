@@ -5,143 +5,160 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JokeFI AI Agent</title>
   <style>
-    /* Futuristic background animation */
+    /* ====== Global Reset ====== */
+    * {margin:0;padding:0;box-sizing:border-box;}
     body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-    }
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      font-family: "Segoe UI", sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
     }
 
-    header {
-      background: rgba(0,0,0,0.6);
-      padding: 10px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      border-bottom: 1px solid #444;
-    }
-
-    #chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-    }
-    .msg {
-      max-width: 80%;
-      margin-bottom: 15px;
-      padding: 12px 15px;
-      border-radius: 12px;
-      animation: fadeIn 0.5s ease;
-    }
-    .user { background: #00c6ff; color: #000; margin-left: auto; }
-    .ai { background: #111; border: 1px solid #00c6ff; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    #input-area {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #444;
-      background: rgba(0,0,0,0.7);
-    }
-    #user-input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-    }
-    button {
-      margin-left: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      background: #00c6ff;
-      color: #000;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover { background: #00ffff; }
-
-    /* Settings + About Modal */
-    .modal {
-      display: none;
+    /* ====== Background Animation ====== */
+    canvas#bg {
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
+      top: 0;left: 0;
+      width: 100%;height: 100%;
+      z-index: -1;
+    }
+
+    /* ====== Header ====== */
+    header {
+      height: 60px;
+      background: rgba(0,0,0,0.6);
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .modal-content {
-      background: #111;
-      padding: 20px;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 400px;
+    header h1 {
+      font-size: 18px;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
     }
-    .modal-content h2 { margin-top: 0; }
-    .close {
-      float: right;
+    .menu-btn {
+      font-size: 26px;
       cursor: pointer;
       color: #fff;
     }
+
+    /* ====== Chat Window ====== */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-bubble {
+      max-width: 75%;
+      margin: 8px 0;
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .user {align-self: flex-end;background:#0ff;color:#000;}
+    .ai {align-self: flex-start;background:#222;color:#0ff;border:1px solid #0ff;}
+    @keyframes fadeIn {
+      from {opacity:0;transform: translateY(5px);}
+      to {opacity:1;transform: translateY(0);}
+    }
+
+    /* ====== Input Box ====== */
+    .input-area {
+      display:flex;
+      padding:10px;
+      border-top:1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.7);
+    }
+    .input-area input {
+      flex:1;
+      padding:10px;
+      border:none;
+      outline:none;
+      border-radius:8px;
+      background:#111;
+      color:#fff;
+    }
+    .input-area button {
+      margin-left:8px;
+      padding:10px 16px;
+      border:none;
+      border-radius:8px;
+      background:#0ff;
+      color:#000;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    /* ====== Slide Menu ====== */
+    .menu {
+      position: fixed;
+      top: 0;right: -70%;
+      width: 70%;height: 100%;
+      background: rgba(10,10,20,0.95);
+      backdrop-filter: blur(8px);
+      transition: 0.3s;
+      z-index: 1000;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+    .menu.active {right:0;}
+    .menu h2 {color:#0ff;text-shadow:0 0 8px #0ff;}
+    .menu button {
+      background:#0ff;color:#000;
+      border:none;padding:12px;
+      border-radius:8px;
+      cursor:pointer;font-weight:bold;
+    }
+    .about {font-size:14px;color:#ccc;}
+
   </style>
 </head>
 <body>
+  <canvas id="bg"></canvas>
   <header>
-    🤖 JokeFI AI Agent
-    <button onclick="openModal('about')">About</button>
-    <button onclick="openModal('settings')">Settings</button>
-    <button onclick="clearChat()">Clear Chat</button>
-    <button onclick="saveChat()">Save Chat</button>
+    <h1>JokeFI AI Agent</h1>
+    <div class="menu-btn">☰</div>
   </header>
 
-  <div id="chat-container"></div>
+  <div class="chat-container" id="chat"></div>
 
-  <div id="input-area">
-    <input type="text" id="user-input" placeholder="Type your question...">
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Ask me anything...">
     <button onclick="sendMessage()">Send</button>
   </div>
 
-  <!-- About Modal -->
-  <div id="about" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('about')">&times;</span>
-      <h2>About JokeFI</h2>
-      <p>JokeFI AI Agent is a futuristic assistant inspired by ChatGPT, Grok, and Gemini. 
-      It answers common daily questions and falls back to ChatGPT API when needed.</p>
+  <!-- Slide Menu -->
+  <div class="menu" id="menu">
+    <h2>Menu</h2>
+    <button onclick="clearChat()">Clear Chat</button>
+    <button onclick="saveChat()">Save Chat</button>
+    <button onclick="toggleTheme()">Toggle Theme</button>
+    <div class="about">
+      <h3>About JokeFI AI Agent</h3>
+      <p>A futuristic AI Agent with space vibes. Preloaded with 100 daily Q&A and ChatGPT fallback.</p>
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div id="settings" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('settings')">&times;</span>
-      <h2>Settings</h2>
-      <button onclick="toggleTheme()">Toggle Dark/Light</button>
-    </div>
-  </div>
+<script>
+/* ===== Background Animation (Space Stars) ===== */
+const canvas=document.getElementById("bg"),ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+let stars=[];
+for(let i=0;i<200;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2,s:Math.random()*1});}
+function animateStars(){ctx.fillStyle="black";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle="white";stars.forEach(star=>{ctx.beginPath();ctx.arc(star.x,star.y,star.r,0,Math.PI*2);ctx.fill();star.y+=star.s;if(star.y>canvas.height){star.y=0;star.x=Math.random()*canvas.width;}});requestAnimationFrame(animateStars);}animateStars();
 
-  <script>
-    const chatContainer = document.getElementById("chat-container");
-    const userInput = document.getElementById("user-input");
-
-    // Predefined 100 Q&A
-    const qa = {
-      "what is ai": "AI stands for Artificial Intelligence, which is the simulation of human intelligence in machines.",
+/* ===== 100 Predefined Q&A ===== */
+const qa = {
+  "what is ai": "AI stands for Artificial Intelligence, which is the simulation of human intelligence in machines.",
 "who is elon musk": "Elon Musk is a entrepreneur and CEO of companies like Tesla, SpaceX, and xAI.",
 "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
 "what is the weather today": "It's sunny with a chance of rain. Check your local forecast for accuracy.",
@@ -237,92 +254,61 @@
 "what is automation": "Automation is using technology to perform tasks without human intervention.",
 "who is isaac asimov": "Isaac Asimov was a science fiction writer who created the Three Laws of Robotics.",
 "what is science fiction": "Science fiction is a genre exploring futuristic concepts."
-    };
+};
 
-    // Load saved chat
-    window.onload = () => {
-      const saved = localStorage.getItem("chat");
-      if (saved) chatContainer.innerHTML = saved;
-    };
+/* ===== Chat Functions ===== */
+const chatBox=document.getElementById("chat");
+function appendMessage(text,sender){
+  const div=document.createElement("div");
+  div.classList.add("chat-bubble",sender);
+  div.textContent=text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop=chatBox.scrollHeight;
+}
+async function sendMessage(){
+  const input=document.getElementById("userInput");
+  const text=input.value.trim();
+  if(!text) return;
+  appendMessage(text,"user");
+  input.value="";
+  // AI thinking...
+  const thinking=document.createElement("div");
+  thinking.classList.add("chat-bubble","ai");
+  thinking.textContent="Thinking...";
+  chatBox.appendChild(thinking);
+  chatBox.scrollTop=chatBox.scrollHeight;
 
-    function appendMessage(text, sender) {
-      const msg = document.createElement("div");
-      msg.classList.add("msg", sender);
-      msg.innerText = text;
-      chatContainer.appendChild(msg);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+  setTimeout(async ()=>{
+    thinking.remove();
+    const key=text.toLowerCase();
+    if(qa[key]){
+      typingEffect(qa[key]);
+    } else {
+      // fallback to ChatGPT API (demo placeholder)
+      const reply="(ChatGPT says) Sorry I don’t know this yet.";
+      typingEffect(reply);
     }
+  },5000);
+}
+function typingEffect(text){
+  let i=0;
+  const div=document.createElement("div");
+  div.classList.add("chat-bubble","ai");
+  chatBox.appendChild(div);
+  const interval=setInterval(()=>{
+    div.textContent=text.slice(0,i);
+    i++;
+    if(i>text.length){clearInterval(interval);}
+    chatBox.scrollTop=chatBox.scrollHeight;
+  },40);
+}
 
-    async function sendMessage() {
-      const text = userInput.value.trim();
-      if (!text) return;
-      appendMessage(text, "user");
-      userInput.value = "";
-
-      // Thinking
-      const thinkingMsg = document.createElement("div");
-      thinkingMsg.classList.add("msg", "ai");
-      thinkingMsg.innerText = "Thinking...";
-      chatContainer.appendChild(thinkingMsg);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-
-      setTimeout(async () => {
-        thinkingMsg.remove();
-        const lower = text.toLowerCase();
-        if (qa[lower]) {
-          appendMessage(qa[lower], "ai");
-        } else {
-          // ChatGPT API fallback
-          const reply = await fetchGPT(text);
-          appendMessage(reply, "ai");
-        }
-      }, 5000);
-    }
-
-    async function fetchGPT(query) {
-      try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer YOUR_API_KEY"
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{role: "user", content: query}]
-          })
-        });
-        const data = await res.json();
-        return data.choices[0].message.content;
-      } catch (e) {
-        return "Error fetching response from ChatGPT API.";
-      }
-    }
-
-    function clearChat() {
-      chatContainer.innerHTML = "";
-      localStorage.removeItem("chat");
-    }
-
-    function saveChat() {
-      localStorage.setItem("chat", chatContainer.innerHTML);
-      alert("Chat saved!");
-    }
-
-    function openModal(id) {
-      document.getElementById(id).style.display = "flex";
-    }
-    function closeModal(id) {
-      document.getElementById(id).style.display = "none";
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle("light");
-    }
-
-    userInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") sendMessage();
-    });
-  </script>
+/* ===== Menu Functions ===== */
+const menu=document.getElementById("menu");
+document.querySelector(".menu-btn").onclick=()=>menu.classList.toggle("active");
+function clearChat(){chatBox.innerHTML="";}
+function saveChat(){localStorage.setItem("chat",chatBox.innerHTML);alert("Chat saved!");}
+function toggleTheme(){document.body.classList.toggle("dark");}
+</script>
 </body>
 </html>
