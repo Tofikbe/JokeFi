@@ -2,784 +2,357 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>JokeFi Edit Tool</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Raleway:wght@400;700&family=PT+Sans:wght@400;700&family=Ubuntu:wght@400;700&family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;700&family=Poppins:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Playfair+Display:wght@400;700&family=Roboto+Slab:wght@400;700&family=Lora:wght@400;700&family=Work+Sans:wght@400;700&family=Quicksand:wght@400;700&family=Nunito:wght@400;700&family=Heebo:wght@400;700&family=Barlow:wght@400;700&family=Inter:wght@400;700&family=DM+Sans:wght@400;700&family=Archivo:wght@400;700&family=Libre+Franklin:wght@400;700&family=Space+Grotesk:wght@400;700&family=Manrope:wght@400;700&family=Karla:wght@400;700&family=Rubik:wght@400;700&family=Overpass:wght@400;700&family=Public+Sans:wght@400;700&family=Figtree:wght@400;700&family=Outfit:wght@400;700&family=Red+Hat+Display:wght@400;700&family=Sen:wght@400;700&family=Lexend:wght@400;700&family=Chivo:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700&family=Epilogue:wght@400;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JokeFI AI Agent</title>
     <style>
+        /* Futuristic styles with glowing effects */
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #1a1a1a, #000000);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(270deg, #0f0c29, #302b63, #24243e);
+            background-size: 600% 600%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
             overflow: hidden;
-            touch-action: none;
-            color: #ffffff;
-            -webkit-user-select: none;
-            user-select: none;
         }
-        #header {
-            background: #111111;
-            color: #ffffff;
-            text-align: center;
-            padding: 12px;
-            font-size: 20px;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            z-index: 100;
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        #editor {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%23222222" d="M0 0h10v10H0zM10 10h10v10H10z"/></svg>') repeat;
+
+        #chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
             overflow: hidden;
-            transition: background 0.3s ease;
-        }
-        #canvas {
-            border: 1px solid #333333;
-            background: transparent;
-            touch-action: manipulation;
-            max-width: 90%;
-            max-height: 80%;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            border-radius: 8px;
-        }
-        #tools {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #111111;
-            color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glowing effect */
             display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px;
-            overflow-x: auto;
-            z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-        }
-        button, select, input[type="range"], label, input[type="color"] {
-            background: transparent;
-            color: #ffffff;
-            border: none;
-            padding: 8px;
-            margin: 4px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
             flex-direction: column;
-            transition: background 0.2s ease, transform 0.1s ease;
         }
-        button:active, select:active, label:active {
-            transform: scale(0.95);
-        }
-        button:hover, select:hover, label:hover {
-            background: #333333;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        i {
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-        .tool-label {
-            font-size: 11px;
-        }
-        #fontSelect {
-            max-width: 120px;
-            background: #333333;
-            color: #ffffff;
-            border-radius: 8px;
-        }
-        .handle {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background: #ffffff;
-            border: 2px solid #000000;
-            border-radius: 50%;
-            display: none;
-            z-index: 50;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        #delete-handle {
-            background: none;
-            border: none;
-            font-size: 24px;
-            line-height: 24px;
-            text-align: center;
-            cursor: pointer;
-        }
-        #filter-panel, #text-panel, #sticker-panel, #layers-panel {
-            display: none;
-            position: fixed;
-            bottom: 80px;
-            left: 0;
-            right: 0;
-            background: #222222;
-            padding: 12px;
-            overflow-x: auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            z-index: 90;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 0;
-            transform: translateY(20%);
-        }
-        #filter-panel.open, #text-panel.open, #sticker-panel.open, #layers-panel.open {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
-        }
-        #sticker-panel img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            margin: 8px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: transform 0.2s ease;
-        }
-        #sticker-panel img:hover {
-            transform: scale(1.1);
-        }
-        #layers-panel {
-            flex-direction: column;
-            overflow-y: auto;
-            max-height: 200px;
-        }
-        .layer-item {
-            background: #333333;
+
+        #chat-header {
             padding: 10px;
-            margin: 5px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: background 0.2s ease;
-        }
-        .layer-item.selected {
-            background: #555555;
-        }
-        .layer-item button {
-            background: transparent;
-            color: #ffffff;
-            font-size: 12px;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        #editor {
-            animation: fadeIn 0.5s ease;
-        }
-        input[type="range"] {
-            width: 100px;
-            -webkit-appearance: none;
-            background: #333333;
-            height: 6px;
-            border-radius: 3px;
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #ffffff;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-        }
-        input[type="color"] {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-        }
-        input[type="color"]::-webkit-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-        }
-        #loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            z-index: 200;
-        }
-        #loading.active {
-            display: block;
-        }
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid #ffffff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #tutorial-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 200;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
             text-align: center;
-            padding: 20px;
-        }
-        #tutorial-overlay.active {
+            font-size: 1.2em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        #tutorial-overlay h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
+
+        #chat-header button {
+            background: transparent;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        #tutorial-overlay p {
-            font-size: 16px;
-            margin-bottom: 20px;
+
+        #chat-header button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 10px #00ffff;
         }
-        #tutorial-overlay button {
-            background: #444444;
-            padding: 10px 20px;
-            border-radius: 8px;
+
+        #chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2); /* Glowing */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user {
+            align-self: flex-end;
+            background: #00ffff;
+            color: #000;
+        }
+
+        .ai {
+            align-self: flex-start;
+            background: #ffffff22;
+            color: #ffffff;
+        }
+
+        .thinking {
+            align-self: flex-start;
+            background: #ffffff22;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+        }
+
+        .thinking::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+
+        #user-input {
+            padding: 15px;
+            border: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            font-size: 1em;
+            outline: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #user-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Mobile-first responsive */
+        @media (max-width: 600px) {
+            #chat-container {
+                border-radius: 0;
+            }
+            #chat-history {
+                padding: 10px;
+            }
+            .message {
+                max-width: 95%;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="header">JokeFi Edit Tool</div>
-    <div id="editor">
-        <canvas id="canvas"></canvas>
-        <div id="rotate-handle" class="handle"></div>
-        <div id="delete-handle" class="handle">❌</div>
+    <div id="chat-container">
+        <div id="chat-header">
+            JokeFI AI Agent
+            <button id="clear-chat">Clear Chat</button>
+        </div>
+        <div id="chat-history"></div>
+        <input id="user-input" placeholder="Type your question..." />
     </div>
-    <div id="filter-panel">
-        <label><i class="fas fa-sun"></i><span class="tool-label">Brightness</span><input type="range" id="brightness" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-adjust"></i><span class="tool-label">Contrast</span><input type="range" id="contrast" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-palette"></i><span class="tool-label">Saturation</span><input type="range" id="saturation" min="0" max="200" value="100" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-tint"></i><span class="tool-label">Hue</span><input type="range" id="hue" min="-180" max="180" value="0" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-eye-dropper"></i><span class="tool-label">Blur</span><input type="range" id="blur" min="0" max="10" value="0" step="0.1" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-image"></i><span class="tool-label">Grayscale</span><input type="range" id="grayscale" min="0" max="100" value="0" oninput="applyFilters(selected)"></label>
-        <label><i class="fas fa-search-plus"></i><span class="tool-label">Scale</span><input type="range" id="scale" min="0.1" max="5" step="0.1" value="1" oninput="applyScale(selected)"></label>
-        <label><i class="fas fa-low-vision"></i><span class="tool-label">Opacity</span><input type="range" id="opacity" min="0" max="100" value="100" oninput="applyFilters(selected)"></label>
-    </div>
-    <div id="text-panel">
-        <select id="fontSelect">
-            <option>Open Sans</option>
-            <option>Roboto</option>
-            <option>Lato</option>
-            <option>Montserrat</option>
-            <option>Oswald</option>
-            <option>Raleway</option>
-            <option>PT Sans</option>
-            <option>Ubuntu</option>
-            <option>Merriweather</option>
-            <option>Noto Sans</option>
-            <option>Poppins</option>
-            <option>Source Sans Pro</option>
-            <option>Playfair Display</option>
-            <option>Roboto Slab</option>
-            <option>Lora</option>
-            <option>Work Sans</option>
-            <option>Quicksand</option>
-            <option>Nunito</option>
-            <option>Heebo</option>
-            <option>Barlow</option>
-            <option>Inter</option>
-            <option>DM Sans</option>
-            <option>Archivo</option>
-            <option>Libre Franklin</option>
-            <option>Space Grotesk</option>
-            <option>Manrope</option>
-            <option>Karla</option>
-            <option>Rubik</option>
-            <option>Overpass</option>
-            <option>Public Sans</option>
-            <option>Figtree</option>
-            <option>Outfit</option>
-            <option>Red Hat Display</option>
-            <option>Sen</option>
-            <option>Lexend</option>
-            <option>Chivo</option>
-            <option>Plus Jakarta Sans</option>
-            <option>Epilogue</option>
-            <option>Syne</option>
-            <option>Arial</option>
-        </select>
-        <label><i class="fas fa-text-height"></i><span class="tool-label">Size</span><input type="range" id="textSize" min="10" max="200" value="40" oninput="applyTextStyle(selected)"></label>
-        <label><i class="fas fa-palette"></i><span class="tool-label">Color</span><input type="color" id="textColor" value="#ffffff" oninput="applyTextStyle(selected)"></label>
-        <button onclick="toggleBold(selected)"><i class="fas fa-bold"></i><span class="tool-label">Bold</span></button>
-        <button onclick="toggleItalic(selected)"><i class="fas fa-italic"></i><span class="tool-label">Italic</span></button>
-        <select id="textAlign" onchange="applyTextStyle(selected)">
-            <option value="left">Left</option>
-            <option value="center">Center</option>
-            <option value="right">Right</option>
-        </select>
-        <label><i class="fas fa-shadow"></i><span class="tool-label">Shadow Color</span><input type="color" id="shadowColor" value="#000000" oninput="applyTextStyle(selected)"></label>
-        <label><i class="fas fa-arrows-alt-h"></i><span class="tool-label">Shadow X</span><input type="range" id="shadowX" min="-50" max="50" value="0" oninput="applyTextStyle(selected)"></label>
-        <label><i class="fas fa-arrows-alt-v"></i><span class="tool-label">Shadow Y</span><input type="range" id="shadowY" min="-50" max="50" value="0" oninput="applyTextStyle(selected)"></label>
-        <label><i class="fas fa-eye-dropper"></i><span class="tool-label">Shadow Blur</span><input type="range" id="shadowBlur" min="0" max="50" value="0" oninput="applyTextStyle(selected)"></label>
-        <label><i class="fas fa-low-vision"></i><span class="tool-label">Opacity</span><input type="range" id="textOpacity" min="0" max="100" value="100" oninput="applyTextStyle(selected)"></label>
-    </div>
-    <div id="sticker-panel">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/btc.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/eth.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/ltc.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/xrp.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/bch.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/ada.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/dot.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/xlm.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/link.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/usdt.png" onclick="addSticker(this.src)">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/X_logo_2023_original.svg/512px-X_logo_2023_original.svg.png" onclick="addSticker(this.src)">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/X Corp logo white on black.svg/512px-X_Corp_logo_white_on_black.svg.png" onclick="addSticker(this.src)">
-        <img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/x.svg" onclick="addSticker(this.src)">
-        <img src="https://www.freeiconspng.com/uploads/twitter-x-logo-png-transparent-1.png" onclick="addSticker(this.src)">
-        <img src="https://www.stickpng.com/assets/images/580b57fcd9996e24bc43c53e.png" onclick="addSticker(this.src)">
-        <img src="https://pngimg.com/uploads/twitter/twitter_PNG3.png" onclick="addSticker(this.src)">
-        <img src="https://icons8.com/icon/4Vdoj4nQv5jV/twitter-x" onclick="addSticker(this.src)">
-        <img src="https://cdn-icons-png.flaticon.com/512/124/124021.png" onclick="addSticker(this.src)">
-        <img src="https://cdn-icons-png.flaticon.com/512/2525/2525810.png" onclick="addSticker(this.src)">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733635.png" onclick="addSticker(this.src)">
-    </div>
-    <div id="layers-panel">
-    </div>
-    <div id="tools">
-        <label for="upload"><i class="fas fa-image"></i><span class="tool-label">Add Image</span></label>
-        <input type="file" id="upload" accept="image/*" multiple>
-        <button onclick="addText()"><i class="fas fa-font"></i><span class="tool-label">Add Text</span></button>
-        <button onclick="togglePanel('text-panel')"><i class="fas fa-text"></i><span class="tool-label">Text Style</span></button>
-        <button onclick="togglePanel('filter-panel')"><i class="fas fa-sliders-h"></i><span class="tool-label">Filters</span></button>
-        <button onclick="flipHorizontal()"><i class="fas fa-arrows-alt-h"></i><span class="tool-label">Flip H</span></button>
-        <button onclick="flipVertical()"><i class="fas fa-arrows-alt-v"></i><span class="tool-label">Flip V</span></button>
-        <button onclick="enterCropMode()"><i class="fas fa-crop"></i><span class="tool-label">Crop</span></button>
-        <select id="ratio">
-            <option value="1">1:1</option>
-            <option value="1.333">4:3</option>
-            <option value="1.777">16:9</option>
-            <option value="0.562">9:16</option>
-            <option value="2">2:1</option>
-            <option value="0.5">1:2</option>
-            <option value="1.414">A4 (P)</option>
-            <option value="0.707">A4 (L)</option>
-        </select>
-        <button onclick="applyRatio()"><i class="fas fa-expand"></i><span class="tool-label">Ratio</span></button>
-        <button onclick="togglePanel('sticker-panel')"><i class="fas fa-sticker-muk"></i><span class="tool-label">Sticker</span></button>
-        <button onclick="undo()"><i class="fas fa-undo"></i><span class="tool-label">Undo</span></button>
-        <button onclick="redo()"><i class="fas fa-redo"></i><span class="tool-label">Redo</span></button>
-        <button onclick="togglePanel('layers-panel')"><i class="fas fa-layers"></i><span class="tool-label">Layers</span></button>
-        <button onclick="download('png')"><i class="fas fa-download"></i><span class="tool-label">PNG</span></button>
-        <button onclick="download('jpeg')"><i class="fas fa-download"></i><span class="tool-label">JPG</span></button>
-    </div>
-    <div id="loading">
-        <div class="spinner"></div>
-    </div>
-    <div id="tutorial-overlay">
-        <h2>Welcome to JokeFi Edit Tool</h2>
-        <p>Tap to select layers, pinch to scale and rotate, use tools at bottom for editing.</p>
-        <button onclick="closeTutorial()">Got it!</button>
-    </div>
+
     <script>
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let layers = [];
-        let selected = null;
-        let isDragging = false;
-        let isRotating = false;
-        let isScaling = false;
-        let startX, startY, startAngle, startDist, startScale, startPinchAngle;
-        let cropMode = false;
-        let cropStartX, cropStartY, cropEndX, cropEndY;
-        let rotateHandle = document.getElementById('rotate-handle');
-        let deleteHandle = document.getElementById('delete-handle');
-        let history = [];
-        let redoStack = [];
-        let autoSaveInterval = null;
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const clearChatBtn = document.getElementById('clear-chat');
 
-        function initCanvas() {
-            canvas.width = window.innerWidth * 0.9;
-            canvas.height = window.innerHeight * 0.6;
-            redraw();
-            autoSaveInterval = setInterval(autoSave, 30000);
-            if (localStorage.getItem('firstLoad') === null) {
-                document.getElementById('tutorial-overlay').classList.add('active');
-                localStorage.setItem('firstLoad', 'done');
-            }
-        }
+        // Placeholder for OpenAI API key
+        const apiKey = 'your-openai-api-key-here'; // Replace with your actual OpenAI API key
 
-        function closeTutorial() {
-            document.getElementById('tutorial-overlay').classList.remove('active');
-        }
+        // Pre-defined Q&A pairs (100 questions)
+        const qaPairs = {
+            "what is ai": "AI stands for Artificial Intelligence, which is the simulation of human intelligence in machines.",
+            "who is elon musk": "Elon Musk is a entrepreneur and CEO of companies like Tesla, SpaceX, and xAI.",
+            "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
+            "what is the weather today": "It's sunny with a chance of rain. Check your local forecast for accuracy.",
+            "how are you": "I'm doing great, thanks for asking!",
+            "what is python": "Python is a popular programming language known for its simplicity.",
+            "who is albert einstein": "Albert Einstein was a physicist who developed the theory of relativity.",
+            "what is the capital of france": "The capital of France is Paris.",
+            "tell me about coffee": "Coffee is a brewed drink prepared from roasted coffee beans.",
+            "what is blockchain": "Blockchain is a decentralized digital ledger technology.",
+            "who is steve jobs": "Steve Jobs was the co-founder of Apple Inc.",
+            "what is quantum computing": "Quantum computing uses quantum bits to perform computations faster than classical computers.",
+            "tell me a fun fact": "Octopuses have three hearts!",
+            "what is machine learning": "Machine learning is a subset of AI where machines learn from data.",
+            "who is bill gates": "Bill Gates is the co-founder of Microsoft.",
+            "what is the meaning of life": "42, according to The Hitchhiker's Guide to the Galaxy.",
+            "how to make tea": "Boil water, add tea bag, steep for 3-5 minutes.",
+            "what is nft": "NFT stands for Non-Fungible Token, a unique digital asset.",
+            "who is marie curie": "Marie Curie was a physicist and chemist who researched radioactivity.",
+            "what is global warming": "Global warming is the long-term heating of Earth's climate system.",
+            "tell me about dogs": "Dogs are loyal animals and man's best friend.",
+            "what is cryptocurrency": "Cryptocurrency is digital money using cryptography for security.",
+            "who is leonardo da vinci": "Leonardo da Vinci was a Renaissance artist and inventor.",
+            "what is photosynthesis": "Photosynthesis is the process by which plants make food using sunlight.",
+            "how to tie a tie": "Use the Windsor knot for a formal look.",
+            "what is the internet": "The internet is a global network of computers.",
+            "who is william shakespeare": "William Shakespeare was an English playwright and poet.",
+            "what is dna": "DNA is the molecule that carries genetic information.",
+            "tell me about cats": "Cats are independent and agile animals.",
+            "what is relativity": "Relativity is Einstein's theory explaining space, time, and gravity.",
+            "who is isaac newton": "Isaac Newton was a mathematician and physicist who formulated laws of motion.",
+            "what is evolution": "Evolution is the process by which species change over time.",
+            "how to cook pasta": "Boil water, add pasta, cook for 8-10 minutes.",
+            "what is big bang": "The Big Bang is the theory of the universe's origin.",
+            "who is charles darwin": "Charles Darwin proposed the theory of natural selection.",
+            "what is gravity": "Gravity is the force that attracts objects toward each other.",
+            "tell me a riddle": "What has keys but can't open locks? A piano.",
+            "what is electricity": "Electricity is the flow of electric charge.",
+            "who is thomas edison": "Thomas Edison invented the light bulb.",
+            "what is solar system": "The solar system consists of the sun and eight planets.",
+            "how to plant a tree": "Dig a hole, place the tree, cover with soil, water it.",
+            "what is recycling": "Recycling is processing waste into new materials.",
+            "who is nelson mandela": "Nelson Mandela was a South African anti-apartheid leader.",
+            "what is democracy": "Democracy is a government by the people.",
+            "tell me about music": "Music is an art form using sound and rhythm.",
+            "what is philosophy": "Philosophy is the study of fundamental questions about existence.",
+            "who is socrates": "Socrates was a Greek philosopher.",
+            "what is meditation": "Meditation is a practice for mental clarity and relaxation.",
+            "how to exercise": "Start with warm-up, do cardio or strength training, cool down.",
+            "what is yoga": "Yoga is a physical and mental practice originating from India.",
+            "who is buddha": "Buddha was a spiritual leader who founded Buddhism.",
+            "what is buddhism": "Buddhism is a religion based on the teachings of Buddha.",
+            "tell me about books": "Books are sources of knowledge and entertainment.",
+            "what is history": "History is the study of past events.",
+            "who is cleopatra": "Cleopatra was the last pharaoh of Ancient Egypt.",
+            "what is ancient egypt": "Ancient Egypt was a civilization along the Nile River.",
+            "how to learn a language": "Practice daily, use apps like Duolingo.",
+            "what is spanish": "Spanish is a Romance language spoken in Spain and Latin America.",
+            "who is pablo picasso": "Pablo Picasso was a Spanish painter and sculptor.",
+            "what is art": "Art is the expression of human creativity.",
+            "tell me about movies": "Movies are visual stories told through film.",
+            "what is hollywood": "Hollywood is the center of the American film industry.",
+            "who is alfred hitchcock": "Alfred Hitchcock was a film director known for suspense.",
+            "what is psychology": "Psychology is the study of the mind and behavior.",
+            "how to be happy": "Practice gratitude, exercise, connect with others.",
+            "what is love": "Love is a deep affection for someone or something.",
+            "who is romeo and juliet": "Romeo and Juliet is a play by Shakespeare about tragic lovers.",
+            "what is shakespearean tragedy": "A Shakespearean tragedy involves a hero with a fatal flaw.",
+            "tell me about space": "Space is the vast expanse beyond Earth's atmosphere.",
+            "what is mars": "Mars is the fourth planet from the sun, known as the Red Planet.",
+            "who is neil armstrong": "Neil Armstrong was the first man to walk on the moon.",
+            "what is moon landing": "The moon landing was in 1969 by Apollo 11.",
+            "how to stargaze": "Find a dark spot, use a telescope or binoculars.",
+            "what is black hole": "A black hole is a region where gravity pulls so much that light can't escape.",
+            "who is stephen hawking": "Stephen Hawking was a theoretical physicist known for black hole research.",
+            "what is time travel": "Time travel is a hypothetical concept of moving between points in time.",
+            "tell me about dinosaurs": "Dinosaurs were reptiles that lived millions of years ago.",
+            "what is extinction": "Extinction is when a species dies out completely.",
+            "who is jurassic park": "Jurassic Park is a movie about cloned dinosaurs.",
+            "what is ocean": "The ocean covers over 70% of Earth's surface.",
+            "how to swim": "Learn basic strokes like freestyle and breaststroke.",
+            "what is coral reef": "Coral reefs are underwater ecosystems made of coral.",
+            "who is jacques cousteau": "Jacques Cousteau was an ocean explorer and filmmaker.",
+            "what is climate change": "Climate change is the alteration of global weather patterns.",
+            "tell me about trees": "Trees produce oxygen and provide habitat for wildlife.",
+            "what is deforestation": "Deforestation is the removal of forests for other uses.",
+            "who is greta thunberg": "Greta Thunberg is a climate activist.",
+            "what is renewable energy": "Renewable energy comes from sources like sun and wind.",
+            "how to save energy": "Turn off lights, use efficient appliances.",
+            "what is solar power": "Solar power harnesses energy from the sun.",
+            "who is nikola tesla": "Nikola Tesla was an inventor known for AC electricity.",
+            "what is invention": "An invention is a new device or process.",
+            "tell me about robots": "Robots are machines that can perform tasks autonomously.",
+            "what is automation": "Automation is using technology to perform tasks without human intervention.",
+            "who is isaac asimov": "Isaac Asimov was a science fiction writer who created the Three Laws of Robotics.",
+            "what is science fiction": "Science fiction is a genre exploring futuristic concepts."
+        };
 
-        function saveState() {
-            let clone = layers.map(layer => {
-                let c = {...layer};
-                if (layer.type === 'image') c.imgData = layer.img.src;
-                return c;
-            });
-            history.push(clone);
-            if (history.length > 20) history.shift();
-        }
+        // Function to add message to chat
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', type);
+            messageDiv.textContent = type === 'ai' ? 'JokeFI AI Agent: ' : 'You: ';
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
 
-        function undo() {
-            if (history.length) {
-                let state = history.pop();
-                redoStack.push(layers.map(layer => {
-                    let c = {...layer};
-                    if (layer.type === 'image') c.imgData = layer.img.src;
-                    return c;
-                }));
-                layers = state.map(layer => {
-                    if (layer.type === 'image') {
-                        let img = new Image();
-                        img.src = layer.imgData;
-                        layer.img = img;
+            // Typing animation for AI responses
+            if (type === 'ai') {
+                let i = 0;
+                const fullText = 'JokeFI AI Agent: ' + text;
+                messageDiv.textContent = '';
+                const typingInterval = setInterval(() => {
+                    if (i < fullText.length) {
+                        messageDiv.textContent += fullText.charAt(i);
+                        i++;
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    } else {
+                        clearInterval(typingInterval);
                     }
-                    return layer;
-                });
-                redraw();
-            }
-        }
-
-        function redo() {
-            if (redoStack.length) {
-                let state = redoStack.pop();
-                history.push(layers.map(layer => {
-                    let c = {...layer};
-                    if (layer.type === 'image') c.imgData = layer.img.src;
-                    return c;
-                }));
-                layers = state.map(layer => {
-                    if (layer.type === 'image') {
-                        let img = new Image();
-                        img.src = layer.imgData;
-                        layer.img = img;
-                    }
-                    return layer;
-                });
-                redraw();
-            }
-        }
-
-        function autoSave() {
-            localStorage.setItem('jokeFiProject', JSON.stringify(layers.map(layer => {
-                let c = {...layer};
-                if (layer.type === 'image') c.imgData = layer.img.src;
-                return c;
-            })));
-        }
-
-        function redraw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let layer of layers) {
-                ctx.save();
-                ctx.globalAlpha = (layer.opacity || 100) / 100;
-                ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
-                ctx.rotate(layer.rotation * Math.PI / 180);
-                ctx.scale(layer.flipX ? -1 : 1, layer.flipY ? -1 : 1);
-                if (layer.type === 'image' || layer.type === 'sticker') {
-                    ctx.filter = `brightness(${layer.brightness}%) contrast(${layer.contrast}%) saturate(${layer.saturation}%) hue-rotate(${layer.hue}deg) blur(${layer.blur}px) grayscale(${layer.grayscale}%)`;
-                    ctx.drawImage(layer.img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
-                } else if (layer.type === 'text') {
-                    ctx.shadowColor = layer.shadowColor;
-                    ctx.shadowOffsetX = layer.shadowOffsetX;
-                    ctx.shadowOffsetY = layer.shadowOffsetY;
-                    ctx.shadowBlur = layer.shadowBlur;
-                    ctx.font = `${layer.bold ? 'bold ' : ''}${layer.italic ? 'italic ' : ''}${layer.size}px ${layer.font}`;
-                    ctx.fillStyle = layer.color;
-                    ctx.textAlign = layer.align || 'left';
-                    let textX = 0;
-                    if (layer.align === 'center') textX = -ctx.measureText(layer.text).width / 2;
-                    if (layer.align === 'right') textX = -ctx.measureText(layer.text).width;
-                    ctx.fillText(layer.text, textX, 0);
-                    layer.width = ctx.measureText(layer.text).width;
-                }
-                ctx.restore();
-            }
-            if (selected) {
-                drawHandles(selected);
-            }
-            if (cropMode) {
-                drawCropRect();
-            }
-        }
-
-        function drawHandles(layer) {
-            let rect = canvas.getBoundingClientRect();
-            let handleX = layer.x + layer.width;
-            let handleY = layer.y + layer.height;
-            rotateHandle.style.left = `${rect.left + handleX}px`;
-            rotateHandle.style.top = `${rect.top + handleY}px`;
-            rotateHandle.style.display = 'block';
-            let deleteX = layer.x + layer.width;
-            let deleteY = layer.y;
-            deleteHandle.style.left = `${rect.left + deleteX}px`;
-            deleteHandle.style.top = `${rect.top + deleteY}px`;
-            deleteHandle.style.display = 'block';
-        }
-
-        function drawCropRect() {
-            if (cropStartX !== undefined) {
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 5]);
-                ctx.strokeRect(cropStartX, cropStartY, cropEndX - cropStartX, cropEndY - cropStartY);
-                ctx.setLineDash([]);
-            }
-        }
-
-        function getLayerAt(x, y) {
-            for (let i = layers.length - 1; i >= 0; i--) {
-                let layer = layers[i];
-                if (layer.type === 'image' || layer.type === 'sticker') {
-                    if (x > layer.x && x < layer.x + layer.width && y > layer.y && y < layer.y + layer.height) {
-                        return layer;
-                    }
-                } else if (layer.type === 'text') {
-                    ctx.font = `${layer.size}px ${layer.font}`;
-                    let width = ctx.measureText(layer.text).width;
-                    if (x > layer.x && x < layer.x + width && y > layer.y - layer.size && y < layer.y) {
-                        return layer;
-                    }
-                }
-            }
-            return null;
-        }
-
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            let touch = e.touches[0];
-            let rect = canvas.getBoundingClientRect();
-            let x = touch.clientX - rect.left;
-            let y = touch.clientY - rect.top;
-            if (cropMode) {
-                cropStartX = x;
-                cropStartY = y;
-                cropEndX = x;
-                cropEndY = y;
+                }, 50);
             } else {
-                selected = getLayerAt(x, y);
-                if (selected) {
-                    isDragging = true;
-                    startX = x - selected.x;
-                    startY = y - selected.y;
-                    updatePanels(selected);
-                    redraw();
-                }
-            }
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            let touch = e.touches[0];
-            let rect = canvas.getBoundingClientRect();
-            let x = touch.clientX - rect.left;
-            let y = touch.clientY - rect.top;
-            if (cropMode) {
-                cropEndX = x;
-                cropEndY = y;
-                redraw();
-            } else if (isDragging && selected) {
-                selected.x = x - startX;
-                selected.y = y - startY;
-                redraw();
-            }
-        });
-
-        canvas.addEventListener('touchend', (e) => {
-            isDragging = false;
-            if (cropMode && selected && cropStartX !== undefined) {
-                applyCrop(selected);
-                cropMode = false;
-                cropStartX = undefined;
-            }
-            redraw();
-        });
-
-        rotateHandle.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            isRotating = true;
-            let rect = canvas.getBoundingClientRect();
-            startX = e.touches[0].clientX - rect.left;
-            startY = e.touches[0].clientY - rect.top;
-            let centerX = selected.x + selected.width / 2;
-            let centerY = selected.y + selected.height / 2;
-            startAngle = Math.atan2(startY - centerY, startX - centerX);
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (isRotating) {
-                e.preventDefault();
-                let rect = canvas.getBoundingClientRect();
-                let x = e.touches[0].clientX - rect.left;
-                let y = e.touches[0].clientY - rect.top;
-                let centerX = selected.x + selected.width / 2;
-                let centerY = selected.y + selected.height / 2;
-                let angle = Math.atan2(y - centerY, x - centerX);
-                selected.rotation = (angle - startAngle) * 180 / Math.PI + (selected.rotation || 0);
-                redraw();
-            }
-        });
-
-        document.addEventListener('touchend', () => {
-            isRotating = false;
-        });
-
-        deleteHandle.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            deleteSelected();
-        });
-
-        document.getElementById('upload').addEventListener('change', (e) => {
-            for (let file of e.target.files) {
-                let reader = new FileReader();
-                reader.onload = (ev) => {
-                    let img = new Image();
-                    img.onload = () => {
-                        let scale = Math.min(canvas.width / img.width, canvas.height / img.height, 0.8);
-                        let layer = {
-                            type: 'image',
-                            img,
-                            x: (canvas.width - img.width * scale) / 2,
-                            y: (canvas.height - img.height * scale) / 2,
-                            width: img.width * scale,
-                            height: img.height * scale,
-                            rotation: 0,
-                            brightness: 100,
-                            contrast: 100,
-                            saturation: 100,
-                            hue: 0,
-                            blur: 0,
-                            grayscale: 0,
-                            opacity: 100
-                        };
-                        layers.push(layer);
-                        redraw();
-                    };
-                    img.src = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function addText() {
-            let text = prompt('Enter text');
-            if (text) {
-                let font = document.getElementById('fontSelect').value;
-                let layer = {
-                    type: 'text',
-                    text,
-                    x: canvas.width / 2,
-                    y: canvas.height / 2,
-                    size: 40,
-                    font: font,
-                    color: '#000',
-                    rotation: 0
-                };
-                layers.push(layer);
-                redraw();
+                messageDiv.textContent += text;
             }
         }
 
-        function applyFilters(layer) {
-            if (layer) {
-                layer.brightness = document.getElementById('brightness').value;
-                layer.contrast = document.getElementById('contrast').value;
-                layer.saturation = document.getElementById('saturation').value;
-                layer.hue = document.getElementById('hue').value;
-                layer.blur = document.getElementById('blur').value;
-                layer.grayscale = document.getElementById('grayscale').value;
-                layer.opacity = document.getElementById('opacity').value;
-                redraw();
+        // Function to show thinking animation
+        function showThinking() {
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.classList.add('message', 'ai', 'thinking');
+            thinkingDiv.textContent = 'JokeFI AI Agent: Thinking';
+            chatHistory.appendChild(thinkingDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            return thinkingDiv;
+        }
+
+        // Function to remove thinking
+        function removeThinking(thinkingDiv) {
+            chatHistory.removeChild(thinkingDiv);
+        }
+
+        // Handle user input
+        userInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && userInput.value.trim()) {
+                const question = userInput.value.trim();
+                addMessage(question, 'user');
+                userInput.value = '';
+
+                const thinkingDiv = showThinking();
+
+                setTimeout(async () => {
+                    removeThinking(thinkingDiv);
+
+                    const normalizedQuestion = question.toLowerCase().replace(/[.?!,]/g, '').trim();
+                    let answer = qaPairs[normalizedQuestion];
+
+                    if (!answer) {
+                        // Fallback to OpenAI API
+                        try {
+                            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${apiKey}`
+                                },
+                                body: JSON.stringify({
+                                    model: 'gpt-3.5-turbo',
+                                    messages: [{ role: 'user', content: question }]
+                                })
+                            });
+                            const data = await response.json();
+                            answer = data.choices[0].message.content.trim();
+                        } catch (error) {
+                            answer = 'Sorry, I couldn\'t fetch a response. Check your API key.';
+                        }
+                    }
+
+                    addMessage(answer, 'ai');
+                }, 5000); // 5 seconds delay
             }
-        }
+        });
 
-        function applyTextStyle(layer) {
-            if (layer && layer.type === 'text') {
-                layer.font = document.getElementById('fontSelect').value;
-                layer.size = document.getElementById('textSize').value;
-                layer.color = document.getElementById('textColor').value;
-                redraw();
-            }
-        }
-
-        function enterCropMode() {
-            if (selected && selected.type === 'image') {
-                cropMode = true;
-            } else {
-                alert('Select an image layer first.');
-            }
-        }
-
-        function applyCrop(layer) {
-            let cropWidth = Math.abs(cropEndX - cropStartX);
-            let cropHeight = Math.abs(cropEndY - cropStartY);
-            let cropX = Math.min(cropStartX, cropEndX) - layer.x;
-            let cropY = Math.min(cropStartY, cropEndY) - layer.y;
-            let tempCanvas = document.createElement('canvas');
-            tempCanvas.width = cropWidth;
-            tempCanvas.height = cropHeight;
-            let tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(layer.img, cropX * (layer.img.width / layer.width), cropY * (layer.img.height / layer.height), cropWidth * (layer.img.width / layer.width), cropHeight * (layer.img.height / layer.height), 0, 0, cropWidth, cropHeight);
-            layer.img.src = tempCanvas.toDataURL();
-            layer.width = cropWidth;
-            layer.height = cropHeight;
-            layer.x = Math.min(cropStartX, cropEndX);
-            layer.y = Math.min(cropStartY, cropEndY);
-            redraw();
-        }
-
-        function applyRatio() {
-            let ratio = parseFloat(document.getElementById('ratio').value);
-            canvas.height = canvas.width / ratio;
-            redraw();
-        }
-
-        function deleteSelected() {
-            if (selected) {
-                layers = layers.filter(l => l !== selected);
-                selected = null;
-                rotateHandle.style.display = 'none';
-                deleteHandle.style.display = 'none';
-                redraw();
-            }
-        }
-
-        function download(format) {
-            let link = document.createElement('a');
-            link.download = `edited.${format}`;
-            link.href = canvas.toDataURL(`image/${format}`);
-            link.click();
-        }
-
-        initCanvas();
-        window.addEventListener('resize', initCanvas);
+        // Clear chat
+        clearChatBtn.addEventListener('click', () => {
+            chatHistory.innerHTML = '';
+        });
     </script>
 </body>
 </html>
