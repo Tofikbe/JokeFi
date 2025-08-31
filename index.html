@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -26,221 +25,55 @@
       background: radial-gradient(circle at center, #f0f0f0 0%, #ffffff 100%);
       color: #000000;
     }
-    .space-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
-      transition: opacity 0.3s;
-    }
+    .space-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; transition: opacity 0.3s; }
     body.light .space-bg { opacity: 0; }
-    .star {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 50%;
-      animation: floatStars linear infinite, twinkle 1s infinite alternate;
-      cursor: pointer;
-    }
+    .star { position: absolute; background: rgba(255,255,255,0.9); border-radius: 50%; animation: floatStars linear infinite, twinkle 1s infinite alternate; cursor: pointer; }
     @keyframes twinkle { 0% { opacity: 0.5; } 100% { opacity: 1; } }
     .star.explode { animation: explode 0.5s forwards; }
     @keyframes explode { 0% { transform: scale(1); } 100% { transform: scale(2); opacity: 0; } }
-    .nebula {
-      position: absolute;
-      background: radial-gradient(circle, rgba(106, 0, 244, 0.4), transparent);
-      width: 120px;
-      height: 120px;
-      animation: pulseNebula 8s ease-in-out infinite;
-    }
-    .comet {
-      position: absolute;
-      width: 3px;
-      height: 15px;
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), transparent);
-      animation: shootComet 4s linear infinite;
-    }
+    .nebula { position: absolute; background: radial-gradient(circle, rgba(106, 0, 244, 0.4), transparent); width: 120px; height: 120px; animation: pulseNebula 8s ease-in-out infinite; }
+    .comet { position: absolute; width: 3px; height: 15px; background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent); animation: shootComet 4s linear infinite; }
     @keyframes floatStars { 0% { transform: translateY(100vh) scale(1); opacity: 0.8; } 50% { opacity: 1; } 100% { transform: translateY(-20vh) scale(0.5); opacity: 0; } }
     @keyframes pulseNebula { 0% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.2); opacity: 0.5; } 100% { transform: scale(1); opacity: 0.3; } }
     @keyframes shootComet { 0% { transform: translate(100vw, 100vh) rotate(-45deg); opacity: 1; } 100% { transform: translate(-100vw, -100vh) rotate(-45deg); opacity: 0; } }
-    header {
-      padding: 12px;
-      background: linear-gradient(90deg, #6a00f4, #00c3ff);
-      font-size: 16px;
-      font-weight: 700;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      animation: slideIn 0.5s ease-out;
-    }
+    header { padding: 12px; background: linear-gradient(90deg, #6a00f4, #00c3ff); font-size: 16px; font-weight: 700; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; gap: 10px; animation: slideIn 0.5s ease-out; }
     @keyframes slideIn { from { transform: translateY(-100%); } to { transform: translateY(0); } }
     header button { background: none; border: none; color: white; font-size: 18px; cursor: pointer; }
     body.light header { background: linear-gradient(90deg, #00c3ff, #6a00f4); color: #000; }
-    .search-bar {
-      margin: 15px;
-      position: relative;
-    }
-    .search-bar input {
-      width: 90%;
-      padding: 10px 40px 10px 15px;
-      border-radius: 25px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 14px;
-    }
+    .search-bar { margin: 15px; position: relative; }
+    .search-bar input { width: 90%; padding: 10px 40px 10px 15px; border-radius: 25px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 14px; }
     .search-bar input::placeholder { color: #ccc; }
-    .search-bar::after {
-      content: '🔍';
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #ccc;
-    }
-    .user-tweet-form {
-      margin: 15px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-    }
-    .user-tweet-form input {
-      width: 70%;
-      padding: 10px;
-      border-radius: 25px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 14px;
-    }
-    .user-tweet-form button {
-      padding: 10px 20px;
-      border-radius: 25px;
-      background: #ff0080;
-      color: white;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+    .search-bar::after { content: '🔍'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #ccc; }
+    .user-tweet-form { margin: 15px; display: flex; gap: 10px; justify-content: center; }
+    .user-tweet-form input { width: 70%; padding: 10px; border-radius: 25px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 14px; }
+    .user-tweet-form button { padding: 10px 20px; border-radius: 25px; background: #ff0080; color: white; border: none; font-size: 14px; cursor: pointer; transition: transform 0.2s; }
     .user-tweet-form button:hover { transform: scale(1.05); }
-    .post-btn {
-      display: inline-block;
-      margin: 15px auto;
-      padding: 10px 20px;
-      font-size: 14px;
-      border-radius: 25px;
-      background: linear-gradient(90deg, #ff0080, #7928ca);
-      color: #ffffff;
-      text-decoration: none;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-      font-weight: 600;
-    }
+    .post-btn { display: inline-block; margin: 15px auto; padding: 10px 20px; font-size: 14px; border-radius: 25px; background: linear-gradient(90deg, #ff0080, #7928ca); color: #ffffff; text-decoration: none; box-shadow: 0 3px 8px rgba(0,0,0,0.4); transition: transform 0.2s, box-shadow 0.2s; font-weight: 600; }
     .post-btn:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
     body.light .post-btn { background: linear-gradient(90deg, #7928ca, #ff0080); }
-    .tweet-box {
-      margin: 15px auto;
-      max-width: 95%;
-      padding: 10px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-      position: relative;
-      overflow: hidden;
-      border: 1px solid transparent;
-      transition: border 0.3s, transform 0.3s;
-    }
+    .tweet-box { margin: 15px auto; max-width: 95%; padding: 10px; border-radius: 15px; background: rgba(255,255,255,0.08); box-shadow: 0 2px 6px rgba(0,0,0,0.4); position: relative; overflow: hidden; border: 1px solid transparent; transition: border 0.3s, transform 0.3s; }
     .tweet-box:hover { border: 1px solid #ff0080; transform: translateY(-2px); }
-    body.light .tweet-box { background: rgba(0, 0, 0, 0.08); }
-    .tweet-actions {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-    .like-btn, .share-btn, .reaction-btn, .bookmark-btn, .delete-btn {
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-      transition: transform 0.2s;
-    }
-    .like-btn:hover, .share-btn:hover, .reaction-btn:hover, .bookmark-btn:hover, .delete-btn:hover { transform: scale(1.2); }
-    body.light .like-btn, body.light .share-btn, body.light .reaction-btn, body.light .bookmark-btn, body.light .delete-btn { color: black; }
-    .category-tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 15px;
-    }
-    .category-tab {
-      padding: 8px 16px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s;
-    }
+    body.light .tweet-box { background: rgba(0,0,0,0.08); }
+    .tweet-actions { display: flex; gap: 15px; justify-content: center; margin-top: 10px; align-items: center; }
+    .like-btn, .comment-btn, .delete-btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; transition: transform 0.2s; }
+    .like-btn:hover, .comment-btn:hover, .delete-btn:hover { transform: scale(1.15); }
+    body.light .like-btn, body.light .comment-btn, body.light .delete-btn { color: black; }
+    .category-tabs { display: flex; justify-content: center; gap: 10px; margin: 15px; }
+    .category-tab { padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.1); cursor: pointer; font-size: 14px; transition: background 0.3s; }
     .category-tab.active { background: #ff0080; }
-    .loading {
-      display: none;
-      justify-content: center;
-      margin: 20px;
-    }
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
-    }
+    .loading { display: none; justify-content: center; margin: 20px; }
+    .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    #topBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: none;
-      background: #ff0080;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      transition: opacity 0.3s;
-    }
+    #topBtn { position: fixed; bottom: 20px; right: 20px; display: none; background: #ff0080; color: white; border: none; padding: 12px; border-radius: 50%; cursor: pointer; font-size: 18px; transition: opacity 0.3s; }
     #topBtn:hover { opacity: 0.8; }
-    .offline {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: red;
-      color: white;
-      padding: 10px;
-      display: none;
-      font-size: 14px;
-    }
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 10px;
-      display: none;
-      z-index: 2000;
-      font-size: 14px;
-    }
+    .offline { position: fixed; bottom: 0; width: 100%; background: red; color: white; padding: 10px; display: none; font-size: 14px; }
+    .notification { position: fixed; top: 20px; right: 20px; background: #28a745; color: white; padding: 10px 20px; border-radius: 10px; display: none; z-index: 2000; font-size: 14px; }
+    .modal { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(10,10,10,0.95); padding: 16px; border-radius: 12px; width: 90%; max-width: 520px; display: none; z-index: 3000; color: white; }
+    .modal.light { background: #fff; color: #000; }
+    .modal h3 { margin-bottom: 8px; }
+    .modal textarea { width: 100%; min-height: 80px; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; }
+    .modal button { margin-top: 8px; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; }
+    .comments-list { max-height: 200px; overflow-y: auto; text-align: left; margin-top: 8px; }
     @media (min-width: 320px) and (max-width: 480px) {
       header { font-size: 14px; padding: 10px; }
       .post-btn { font-size: 13px; padding: 8px 16px; }
@@ -254,15 +87,7 @@
 </head>
 <body>
   <div class="space-bg">
-    <div class="star" style="width: 2px; height: 2px; top: 10%; left: 15%; animation-duration: 4s;"></div>
-    <div class="star" style="width: 3px; height: 3px; top: 20%; left: 65%; animation-duration: 5s;"></div>
-    <div class="star" style="width: 1px; height: 1px; top: 50%; left: 30%; animation-duration: 3s;"></div>
-    <div class="star" style="width: 2px; height: 2px; top: 70%; left: 80%; animation-duration: 4.5s;"></div>
-    <div class="star" style="width: 1px; height: 1px; top: 40%; left: 50%; animation-duration: 6s;"></div>
-    <div class="nebula" style="top: 30%; left: 20%;"></div>
-    <div class="nebula" style="top: 60%; left: 70%; animation-delay: 2s;"></div>
-    <div class="comet" style="animation-duration: 4s; left: 10%;"></div>
-    <div class="comet" style="animation-duration: 5s; left: 50%; animation-delay: 2s;"></div>
+    <!-- decorative elements -->
   </div>
   <div class="notification" id="notification">Tweet added successfully!</div>
   <div class="offline" id="offlineMsg">No internet connection. Check your network.</div>
@@ -276,26 +101,44 @@
   <div class="category-tabs">
     <div class="category-tab active" data-category="all">All</div>
     <div class="category-tab" data-category="crypto">Crypto</div>
-    <div class="category-tab" data-category="web3">Web3</div>
+    <div class="category-tab" data-category="news">News</div>
     <div class="category-tab" data-category="user">User Tweets</div>
   </div>
   <div class="user-tweet-form">
     <input type="text" id="userTweetInput" placeholder="Enter tweet URL...">
-    <button onclick="addUserTweet()">Add Tweet</button>
+    <button id="submitUserTweet">Add Tweet</button>
   </div>
   <a class="post-btn" href="https://twitter.com/intent/tweet?text=🌌%20Dive%20into%20JokeFi%20News%20-%20The%20ultimate%20mobile%20platform%20for%20crypto%20enthusiasts!%20Get%20real-time%20Twitter%20updates,%20track%20market%20trends,%20and%20explore%20exclusive%20Web3%20insights.%20Join%20now!%20🔥%0A%0Ahttps%3A%2F%2Fjoke-fi-nu.vercel.app%2F%20%23JokeFi%20%23CryptoNews%20%23Web3%20%23Blockchain" target="_blank">
     ✍️ Share JokeFi News
-  </a>
-  <div class="loading"><div class="spinner"></div></div>
+  </a>  <div class="loading"><div class="spinner"></div></div>
   <div class="tweets" id="tweetsSection">
     <div id="userTweets"></div>
-    <!-- Predefined tweets remain the same, but we'll optimize their loading -->
-    <div class="tweet-box" data-tweet-id="0" data-category="crypto"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://twitter.com/GoKiteAI/status/1961903026761052434"></a><div class="tweet-fallback">Loading tweet...</div></blockquote><div class="tweet-actions"><button class="like-btn" onclick="likeTweet(0)">❤️ <span class="like-count">0</span></button><button class="share-btn" onclick="shareTweet('https://twitter.com/GoKiteAI/status/1961903026761052434')">🔗 Share</button><button class="reaction-btn" onclick="addReaction(0, '😂')">😂</button><button class="bookmark-btn" onclick="bookmarkTweet(0)">🔖</button></div></div>
-    <!-- Add data-category to other tweet-box elements as needed -->
-  </div>
-  <button id="topBtn" onclick="topFunction()">⬆️</button>
+    <div id="predefinedTweets"></div>
+  </div>  <!-- Comment / Confirm Modals -->  <div class="modal" id="confirmModal">
+    <h3 id="confirmTitle">Confirm Add Tweet</h3>
+    <p id="confirmUrl"></p>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+      <button id="confirmCancel">Cancel</button>
+      <button id="confirmOk">Confirm</button>
+    </div>
+  </div>  <div class="modal" id="congratsModal">
+    <h3>Congratulations buddy 🎉</h3>
+    <p>Your tweet was added successfully</p>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+      <button id="congratsClose">Close</button>
+    </div>
+  </div>  <div class="modal" id="commentModal">
+    <h3>Comments</h3>
+    <div class="comments-list" id="commentsList"></div>
+    <textarea id="commentInput" placeholder="Type your comment..."></textarea>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+      <button id="commentClose">Close</button>
+      <button id="commentSubmit">Submit</button>
+    </div>
+  </div><button id="topBtn" onclick="topFunction()">⬆️</button>
+
   <script>
-    // Firebase Configuration (Placeholder - Replace with your Firebase config)
+    // Firebase Configuration (Replace with your Firebase config)
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_AUTH_DOMAIN",
@@ -308,105 +151,148 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Space Elements
-    function createSpaceElements() {
-      const spaceBg = document.querySelector('.space-bg');
-      for (let i = 0; i < 20; i++) { // Reduced stars for performance
-        let star = document.createElement('div');
-        star.className = 'star';
-        star.style.width = `${Math.random() * 2 + 1}px`;
-        star.style.height = star.style.width;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.animationDuration = `${Math.random() * 3 + 2}s`;
-        star.style.background = `hsl(${Math.random() * 360}, 70%, 80%)`;
-        star.onclick = () => star.classList.add('explode');
-        spaceBg.appendChild(star);
-      }
-      for (let i = 0; i < 2; i++) {
-        let nebula = document.createElement('div');
-        nebula.className = 'nebula';
-        nebula.style.top = `${Math.random() * 80}%`;
-        nebula.style.left = `${Math.random() * 80}%`;
-        nebula.style.animationDelay = `${Math.random() * 4}s`;
-        spaceBg.appendChild(nebula);
-      }
-      for (let i = 0; i < 2; i++) {
-        let comet = document.createElement('div');
-        comet.className = 'comet';
-        comet.style.left = `${Math.random() * 80}%`;
-        comet.style.animationDuration = `${Math.random() * 2 + 3}s`;
-        comet.style.animationDelay = `${Math.random() * 2}s`;
-        spaceBg.appendChild(comet);
-      }
-    }
-    createSpaceElements();
+    // Predefined tweet URLs (user provided list)
+    const predefinedUrls = [
+      "https://x.com/GoKiteAI/status/1961903026761052434",
+      "https://x.com/i/trending/1961971997065572846",
+      "https://x.com/CNBC/status/1961809223680954816",
+      "https://x.com/MarketWatch/status/1961778709070823482",
+      "https://x.com/CNBC/status/1961764053694439456",
+      "https://x.com/barronsonline/status/1961663310035669109",
+      "https://x.com/YahooFinance/status/1961777440939810997",
+      "https://x.com/Cryptowithkhan/status/1961870317724565797",
+      "https://x.com/BioProtocol/status/1961399300438605859",
+      "https://x.com/GoKiteAI/status/1942242605766688899",
+      "https://x.com/Laff38/status/1961778078419398940",
+      "https://x.com/yanaaa496/status/1961530690312573093",
+      "https://x.com/Crypto_King877/status/1960212332266639828",
+      "https://x.com/Crypto_King877/status/1959996150234140820",
+      "https://x.com/GoKiteAI/status/1959787392262451538",
+      "https://x.com/Crypto_King877/status/1959150396032643359",
+      "https://x.com/rovercrc/status/1962017983800250752",
+      "https://x.com/CrpBillion/status/1961866143997804728",
+      "https://x.com/YahayaCrypto/status/1961432364690616458",
+      "https://x.com/misterrcrypto/status/1961852166538154335",
+      "https://x.com/Ashcryptoreal/status/1961882957292982752",
+      "https://x.com/Ashcryptoreal/status/1961423817567342847",
+      "https://x.com/rovercrc/status/1961754774338228252",
+      "https://x.com/misterrcrypto/status/1961761569169457356",
+      "https://x.com/Steph_iscrypto/status/1961847636505321849",
+      "https://x.com/cryptocom/status/1961666997831569528"
+    ];
 
-    // Tweet Loading Optimization
+    // Simple crypto keywords to tag as crypto
+    const cryptoKeywords = ['crypto','bitcoin','btc','eth','ethereum','usdt','usdc','nft','coin','token','market','swap'];
+
+    // Create predefined tweet boxes with category detection
+    function renderPredefined() {
+      const container = document.getElementById('predefinedTweets');
+      container.innerHTML = '<h3>Top Tweets</h3>';
+      predefinedUrls.forEach((url, idx) => {
+        const cat = detectCategory(url);
+        const box = document.createElement('div');
+        box.className = 'tweet-box';
+        box.dataset.tweetId = `pre_${idx}`;
+        box.dataset.category = cat;
+        box.innerHTML = `
+          <blockquote class="twitter-tweet" data-theme="dark"><a href="${url}"></a>
+            <div class="tweet-fallback">Loading tweet...</div>
+          </blockquote>
+          <div class="tweet-actions">
+            <button class="like-btn" onclick="likeTweet('pre_${idx}')">❤️ <span class="like-count">0</span></button>
+            <button class="comment-btn" onclick="openComments('pre_${idx}', '${url.replace(/'/g, "\\'")}')">💬</button>
+          </div>
+        `;
+        container.appendChild(box);
+      });
+      if (window.twttr) window.twttr.widgets.load();
+      lazyObserve();
+      loadAllCounts();
+    }
+
+    function detectCategory(url) {
+      const lower = url.toLowerCase();
+      if (cryptoKeywords.some(k => lower.includes(k))) return 'crypto';
+      if (lower.includes('cnbc') || lower.includes('marketwatch') || lower.includes('yahoofinance') || lower.includes('barrons')) return 'news';
+      if (lower.includes('/i/trending/')) return 'news';
+      return 'crypto';
+    }
+
+    // Lazy observer for tweet boxes
+    let observer;
+    function lazyObserve() {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (window.twttr) window.twttr.widgets.load(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.tweet-box').forEach(tweet => observer.observe(tweet));
+    }
+
+    // Load predefined on start
     window.addEventListener('load', () => {
-      document.querySelector('.loading').style.display = 'none';
-      document.getElementById('tweetsSection').style.display = 'block';
-      loadTweetsWithTimeout();
+      renderPredefined();
       loadUserTweets();
-      loadLikes();
-      loadBookmarks();
-      loadReactions();
+      applyStoredTheme();
+      setupCategoryTabs();
+      setupSearch();
+      checkOnline();
     });
 
-    function loadTweetsWithTimeout() {
-      if (window.twttr) {
-        const tweets = document.querySelectorAll('.twitter-tweet');
-        const loadPromises = Array.from(tweets).map(tweet => {
-          return new Promise(resolve => {
-            window.twttr.widgets.load(tweet);
-            setTimeout(() => {
-              if (!tweet.querySelector('iframe')) {
-                tweet.querySelector('.tweet-fallback').textContent = 'Tweet failed to load. Check the URL or try again later.';
-              } else {
-                tweet.querySelector('.tweet-fallback').style.display = 'none';
-              }
-              resolve();
-            }, 4000); // 4-second timeout for each tweet
-          });
-        });
-        Promise.all(loadPromises).then(() => {
-          console.log('All tweets loaded or timed out');
-        });
-      }
-    }
+    // User Tweets with Firebase and confirmation flow
+    const submitBtn = document.getElementById('submitUserTweet');
+    const confirmModal = document.getElementById('confirmModal');
+    const congratsModal = document.getElementById('congratsModal');
+    const commentModal = document.getElementById('commentModal');
+    let pendingTweetUrl = '';
 
-    // User Tweets with Firebase
-    function addUserTweet() {
-      const input = document.getElementById('userTweetInput').value;
-      if (!input.match(/https:\/\/(twitter|x)\.com\/.*\/status\/\d+/)) {
+    submitBtn.addEventListener('click', () => {
+      const input = document.getElementById('userTweetInput').value.trim();
+      if (!input.match(/https?:\/\/(x|twitter)\.com\/.*\/status\/\d+/)) {
         showNotification('Please enter a valid tweet URL!', 'error');
         return;
       }
-      const tweetUrl = input.replace('x.com', 'twitter.com');
-      const tweetData = { url: tweetUrl, timestamp: new Date().toISOString(), category: 'user' };
-      
-      // Push to Firebase
+      pendingTweetUrl = input.replace('x.com', 'twitter.com');
+      document.getElementById('confirmUrl').textContent = pendingTweetUrl;
+      showModal(confirmModal);
+    });
+
+    document.getElementById('confirmCancel').addEventListener('click', () => { hideModal(confirmModal); pendingTweetUrl = ''; });
+    document.getElementById('confirmOk').addEventListener('click', () => {
+      if (!pendingTweetUrl) return;
+      // push to firebase
+      const tweetData = { url: pendingTweetUrl, timestamp: new Date().toISOString(), category: 'user' };
       database.ref('userTweets').push(tweetData).then(() => {
-        showNotification('Tweet added successfully!');
+        hideModal(confirmModal);
+        showModal(congratsModal);
         document.getElementById('userTweetInput').value = '';
+        setTimeout(() => hideModal(congratsModal), 2500);
       }).catch(err => {
+        hideModal(confirmModal);
         showNotification('Failed to add tweet. Try again.', 'error');
         console.error(err);
       });
-    }
+    });
+    document.getElementById('congratsClose').addEventListener('click', () => hideModal(congratsModal));
+
+    function showModal(modal) { modal.style.display = 'block'; if (document.body.classList.contains('light')) modal.classList.add('light'); }
+    function hideModal(modal) { modal.style.display = 'none'; modal.classList.remove('light'); }
 
     function loadUserTweets() {
       const userTweetsDiv = document.getElementById('userTweets');
       userTweetsDiv.innerHTML = '<h3>User-Submitted Tweets</h3>';
-      database.ref('userTweets').limitToLast(10).on('value', snapshot => {
+      database.ref('userTweets').limitToLast(100).on('value', snapshot => {
         userTweetsDiv.innerHTML = '<h3>User-Submitted Tweets</h3>';
         const tweets = snapshot.val();
         if (!tweets) return;
-        Object.entries(tweets).forEach(([key, tweet], index) => {
+        Object.entries(tweets).forEach(([key, tweet]) => {
           const tweetBox = document.createElement('div');
           tweetBox.className = 'tweet-box user-tweet';
           tweetBox.dataset.tweetId = `user_${key}`;
-          tweetBox.dataset.category = 'user';
+          tweetBox.dataset.category = tweet.category || 'user';
           tweetBox.innerHTML = `
             <blockquote class="twitter-tweet" data-theme="dark">
               <a href="${tweet.url}"></a>
@@ -414,139 +300,150 @@
             </blockquote>
             <div class="tweet-actions">
               <button class="like-btn" onclick="likeTweet('user_${key}')">❤️ <span class="like-count">0</span></button>
-              <button class="share-btn" onclick="shareTweet('${tweet.url}')">🔗 Share</button>
-              <button class="reaction-btn" onclick="addReaction('user_${key}', '😂')">😂</button>
-              <button class="bookmark-btn" onclick="bookmarkTweet('user_${key}')">🔖</button>
+              <button class="comment-btn" onclick="openComments('user_${key}', '${tweet.url.replace(/'/g, "\\'")}')">💬</button>
               <button class="delete-btn" onclick="deleteUserTweet('${key}')">🗑</button>
-              <span>${new Date(tweet.timestamp).toLocaleString()}</span>
-            </div>`;
+            </div>
+            <div style="font-size:12px; margin-top:6px;">${new Date(tweet.timestamp).toLocaleString()}</div>
+          `;
           userTweetsDiv.appendChild(tweetBox);
         });
         if (window.twttr) window.twttr.widgets.load();
+        lazyObserve();
+        loadAllCounts();
       });
     }
 
     function deleteUserTweet(key) {
-      database.ref(`userTweets/${key}`).remove().then(() => {
-        showNotification('Tweet deleted successfully!');
-      }).catch(err => {
-        showNotification('Failed to delete tweet. Try again.', 'error');
-        console.error(err);
+      database.ref(`userTweets/${key}`).remove().then(() => showNotification('Tweet deleted successfully!')).catch(err => { showNotification('Failed to delete tweet. Try again.', 'error'); console.error(err); });
+    }
+
+    // Likes and comments stored in Firebase so visible to all users and persistent
+    function likeTweet(id) {
+      const localKey = `liked_${id}`;
+      if (localStorage.getItem(localKey)) return showNotification('You already liked this');
+      localStorage.setItem(localKey, '1');
+      const ref = database.ref(`counts/${id}`);
+      ref.transaction(current => (current || 0) + 1).then(() => loadCountFor(id));
+    }
+
+    function openComments(id, url) {
+      commentModal.dataset.tweetId = id;
+      document.getElementById('commentsList').innerHTML = `<div style="font-size:12px; margin-bottom:6px;">Comments for <a href='${url}' target='_blank'>open tweet</a></div>`;
+      loadComments(id);
+      showModal(commentModal);
+    }
+
+    document.getElementById('commentClose').addEventListener('click', () => hideModal(commentModal));
+    document.getElementById('commentSubmit').addEventListener('click', () => {
+      const id = commentModal.dataset.tweetId;
+      const text = document.getElementById('commentInput').value.trim();
+      if (!text) return;
+      const comment = { text, ts: new Date().toISOString() };
+      database.ref(`comments/${id}`).push(comment).then(() => {
+        document.getElementById('commentInput').value = '';
+        loadComments(id);
+      }).catch(err => console.error(err));
+    });
+
+    function loadComments(id) {
+      const list = document.getElementById('commentsList');
+      list.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:3px;border-top-color:#fff;"></div>';
+      database.ref(`comments/${id}`).limitToLast(100).once('value').then(snap => {
+        const val = snap.val();
+        list.innerHTML = '';
+        if (!val) { list.innerHTML = '<div style="font-size:13px;">No comments yet</div>'; return; }
+        Object.values(val).forEach(c => {
+          const el = document.createElement('div');
+          el.style.padding = '6px 0';
+          el.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+          el.innerHTML = `<div style="font-size:14px;">${escapeHtml(c.text)}</div><div style="font-size:11px; opacity:0.8; margin-top:4px;">${new Date(c.ts).toLocaleString()}</div>`;
+          list.appendChild(el);
+        });
+      }).catch(err => { console.error(err); list.innerHTML = '<div style="color:#f88;">Failed to load comments</div>'; });
+    }
+
+    function loadAllCounts() {
+      // load all like counts and set to elements
+      database.ref('counts').once('value').then(snap => {
+        const counts = snap.val() || {};
+        document.querySelectorAll('.tweet-box').forEach(box => {
+          const id = box.dataset.tweetId;
+          const el = box.querySelector('.like-count');
+          if (el) el.textContent = counts[id] || 0;
+        });
+      }).catch(err => console.error(err));
+    }
+
+    function loadCountFor(id) {
+      database.ref(`counts/${id}`).once('value').then(snap => {
+        const val = snap.val() || 0;
+        const box = document.querySelector(`[data-tweet-id='${id}']`);
+        if (box) box.querySelector('.like-count').textContent = val;
       });
     }
 
-    // Theme Toggle
+    function escapeHtml(text) { return text.replace(/[&<>"']/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; }); }
+
+    // Theme toggle and stored theme
     document.getElementById('themeToggle').addEventListener('click', () => {
       document.body.classList.toggle('light');
       localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
-      document.querySelectorAll('.twitter-tweet').forEach(tweet => {
-        tweet.setAttribute('data-theme', document.body.classList.contains('light') ? 'light' : 'dark');
-        if (window.twttr) window.twttr.widgets.load(tweet);
-      });
+      document.querySelectorAll('.twitter-tweet').forEach(tweet => tweet.setAttribute('data-theme', document.body.classList.contains('light') ? 'light' : 'dark'));
     });
-    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+    function applyStoredTheme() { if (localStorage.getItem('theme') === 'light') document.body.classList.add('light'); }
 
-    // Category Tabs
-    document.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const category = tab.dataset.category;
+    // Search
+    function setupSearch() {
+      document.getElementById('searchInput').addEventListener('input', () => {
+        const input = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.tweet-box').forEach(box => {
-          box.style.display = category === 'all' || box.dataset.category === category ? 'block' : 'none';
+          const text = (box.innerText || '').toLowerCase();
+          box.style.display = text.includes(input) ? 'block' : 'none';
         });
       });
-    });
-
-    // Improved Search
-    document.getElementById('searchInput').addEventListener('input', () => {
-      const input = document.getElementById('searchInput').value.toLowerCase();
-      document.querySelectorAll('.tweet-box').forEach(box => {
-        const text = box.innerText.toLowerCase();
-        box.style.display = text.includes(input) ? 'block' : 'none';
-      });
-    });
-
-    // Likes, Reactions, Bookmarks
-    function likeTweet(id) {
-      const countEl = document.querySelector(`[data-tweet-id="${id}"] .like-count`);
-      let likes = parseInt(countEl.textContent) + 1;
-      countEl.textContent = likes;
-      localStorage.setItem(`like_${id}`, likes);
     }
 
-    function addReaction(id, emoji) {
-      const reactionEl = document.querySelector(`[data-tweet-id="${id}"] .reaction-btn`);
-      reactionEl.textContent = emoji;
-      const reactions = JSON.parse(localStorage.getItem(`reactions_${id}`) || '{}');
-      reactions[emoji] = (reactions[emoji] || 0) + 1;
-      localStorage.setItem(`reactions_${id}`, JSON.stringify(reactions));
-    }
-
-    function bookmarkTweet(id) {
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      if (!bookmarks.includes(id)) {
-        bookmarks.push(id);
-        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        showNotification('Tweet bookmarked!');
-      }
-    }
-
-    function loadLikes() {
-      document.querySelectorAll('.tweet-box').forEach((box, i) => {
-        const likes = localStorage.getItem(`like_${i}`) || 0;
-        box.querySelector('.like-count').textContent = likes;
+    // Category tabs
+    function setupCategoryTabs() {
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const category = tab.dataset.category;
+          document.querySelectorAll('.tweet-box').forEach(box => {
+            box.style.display = (category === 'all' || box.dataset.category === category) ? 'block' : 'none';
+          });
+        });
       });
     }
 
-    function loadBookmarks() {
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      bookmarks.forEach(id => {
-        const box = document.querySelector(`[data-tweet-id="${id}"]`);
-        if (box) box.classList.add('bookmarked');
+    // Back to top
+    window.onscroll = () => { document.getElementById('topBtn').style.display = (document.documentElement.scrollTop > 120) ? 'block' : 'none'; };
+    function topFunction() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    // Offline detection
+    function checkOnline() { if (!navigator.onLine) document.getElementById('offlineMsg').style.display = 'block'; window.addEventListener('offline', () => document.getElementById('offlineMsg').style.display = 'block'); window.addEventListener('online', () => document.getElementById('offlineMsg').style.display = 'none'); }
+
+    // Utility: observe future tweet boxes added dynamically
+    function observeNewBoxes() {
+      const target = document.getElementById('tweetsSection');
+      const m = new MutationObserver(() => {
+        document.querySelectorAll('.tweet-box').forEach(box => { if (!box.dataset.observed) { box.dataset.observed = '1'; if (observer) observer.observe(box); } });
       });
+      m.observe(target, { childList: true, subtree: true });
     }
+    observeNewBoxes();
 
-    function loadReactions() {
-      document.querySelectorAll('.tweet-box').forEach((box, i) => {
-        const reactions = JSON.parse(localStorage.getItem(`reactions_${i}`) || '{}');
-        const reactionBtn = box.querySelector('.reaction-btn');
-        if (reactionBtn) reactionBtn.textContent = Object.keys(reactions)[0] || '😂';
-      });
-    }
+    // Helper: call this after initial render
+    function lazyObserve() { if (observer) observer.disconnect(); renderObserver(); }
+    function renderObserver() { observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { if (window.twttr) window.twttr.widgets.load(entry.target); observer.unobserve(entry.target); } }); }, { threshold: 0.1 }); document.querySelectorAll('.tweet-box').forEach(tweet => observer.observe(tweet)); }
 
-    // Notifications
-    function showNotification(message, type = 'success') {
-      const notification = document.getElementById('notification');
-      notification.textContent = message;
-      notification.style.background = type === 'error' ? '#dc3545' : '#28a745';
-      notification.style.display = 'block';
-      setTimeout(() => notification.style.display = 'none', 3000);
-    }
+    // Load like counts periodically so new tweets reflect counts
+    setInterval(loadAllCounts, 5000);
 
-    // Back to Top
-    window.onscroll = () => {
-      document.getElementById('topBtn').style.display = (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) ? 'block' : 'none';
-    };
-    function topFunction() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Initial load of counts
+    function loadCountsOnce() { loadAllCounts(); }
+    loadCountsOnce();
 
-    // Offline Detection
-    if (!navigator.onLine) document.getElementById('offlineMsg').style.display = 'block';
-    window.addEventListener('offline', () => document.getElementById('offlineMsg').style.display = 'block');
-    window.addEventListener('online', () => document.getElementById('offlineMsg').style.display = 'none');
-
-    // Lazy Load Tweets
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          window.twttr.widgets.load(entry.target);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.tweet-box').forEach(tweet => observer.observe(tweet));
-  </script>
-</body>
+  </script></body>
 </html>
