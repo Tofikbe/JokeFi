@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Name Universe 3.0</title>
+  <title>The Name Universe 4.0</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap');
     * {
@@ -49,7 +49,7 @@
       cursor: grab;
       transition: transform 0.2s ease, opacity 0.5s;
       touch-action: none;
-      animation: pulse 3s infinite ease-in-out;
+      animation: pulse 3s infinite ease-in-out, float 15s infinite linear;
       text-align: center;
       font-size: 12px;
       overflow: hidden;
@@ -70,6 +70,21 @@
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
+    }
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(20px, -20px); }
+      50% { transform: translate(-20px, 20px); }
+      75% { transform: translate(20px, 20px); }
+      100% { transform: translate(0, 0); }
+    }
+    .bubble-text {
+      text-shadow: 0 0 5px #0ff;
+      animation: glowText 2s infinite ease-in-out;
+    }
+    @keyframes glowText {
+      0%, 100% { text-shadow: 0 0 5px #0ff; }
+      50% { text-shadow: 0 0 10px #0ff; }
     }
 
     /* Ripple effect */
@@ -113,7 +128,7 @@
       margin-bottom: 10px;
       font-size: 1.5em;
     }
-    #nameInput, #colorPicker, #sizeSlider, #fontSelect, #shapeSelect, #categoryInput, #opacitySlider, #glowSlider {
+    #nameInput, #colorPicker, #sizeSlider, #fontSelect, #shapeSelect, #categoryInput, #opacitySlider, #glowSlider, #rotationSlider, #textColorPicker, #fontSizeSlider, #animSpeedSlider, #zoomSlider, #nebulaColorPicker, #bgColorPicker {
       padding: 10px;
       font-size: 14px;
       border-radius: 8px;
@@ -124,7 +139,13 @@
       background: #222;
       color: #fff;
     }
-    #submitBtn, #themeToggle, #musicToggle, #fullscreenBtn, #exportBtn, #importBtn, #undoBtn, #redoBtn, #glowToggle, #labelToggle, #spinToggle {
+    .slider-label {
+      color: #0ff;
+      font-size: 12px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    #submitBtn {
       padding: 8px 20px;
       font-size: 14px;
       background: #0ff;
@@ -136,7 +157,7 @@
       box-shadow: 0 0 10px #0ff;
       margin: 5px;
     }
-    #submitBtn:hover, #themeToggle:hover, #musicToggle:hover, #fullscreenBtn:hover, #exportBtn:hover, #importBtn:hover, #undoBtn:hover, #redoBtn:hover, #glowToggle:hover, #labelToggle:hover, #spinToggle:hover {
+    #submitBtn:hover {
       background: #00aaff;
       box-shadow: 0 0 20px #00aaff;
     }
@@ -170,15 +191,43 @@
       font-weight: bold;
     }
 
-    /* Controls panel */
-    #controls {
+    /* Menu button and controls */
+    #menuBtn {
       position: fixed;
       top: 10px;
       right: 10px;
+      padding: 10px;
+      background: #0ff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 10px #0ff;
       z-index: 5;
-      display: flex;
-      flex-wrap: wrap;
+    }
+    #controls {
+      position: fixed;
+      top: 50px;
+      right: 10px;
+      background: rgba(20, 20, 40, 0.9);
+      border: 2px solid #0ff;
+      padding: 10px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
       gap: 5px;
+      z-index: 5;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: slideIn 0.3s ease-in-out;
+    }
+    #controls.show {
+      display: flex;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
     }
 
     /* Search bar */
@@ -210,6 +259,20 @@
       pointer-events: none;
     }
 
+    /* Auto-save indicator */
+    #saveIndicator {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      color: #0ff;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    #saveIndicator.active {
+      opacity: 1;
+    }
+
     /* Mobile adjustments */
     @media (max-width: 600px) {
       .bubble {
@@ -221,12 +284,16 @@
       }
       #controls {
         top: auto;
-        bottom: 10px;
+        bottom: 50px;
         right: 5px;
-        flex-direction: column;
+        width: 200px;
       }
       #searchInput {
-        width: 100px;
+        width: 100%;
+      }
+      #menuBtn {
+        top: 5px;
+        right: 5px;
       }
     }
 
@@ -241,7 +308,7 @@
     body.light-theme .bubble::after {
       box-shadow: 0 0 30px rgba(255,255,0,0.6);
     }
-    body.light-theme #popup-box, body.light-theme #namePopup {
+    body.light-theme #popup-box, body.light-theme #namePopup, body.light-theme #controls {
       background: rgba(255,255,255,0.9);
       border-color: #ff0;
       color: #000;
@@ -249,7 +316,7 @@
     body.light-theme #popup-box h2, body.light-theme #namePopup {
       color: #ff0;
     }
-    body.light-theme #submitBtn, body.light-theme #namePopup button, body.light-theme #controls button {
+    body.light-theme #submitBtn, body.light-theme #namePopup button, body.light-theme #menuBtn, body.light-theme #controls button {
       background: #ff0;
       color: #000;
       box-shadow: 0 0 10px #ff0;
@@ -257,29 +324,64 @@
   </style>
 </head>
 <body>
-  <!-- Background stars and nebula -->
+  <!-- Background bubbles and nebula -->
   <canvas id="bg"></canvas>
   <div class="nebula"></div>
+  <div id="saveIndicator">Saved!</div>
 
   <!-- Input popup -->
   <div id="popup">
     <div id="popup-box">
       <h2>Enter Your Name ✨</h2>
       <input type="text" id="nameInput" placeholder="Your Name" maxlength="20" aria-label="Name input">
+      <label class="slider-label" for="colorPicker">Bubble Color</label>
       <input type="color" id="colorPicker" value="#00ffff" aria-label="Bubble color picker">
+      <label class="slider-label" for="sizeSlider">Bubble Size: <span id="sizeValue">50%</span></label>
       <input type="range" id="sizeSlider" min="30" max="150" value="50" aria-label="Bubble size slider">
+      <label class="slider-label" for="fontSelect">Font Style</label>
       <select id="fontSelect" aria-label="Font selector">
         <option value="Orbitron">Orbitron</option>
         <option value="Space Mono">Space Mono</option>
       </select>
+      <label class="slider-label" for="shapeSelect">Bubble Shape</label>
       <select id="shapeSelect" aria-label="Shape selector">
         <option value="circle">Circle</option>
         <option value="star">Star</option>
         <option value="hexagon">Hexagon</option>
       </select>
+      <label class="slider-label" for="categoryInput">Category (optional)</label>
       <input type="text" id="categoryInput" placeholder="Category (optional)" aria-label="Category input">
+      <label class="slider-label" for="opacitySlider">Bubble Opacity: <span id="opacityValue">100%</span></label>
       <input type="range" id="opacitySlider" min="0.2" max="1" step="0.1" value="1" aria-label="Opacity slider">
+      <label class="slider-label" for="glowSlider">Glow Intensity: <span id="glowValue">67%</span></label>
       <input type="range" id="glowSlider" min="0" max="30" value="20" aria-label="Glow intensity slider">
+      <label class="slider-label" for="rotationSlider">Rotation Speed: <span id="rotationValue">50%</span></label>
+      <input type="range" id="rotationSlider" min="0" max="20" value="10" aria-label="Rotation speed slider">
+      <label class="slider-label" for="textColorPicker">Text Color</label>
+      <input type="color" id="textColorPicker" value="#ffffff" aria-label="Text color picker">
+      <label class="slider-label" for="fontSizeSlider">Text Size: <span id="fontSizeValue">50%</span></label>
+      <input type="range" id="fontSizeSlider" min="8" max="24" value="12" aria-label="Text size slider">
+      <label class="slider-label" for="animSpeedSlider">Animation Speed: <span id="animSpeedValue">50%</span></label>
+      <input type="range" id="animSpeedSlider" min="1" max="10" value="5" aria-label="Animation speed slider">
+      <label class="slider-label" for="nameAlignSelect">Text Alignment</label>
+      <select id="nameAlignSelect" aria-label="Text alignment selector">
+        <option value="center">Center</option>
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+      </select>
+      <label class="slider-label" for="nameCaseSelect">Text Case</label>
+      <select id="nameCaseSelect" aria-label="Text case selector">
+        <option value="normal">Normal</option>
+        <option value="uppercase">Uppercase</option>
+        <option value="lowercase">Lowercase</option>
+        <option value="capitalize">Capitalize</option>
+      </select>
+      <label class="slider-label" for="borderStyleSelect">Border Style</label>
+      <select id="borderStyleSelect" aria-label="Border style selector">
+        <option value="solid">Solid</option>
+        <option value="dashed">Dashed</option>
+        <option value="dotted">Dotted</option>
+      </select>
       <button id="submitBtn" aria-label="Submit name">Shine</button>
     </div>
   </div>
@@ -292,9 +394,23 @@
     <button id="closePopup" aria-label="Close popup">Close</button>
   </div>
 
+  <!-- Menu button -->
+  <button id="menuBtn" aria-label="Toggle menu">Menu</button>
+
   <!-- Controls panel -->
   <div id="controls">
     <input type="text" id="searchInput" placeholder="Search bubbles..." aria-label="Search bubbles">
+    <label class="slider-label" for="zoomSlider">Canvas Zoom: <span id="zoomValue">100%</span></label>
+    <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1" aria-label="Canvas zoom slider">
+    <label class="slider-label" for="nebulaColorPicker">Nebula Color</label>
+    <input type="color" id="nebulaColorPicker" value="#0096ff" aria-label="Nebula color picker">
+    <label class="slider-label" for="bgColorPicker">Background Color</label>
+    <input type="color" id="bgColorPicker" value="#0a0f23" aria-label="Background color picker">
+    <select id="languageSelect" aria-label="Language selector">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="es">Spanish</option>
+    </select>
     <button id="themeToggle" aria-label="Toggle theme">Light Theme</button>
     <button id="musicToggle" aria-label="Toggle music">Music: Off</button>
     <button id="fullscreenBtn" aria-label="Toggle fullscreen">Fullscreen</button>
@@ -306,12 +422,17 @@
     <button id="glowToggle" aria-label="Toggle glow">Glow: On</button>
     <button id="labelToggle" aria-label="Toggle labels">Labels: Off</button>
     <button id="spinToggle" aria-label="Toggle spin">Spin: On</button>
+    <button id="perfModeToggle" aria-label="Toggle performance mode">Perf Mode: Off</button>
+    <button id="snapToggle" aria-label="Toggle snap to grid">Snap: Off</button>
+    <button id="limitToggle" aria-label="Toggle bubble limit">Limit: Off</button>
   </div>
 
   <!-- Audio for background music and sound effects -->
   <audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
   <audio id="clickSound" src="https://www.soundjay.com/buttons/button-09.mp3"></audio>
   <audio id="deleteSound" src="https://www.soundjay.com/misc/explosion-01.mp3"></audio>
+  <audio id="dragSound" src="https://www.soundjay.com/buttons/button-01.mp3"></audio>
+  <audio id="collisionSound" src="https://www.soundjay.com/buttons/button-02.mp3"></audio>
 
   <script>
     const popup = document.getElementById("popup");
@@ -324,11 +445,21 @@
     const categoryInput = document.getElementById("categoryInput");
     const opacitySlider = document.getElementById("opacitySlider");
     const glowSlider = document.getElementById("glowSlider");
+    const rotationSlider = document.getElementById("rotationSlider");
+    const textColorPicker = document.getElementById("textColorPicker");
+    const fontSizeSlider = document.getElementById("fontSizeSlider");
+    const animSpeedSlider = document.getElementById("animSpeedSlider");
+    const nameAlignSelect = document.getElementById("nameAlignSelect");
+    const nameCaseSelect = document.getElementById("nameCaseSelect");
+    const borderStyleSelect = document.getElementById("borderStyleSelect");
     const namePopup = document.getElementById("namePopup");
     const popupName = document.getElementById("popupName");
     const closePopup = document.getElementById("closePopup");
     const editBtn = document.getElementById("editBtn");
     const deleteBtn = document.getElementById("deleteBtn");
+    const menuBtn = document.getElementById("menuBtn");
+    const controls = document.getElementById("controls");
+    const searchInput = document.getElementById("searchInput");
     const themeToggle = document.getElementById("themeToggle");
     const musicToggle = document.getElementById("musicToggle");
     const fullscreenBtn = document.getElementById("fullscreenBtn");
@@ -340,10 +471,19 @@
     const glowToggle = document.getElementById("glowToggle");
     const labelToggle = document.getElementById("labelToggle");
     const spinToggle = document.getElementById("spinToggle");
-    const searchInput = document.getElementById("searchInput");
+    const perfModeToggle = document.getElementById("perfModeToggle");
+    const snapToggle = document.getElementById("snapToggle");
+    const limitToggle = document.getElementById("limitToggle");
+    const zoomSlider = document.getElementById("zoomSlider");
+    const nebulaColorPicker = document.getElementById("nebulaColorPicker");
+    const bgColorPicker = document.getElementById("bgColorPicker");
+    const languageSelect = document.getElementById("languageSelect");
+    const saveIndicator = document.getElementById("saveIndicator");
     const bgMusic = document.getElementById("bgMusic");
     const clickSound = document.getElementById("clickSound");
     const deleteSound = document.getElementById("deleteSound");
+    const dragSound = document.getElementById("dragSound");
+    const collisionSound = document.getElementById("collisionSound");
 
     let currentBubble = null;
     let bubbles = [];
@@ -352,12 +492,44 @@
     let isGlowOn = true;
     let isLabelsOn = false;
     let isSpinOn = true;
+    let isPerfMode = false;
+    let isSnapOn = false;
+    let isLimitOn = false;
+    const maxBubbles = 100;
+
+    // Slider value updates
+    function updateSliderValues() {
+      sizeSlider.addEventListener("input", () => {
+        document.getElementById("sizeValue").textContent = `${Math.round((sizeSlider.value - 30) / 1.2)}%`;
+      });
+      opacitySlider.addEventListener("input", () => {
+        document.getElementById("opacityValue").textContent = `${Math.round(opacitySlider.value * 100)}%`;
+      });
+      glowSlider.addEventListener("input", () => {
+        document.getElementById("glowValue").textContent = `${Math.round((glowSlider.value / 30) * 100)}%`;
+      });
+      rotationSlider.addEventListener("input", () => {
+        document.getElementById("rotationValue").textContent = `${Math.round((rotationSlider.value / 20) * 100)}%`;
+      });
+      fontSizeSlider.addEventListener("input", () => {
+        document.getElementById("fontSizeValue").textContent = `${Math.round((fontSizeSlider.value - 8) / 0.16)}%`;
+      });
+      animSpeedSlider.addEventListener("input", () => {
+        document.getElementById("animSpeedValue").textContent = `${Math.round((animSpeedSlider.value / 10) * 100)}%`;
+      });
+      zoomSlider.addEventListener("input", () => {
+        document.getElementById("zoomValue").textContent = `${Math.round((zoomSlider.value / 2) * 100)}%`;
+        document.body.style.transform = `scale(${zoomSlider.value})`;
+        document.body.style.transformOrigin = "center";
+      });
+    }
+    updateSliderValues();
 
     // Load saved bubbles and initialize
     window.onload = () => {
-      let savedBubbles = JSON.parse(localStorage.getItem("bubbles3")) || [];
+      let savedBubbles = JSON.parse(localStorage.getItem("bubbles4")) || [];
       savedBubbles.forEach(b => createBubble(b));
-      starfield();
+      bubbleField();
       autoBackup();
       showTutorial();
     };
@@ -365,7 +537,7 @@
     // Submit new bubble
     submitBtn.addEventListener("click", () => {
       const name = nameInput.value.trim();
-      if (name) {
+      if (name && (!isLimitOn || bubbles.length < maxBubbles)) {
         const bubbleData = {
           text: name,
           x: Math.random() * (window.innerWidth - 100) + "px",
@@ -376,7 +548,14 @@
           shape: shapeSelect.value,
           category: categoryInput.value.trim(),
           opacity: opacitySlider.value,
-          glow: glowSlider.value
+          glow: glowSlider.value,
+          rotation: rotationSlider.value,
+          textColor: textColorPicker.value,
+          fontSize: fontSizeSlider.value + "px",
+          animSpeed: animSpeedSlider.value,
+          align: nameAlignSelect.value,
+          textCase: nameCaseSelect.value,
+          borderStyle: borderStyleSelect.value
         };
         createBubble(bubbleData);
         saveBubble(bubbleData);
@@ -386,13 +565,16 @@
         clickSound.play();
         nameInput.value = "";
         categoryInput.value = "";
+      } else if (isLimitOn && bubbles.length >= maxBubbles) {
+        alert("Bubble limit reached!");
       }
     });
 
     // Save bubble to localStorage
     function saveBubble(bubble) {
       bubbles.push(bubble);
-      localStorage.setItem("bubbles3", JSON.stringify(bubbles));
+      localStorage.setItem("bubbles4", JSON.stringify(bubbles));
+      showSaveIndicator();
     }
 
     // Update storage
@@ -407,9 +589,23 @@
         shape: b.dataset.shape,
         category: b.dataset.category,
         opacity: b.dataset.opacity,
-        glow: b.dataset.glow
+        glow: b.dataset.glow,
+        rotation: b.dataset.rotation,
+        textColor: b.dataset.textColor,
+        fontSize: b.dataset.fontSize,
+        animSpeed: b.dataset.animSpeed,
+        align: b.dataset.align,
+        textCase: b.dataset.textCase,
+        borderStyle: b.dataset.borderStyle
       }));
-      localStorage.setItem("bubbles3", JSON.stringify(bubbles));
+      localStorage.setItem("bubbles4", JSON.stringify(bubbles));
+      showSaveIndicator();
+    }
+
+    // Show save indicator
+    function showSaveIndicator() {
+      saveIndicator.classList.add("active");
+      setTimeout(() => saveIndicator.classList.remove("active"), 1000);
     }
 
     // Create bubble
@@ -423,6 +619,13 @@
       bubble.dataset.category = data.category;
       bubble.dataset.opacity = data.opacity;
       bubble.dataset.glow = data.glow;
+      bubble.dataset.rotation = data.rotation;
+      bubble.dataset.textColor = data.textColor;
+      bubble.dataset.fontSize = data.fontSize;
+      bubble.dataset.animSpeed = data.animSpeed;
+      bubble.dataset.align = data.align;
+      bubble.dataset.textCase = data.textCase;
+      bubble.dataset.borderStyle = data.borderStyle;
       bubble.style.width = data.size;
       bubble.style.height = data.size;
       bubble.style.left = data.x;
@@ -431,14 +634,38 @@
       bubble.style.fontFamily = data.font;
       bubble.style.opacity = data.opacity;
       bubble.style.boxShadow = `0 0 ${data.glow}px ${data.color}, 0 0 ${data.glow * 2}px ${data.color} inset`;
-      bubble.innerHTML = `<span class="bubble-text">${data.text}</span>`;
+      bubble.style.border = `2px ${data.borderStyle} ${data.color}`;
+      bubble.style.animationDuration = `${15 / data.animSpeed}s`;
+      let formattedName = data.text;
+      if (data.textCase === "uppercase") formattedName = data.text.toUpperCase();
+      else if (data.textCase === "lowercase") formattedName = data.text.toLowerCase();
+      else if (data.textCase === "capitalize") formattedName = data.text.charAt(0).toUpperCase() + data.text.slice(1);
+      bubble.innerHTML = `<span class="bubble-text" style="color: ${data.textColor}; font-size: ${data.fontSize}; align-self: ${data.align}">${formattedName}</span>`;
 
       // Create label
       const label = document.createElement("div");
       label.className = "bubble-label";
-      label.textContent = data.text;
+      label.textContent = formattedName;
       label.style.display = isLabelsOn ? "block" : "none";
       bubble.appendChild(label);
+
+      // Hover info
+      bubble.addEventListener("mouseenter", () => {
+        const info = document.createElement("div");
+        info.className = "bubble-info";
+        info.style.position = "absolute";
+        info.style.background = "rgba(0,0,30,0.95)";
+        info.style.color = "#0ff";
+        info.style.padding = "5px";
+        info.style.borderRadius = "5px";
+        info.style.fontSize = "12px";
+        info.textContent = `Name: ${data.text}\nCategory: ${data.category || "None"}`;
+        bubble.appendChild(info);
+      });
+      bubble.addEventListener("mouseleave", () => {
+        const info = bubble.querySelector(".bubble-info");
+        if (info) info.remove();
+      });
 
       // Click event
       bubble.addEventListener("click", (e) => {
@@ -453,11 +680,11 @@
       });
 
       // Animation
-      bubble.style.animation = isSpinOn ? "spin 10s linear infinite, fadeIn 0.5s" : "fadeIn 0.5s";
+      bubble.style.animation = isSpinOn ? `spin ${20 / data.rotation}s linear infinite, float ${15 / data.animSpeed}s infinite linear` : `float ${15 / data.animSpeed}s infinite linear`;
       enableDrag(bubble);
       document.body.appendChild(bubble);
       applyCollisionDetection(bubble);
-      applyGravity(bubble);
+      applyDynamicOpacity(bubble);
     }
 
     // Dragging support
@@ -470,12 +697,18 @@
         offsetX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
         offsetY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
         el.style.zIndex = 100;
+        dragSound.play();
       }
 
       function move(e) {
         if (!dragging) return;
-        const x = (e.touches ? e.touches[0].clientX : e.clientX) - offsetX;
-        const y = (e.touches ? e.touches[0].clientY : e.clientY) - offsetY;
+        let x = (e.touches ? e.touches[0].clientX : e.clientX) - offsetX;
+        let y = (e.touches ? e.touches[0].clientY : e.clientY) - offsetY;
+        if (isSnapOn) {
+          const gridSize = 20;
+          x = Math.round(x / gridSize) * gridSize;
+          y = Math.round(y / gridSize) * gridSize;
+        }
         const maxX = window.innerWidth - parseFloat(el.style.width);
         const maxY = window.innerHeight - parseFloat(el.style.height);
         el.style.left = Math.max(0, Math.min(x, maxX)) + "px";
@@ -507,6 +740,7 @@
       trail.style.left = x + parseFloat(el.style.width) / 2 + "px";
       trail.style.top = y + parseFloat(el.style.height) / 2 + "px";
       trail.style.background = el.dataset.color;
+      trail.style.boxShadow = `0 0 10px ${el.dataset.color}`;
       document.body.appendChild(trail);
       setTimeout(() => trail.remove(), 500);
     }
@@ -515,6 +749,7 @@
     function applyCollisionDetection(bubble) {
       const bubbles = document.querySelectorAll(".bubble");
       function checkCollision() {
+        if (isPerfMode) return;
         bubbles.forEach(b => {
           if (b !== bubble) {
             const rect1 = bubble.getBoundingClientRect();
@@ -527,6 +762,7 @@
               const angle = Math.atan2(dy, dx);
               bubble.style.left = parseFloat(bubble.style.left) + Math.cos(angle) * 5 + "px";
               bubble.style.top = parseFloat(bubble.style.top) + Math.sin(angle) * 5 + "px";
+              collisionSound.play();
             }
           }
         });
@@ -535,20 +771,21 @@
       checkCollision();
     }
 
-    // Gravity effect
-    function applyGravity(bubble) {
-      let velocity = 0;
-      function updateGravity() {
-        velocity += 0.05;
-        let y = parseFloat(bubble.style.top) + velocity;
-        if (y > window.innerHeight - parseFloat(bubble.style.height)) {
-          y = window.innerHeight - parseFloat(bubble.style.height);
-          velocity = -velocity * 0.5;
-        }
-        bubble.style.top = y + "px";
-        requestAnimationFrame(updateGravity);
+    // Dynamic opacity based on distance from center
+    function applyDynamicOpacity(bubble) {
+      function updateOpacity() {
+        if (isPerfMode) return;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const rect = bubble.getBoundingClientRect();
+        const dx = (rect.left + rect.width / 2) - centerX;
+        const dy = (rect.top + rect.height / 2) - centerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+        bubble.style.opacity = Math.max(0.3, Math.min(1, 1 - (distance / maxDistance)));
+        requestAnimationFrame(updateOpacity);
       }
-      updateGravity();
+      updateOpacity();
     }
 
     // Popup buttons
@@ -559,8 +796,12 @@
       const newName = prompt("Edit name:", currentBubble.dataset.name);
       if (newName && newName.length <= 20) {
         currentBubble.dataset.name = newName;
-        currentBubble.querySelector(".bubble-text").textContent = newName;
-        currentBubble.querySelector(".bubble-label").textContent = newName;
+        let formattedName = newName;
+        if (currentBubble.dataset.textCase === "uppercase") formattedName = newName.toUpperCase();
+        else if (currentBubble.dataset.textCase === "lowercase") formattedName = newName.toLowerCase();
+        else if (currentBubble.dataset.textCase === "capitalize") formattedName = newName.charAt(0).toUpperCase() + newName.slice(1);
+        currentBubble.querySelector(".bubble-text").textContent = formattedName;
+        currentBubble.querySelector(".bubble-label").textContent = formattedName;
         popupName.textContent = newName;
         updateStorage();
         clickSound.play();
@@ -577,7 +818,14 @@
         shape: currentBubble.dataset.shape,
         category: currentBubble.dataset.category,
         opacity: currentBubble.dataset.opacity,
-        glow: currentBubble.dataset.glow
+        glow: currentBubble.dataset.glow,
+        rotation: currentBubble.dataset.rotation,
+        textColor: currentBubble.dataset.textColor,
+        fontSize: currentBubble.dataset.fontSize,
+        animSpeed: currentBubble.dataset.animSpeed,
+        align: currentBubble.dataset.align,
+        textCase: currentBubble.dataset.textCase,
+        borderStyle: currentBubble.dataset.borderStyle
       };
       undoStack.push({ action: "delete", data: bubbleData });
       redoStack = [];
@@ -606,6 +854,12 @@
         setTimeout(() => particle.remove(), 1000);
       }
     }
+
+    // Menu toggle
+    menuBtn.addEventListener("click", () => {
+      controls.classList.toggle("show");
+      menuBtn.textContent = controls.classList.contains("show") ? "Close" : "Menu";
+    });
 
     // Theme toggle
     themeToggle.addEventListener("click", () => {
@@ -721,9 +975,30 @@
     spinToggle.addEventListener("click", () => {
       isSpinOn = !isSpinOn;
       document.querySelectorAll(".bubble").forEach(b => {
-        b.style.animation = isSpinOn ? "spin 10s linear infinite, pulse 3s infinite ease-in-out" : "pulse 3s infinite ease-in-out";
+        b.style.animation = isSpinOn ? `spin ${20 / b.dataset.rotation}s linear infinite, float ${15 / b.dataset.animSpeed}s infinite linear` : `float ${15 / b.dataset.animSpeed}s infinite linear`;
       });
       spinToggle.textContent = `Spin: ${isSpinOn ? "On" : "Off"}`;
+    });
+
+    // Performance mode toggle
+    perfModeToggle.addEventListener("click", () => {
+      isPerfMode = !isPerfMode;
+      document.querySelectorAll(".bubble").forEach(b => {
+        b.style.animation = isPerfMode ? "none" : `spin ${20 / b.dataset.rotation}s linear infinite, float ${15 / b.dataset.animSpeed}s infinite linear`;
+      });
+      perfModeToggle.textContent = `Perf Mode: ${isPerfMode ? "On" : "Off"}`;
+    });
+
+    // Snap toggle
+    snapToggle.addEventListener("click", () => {
+      isSnapOn = !isSnapOn;
+      snapToggle.textContent = `Snap: ${isSnapOn ? "On" : "Off"}`;
+    });
+
+    // Limit toggle
+    limitToggle.addEventListener("click", () => {
+      isLimitOn = !isLimitOn;
+      limitToggle.textContent = `Limit: ${isLimitOn ? "On" : "Off"}`;
     });
 
     // Search bubbles
@@ -739,12 +1014,27 @@
       if (window.SpeechRecognition || window.webkitSpeechRecognition) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.lang = "en-US";
+        recognition.lang = languageSelect.value;
         recognition.start();
         recognition.onresult = (event) => {
           nameInput.value = event.results[0][0].transcript;
         };
       }
+    });
+
+    // Nebula and background color
+    nebulaColorPicker.addEventListener("input", () => {
+      document.querySelector(".nebula").style.background = `radial-gradient(circle at center, ${nebulaColorPicker.value}20, transparent 70%)`;
+    });
+    bgColorPicker.addEventListener("input", () => {
+      document.body.style.background = `radial-gradient(ellipse at bottom, ${bgColorPicker.value} 0%, #000000 100%)`;
+    });
+
+    // Language support (placeholder for translations)
+    languageSelect.addEventListener("change", () => {
+      const lang = languageSelect.value;
+      document.getElementById("popup-box").querySelector("h2").textContent = lang === "en" ? "Enter Your Name ✨" : lang === "hi" ? "अपना नाम दर्ज करें ✨" : "Ingresa tu nombre ✨";
+      // Add more translations as needed
     });
 
     // Auto-backup
@@ -756,58 +1046,50 @@
     // Tutorial
     function showTutorial() {
       if (!localStorage.getItem("tutorialShown")) {
-        alert("Welcome to Name Universe 3.0! Drag bubbles to move them, click to edit/delete, use controls to customize, and explore the space theme!");
+        alert("Welcome to Name Universe 4.0! Drag bubbles to move, click to edit/delete, use the menu to customize, and enjoy the floating space bubbles!");
         localStorage.setItem("tutorialShown", "true");
       }
     }
 
-    // Starfield with parallax and dynamic colors
-    function starfield() {
+    // Bubble field (replacing starfield)
+    function bubbleField() {
       const canvas = document.getElementById("bg");
       const ctx = canvas.getContext("2d");
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      const stars = [];
-      for (let i = 0; i < 300; i++) {
-        stars.push({
+      const bgBubbles = [];
+      for (let i = 0; i < 50; i++) {
+        bgBubbles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 1.5,
-          speed: Math.random() * 0.5 + 0.2,
+          radius: Math.random() * 10 + 5,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: (Math.random() - 0.5) * 0.5,
           color: `hsl(${Math.random() * 360}, 70%, 80%)`
         });
       }
-      const shootingStars = [];
 
       function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        stars.forEach(s => {
-          ctx.fillStyle = s.color;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-          ctx.fill();
-          s.y += s.speed;
-          if (s.y > canvas.height) s.y = 0;
-        });
-
-        // Shooting stars with trails
-        if (Math.random() < 0.005) {
-          shootingStars.push({ x: Math.random() * canvas.width, y: 0, len: Math.random() * 80 + 50, color: `hsl(${Math.random() * 360}, 70%, 80%)` });
+        if (isPerfMode) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          requestAnimationFrame(animate);
+          return;
         }
-        shootingStars.forEach((st, i) => {
-          ctx.strokeStyle = st.color;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        bgBubbles.forEach(b => {
+          ctx.fillStyle = b.color;
           ctx.beginPath();
-          ctx.moveTo(st.x, st.y);
-          ctx.lineTo(st.x - st.len, st.y + st.len / 2);
-          ctx.stroke();
-          st.x += 5;
-          st.y += 5;
-          if (st.y > canvas.height) shootingStars.splice(i, 1);
+          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.fill();
+          b.x += b.speedX;
+          b.y += b.speedY;
+          if (b.x < 0 || b.x > canvas.width) b.speedX = -b.speedX;
+          if (b.y < 0 || b.y > canvas.height) b.speedY = -b.speedY;
         });
 
-        // Nebula particles
-        if (Math.random() < 0.01) {
+        // Background particles
+        if (Math.random() < 0.02) {
           const particle = {
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
@@ -839,18 +1121,52 @@
       if (e.key === "Escape" && namePopup.style.display !== "none") {
         closePopup.click();
       }
+      if (e.key === "m") {
+        menuBtn.click();
+      }
     });
 
-    // Bubble connections (placeholder for visual lines)
-    function drawConnections() {
-      // Implementation depends on specific requirements for connecting related bubbles
-    }
+    // Bubble clustering (visual lines)
+    function drawBubbleConnections() {
+      const canvas = document.createElement("canvas");
+      canvas.style.position = "absolute";
+      canvas.style.top = "0";
+      canvas.style.left = "0";
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.zIndex = "0";
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext("2d");
 
-    // Share feature (placeholder)
-    function generateShareLink() {
-      // Implementation depends on server-side support
-      alert("Share feature coming soon!");
+      function updateConnections() {
+        if (isPerfMode) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const bubbles = document.querySelectorAll(".bubble");
+        bubbles.forEach(b1 => {
+          bubbles.forEach(b2 => {
+            if (b1 !== b2 && b1.dataset.category && b1.dataset.category === b2.dataset.category) {
+              const rect1 = b1.getBoundingClientRect();
+              const rect2 = b2.getBoundingClientRect();
+              const distance = Math.sqrt(
+                Math.pow((rect1.left + rect1.width / 2) - (rect2.left + rect2.width / 2), 2) +
+                Math.pow((rect1.top + rect1.height / 2) - (rect2.top + rect2.height / 2), 2)
+              );
+              if (distance < 200) {
+                ctx.beginPath();
+                ctx.moveTo(rect1.left + rect1.width / 2, rect1.top + rect1.height / 2);
+                ctx.lineTo(rect2.left + rect2.width / 2, rect2.top + rect2.height / 2);
+                ctx.strokeStyle = b1.dataset.color;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+              }
+            }
+          });
+        });
+        requestAnimationFrame(updateConnections);
+      }
+      updateConnections();
     }
+    drawBubbleConnections();
   </script>
 </body>
 </html>
