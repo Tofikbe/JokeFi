@@ -1,330 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>JokeFi News - Crypto Universe</title>
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JokeFi - Crypto Twitter Hub</title>
   <style>
+    /* Reset */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: radial-gradient(circle at center, #1a0b3d 0%, #000000 100%);
-      color: #ffffff;
-      text-align: center;
-      overflow-x: hidden;
-      position: relative;
-      height: 100vh;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
+      background: url('https://images.unsplash.com/photo-1614036634921-6ff3b77e2f20?auto=format&fit=crop&w=1400&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
     }
-
-    /* Space-Themed Animated Background */
-    .space-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
-    }
-    .star {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 50%;
-      animation: floatStars linear infinite;
-    }
-    .nebula {
-      position: absolute;
-      background: radial-gradient(circle, rgba(106, 0, 244, 0.4), transparent);
-      width: 150px;
-      height: 150px;
-      animation: pulseNebula 8s ease-in-out infinite;
-    }
-    .comet {
-      position: absolute;
-      width: 3px;
-      height: 20px;
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), transparent);
-      animation: shootComet 5s linear infinite;
-    }
-    @keyframes floatStars {
-      0% { transform: translateY(100vh) scale(1); opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { transform: translateY(-20vh) scale(0.5); opacity: 0; }
-    }
-    @keyframes pulseNebula {
-      0% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.3); opacity: 0.5; }
-      100% { transform: scale(1); opacity: 0.3; }
-    }
-    @keyframes shootComet {
-      0% { transform: translate(100vw, 100vh) rotate(-45deg); opacity: 1; }
-      100% { transform: translate(-100vw, -100vh) rotate(-45deg); opacity: 0; }
-    }
-
-    /* Header */
     header {
-      padding: 10px;
-      background: linear-gradient(90deg, #6a00f4, #00c3ff);
-      font-size: 15px;
-      font-weight: 700;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      animation: slideIn 0.5s ease-out;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-    .header-icon {
-      font-size: 18px;
-      animation: pulseIcon 2s infinite;
-    }
-    @keyframes pulseIcon {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    /* Tweet Button with Image */
-    .post-btn {
-      display: inline-block;
-      margin: 10px auto;
-      padding: 8px 18px;
-      font-size: 13px;
-      border-radius: 20px;
-      background: linear-gradient(90deg, #ff0080, #7928ca);
-      color: #ffffff;
-      text-decoration: none;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
-      transition: transform 0.2s, box-shadow 0.2s;
-      font-weight: 600;
-      position: relative;
-    }
-    .post-btn:active {
-      transform: scale(0.95);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    }
-    .post-btn img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-      margin-top: 10px;
-      display: block;
-    }
-
-    /* Tweets Section */
-    .tweets {
-      padding: 8px;
-    }
-    .tweet-box {
-      margin: 10px auto;
-      max-width: 95%;
-      padding: 6px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-      animation: fadeIn 0.8s ease-in-out;
-      position: relative;
-      overflow: hidden;
-    }
-    .tweet-box iframe {
-      width: 100% !important;
-      max-width: 100% !important;
-      border: none !important;
-      min-height: 200px;
-    }
-    .tweet-fallback {
-      color: #ff5555;
-      font-size: 12px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideIn {
-      from { transform: translateY(-100%); }
-      to { transform: translateY(0); }
-    }
-
-    /* Pull-to-Refresh */
-    .refresh-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      justify-content: center;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      z-index: 2000;
-      color: #ffffff;
-      font-size: 14px;
     }
-
-    /* Mobile Optimization */
-    @media (min-width: 320px) and (max-width: 480px) {
-      header { font-size: 14px; padding: 8px; }
-      .post-btn { font-size: 12px; padding: 7px 14px; }
-      .tweet-box { padding: 5px; margin: 8px auto; }
-      .nebula { width: 100px; height: 100px; }
-      .comet { height: 15px; }
+    header h1 {
+      font-size: 22px;
+      color: #00acee;
+    }
+    nav a {
+      color: #fff;
+      margin-left: 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      margin-top: 80px;
+      padding: 20px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(0,0,0,0.6);
+      border-radius: 12px;
+    }
+    .tweet {
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 20px;
+    }
+    .tweet iframe {
+      width: 100%;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+      font-size: 14px;
+      background: rgba(0,0,0,0.8);
+    }
+    /* Features */
+    .dark-mode {
+      background: #000 !important;
+      color: #00ffcc !important;
+    }
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00acee;
+      padding: 12px 20px;
+      border-radius: 50px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    #searchBar {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <!-- Space Background -->
-  <div class="space-bg">
-    <div class="star" style="width: 2px; height: 2px; top: 10%; left: 15%; animation-duration: 4s;"></div>
-    <div class="star" style="width: 3px; height: 3px; top: 20%; left: 65%; animation-duration: 6s;"></div>
-    <div class="star" style="width: 1px; height: 1px; top: 50%; left: 30%; animation-duration: 3s;"></div>
-    <div class="star" style="width: 2px; height: 2px; top: 70%; left: 80%; animation-duration: 5s;"></div>
-    <div class="star" style="width: 1px; height: 1px; top: 40%; left: 50%; animation-duration: 7s;"></div>
-    <div class="nebula" style="top: 30%; left: 20%;"></div>
-    <div class="nebula" style="top: 60%; left: 70%; animation-delay: 2s;"></div>
-    <div class="comet" style="animation-duration: 4s; left: 10%;"></div>
-    <div class="comet" style="animation-duration: 6s; left: 50%; animation-delay: 2s;"></div>
-  </div>
-
-  <!-- Pull-to-Refresh Overlay -->
-  <div class="refresh-overlay" id="refreshOverlay">Refreshing...</div>
-
   <header>
-    <span class="header-icon">🚀</span> JokeFi News - Crypto Universe
+    <h1>JokeFi 🚀</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Trending</a>
+      <a href="#">Top</a>
+      <a href="#">Profile</a>
+    </nav>
   </header>
 
-  <!-- Enhanced Tweet Button with Image -->
-  <a class="post-btn" 
-     href="https://twitter.com/intent/tweet?text=🌌%20Dive%20into%20JokeFi%20News%20-%20The%20ultimate%20mobile%20platform%20for%20crypto%20enthusiasts!%20Get%20real-time%20Twitter%20updates,%20track%20market%20trends,%20and%20explore%20exclusive%20Web3%20insights.%20Featuring%20Eastpoint%20Seoul%202025%20sponsors%20like%20Sui,%20Solana,%20and%20more!%20Join%20now!%20🔥%0A%0Ahttps%3A%2F%2Fjoke-fi-nu.vercel.app%2F%20%23JokeFi%20%23CryptoNews%20%23Web3%20%23Blockchain" 
-     target="_blank">
-     ✍️ Share JokeFi News
-     <img src="https://i.imgur.com/THshodqbit.jpg" alt="JokeFi News Event">
-  </a>
+  <div class="container">
+    <input type="text" id="searchBar" placeholder="Search Tweets...">
 
-  <!-- Tweets Section -->
-  <div class="tweets" id="tweetsSection">
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1961903026761052434?t=DbwEglufqAkgLRDM9RqTTQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/i/trending/1961971997065572846?t=zHmv3Ri1HJZAHT-0WDppsA&s=09"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CNBC/status/1961809223680954816?t=0SHgQW2uiDhcO4c6zgfzTw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/MarketWatch/status/1961778709070823482?t=sUfqg6a28IuaorV4KKtWqA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CNBC/status/1961764053694439456?t=u2kX8UugZi-8bBwcggD1qg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/barronsonline/status/1961663310035669109?t=EvXnty8xSYnsxviykIGrGg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/YahooFinance/status/1961777440939810997?t=YEiRfw3od4VybFbxLtreoA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Cryptowithkhan/status/1961870317724565797?t=ghPgQmICgFlfLiScfilAQg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/BioProtocol/status/1961399300438605859?t=lZ_90SkgLys5ua8rgUTxUw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1942242605766688899?t=hnbxjgFmkCUMzE868gl6wA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Laff38/status/1961778078419398940?t=FGIcyg41mA9sROnD2NYo9Q&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/yanaaa496/status/1961530690312573093?t=csFMhlT_X7EUm-QevmD4Lg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1960212332266639828?t=fqpixgTc2MWvR8T21iNBMg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1959996150234140820?t=IpdvBUNDkpx6o5ybHujczg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1959787392262451538?t=rtyv75KWbJjAnfY8Uu6QFg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1959150396032643359?t=UgqH0sxMJZvm8uqbDPnQiQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/rovercrc/status/1962017983800250752?t=NTBGj3BdVB2dH1RSUIfN6g&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CrpBillion/status/1961866143997804728?t=itVqtPknID0gn7ZUFS8vKA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/YahayaCrypto/status/1961432364690616458?t=Wg5zk4XA_sHrvPfyIohrXQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/misterrcrypto/status/1961852166538154335?t=rWHb2Lyt9jDibCcg67xjKg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Ashcryptoreal/status/1961882957292982752?t=EeLFwfRPJapFlg0VCgeusA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Ashcryptoreal/status/1961423817567342847?t=5es64wjDE1sSR2OJ7zMvDQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/rovercrc/status/1961754774338228252?t=9x--yHW__9qvLjRP_RnFQw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/misterrcrypto/status/1961761569169457356?t=Es49t3aL7J6MWlCeq-NINw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Steph_iscrypto/status/1961847636505321849?t=70gQBu-Lb85sOWYeMRqiFg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/cryptocom/status/1961666997831569528?t=4O53W-P44yBvB8FmXl_USw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <!-- Tweets Start -->
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/GoKiteAI/status/1961903026761052434"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/i/trending/1961971997065572846"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/CNBC/status/1961809223680954816"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/MarketWatch/status/1961778709070823482"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/CNBC/status/1961764053694439456"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/barronsonline/status/1961663310035669109"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/YahooFinance/status/1961777440939810997"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/Cryptowithkhan/status/1961870317724565797"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/BioProtocol/status/1961399300438605859"></a></blockquote>
+    </div>
+    <div class="tweet">
+      <blockquote class="twitter-tweet"><a href="https://x.com/GoKiteAI/status/1942242605766688899"></a></blockquote>
+    </div>
+    <!-- ... बाकी tweets इसी तरह डालते जाओ -->
+    <!-- Tweets End -->
   </div>
 
+  <div class="floating-btn" onclick="toggleDarkMode()">🌙 Dark Mode</div>
+
+  <footer>
+    <p>© 2025 JokeFi - Built for Crypto Twitter Fans</p>
+  </footer>
+
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   <script>
-    // Dynamic Space Elements
-    function createSpaceElements() {
-      const spaceBg = document.querySelector('.space-bg');
-      for (let i = 0; i < 20; i++) {
-        let star = document.createElement('div');
-        star.className = 'star';
-        star.style.width = `${Math.random() * 3 + 1}px`;
-        star.style.height = star.style.width;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.animationDuration = `${Math.random() * 4 + 3}s`;
-        spaceBg.appendChild(star);
-      }
-      for (let i = 0; i < 3; i++) {
-        let nebula = document.createElement('div');
-        nebula.className = 'nebula';
-        nebula.style.top = `${Math.random() * 80}%`;
-        nebula.style.left = `${Math.random() * 80}%`;
-        nebula.style.animationDelay = `${Math.random() * 5}s`;
-        spaceBg.appendChild(nebula);
-      }
-      for (let i = 0; i < 2; i++) {
-        let comet = document.createElement('div');
-        comet.className = 'comet';
-        comet.style.left = `${Math.random() * 80}%`;
-        comet.style.animationDuration = `${Math.random() * 3 + 4}s`;
-        comet.style.animationDelay = `${Math.random() * 3}s`;
-        spaceBg.appendChild(comet);
-      }
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
     }
-    createSpaceElements();
 
-    // Tweet Loading with Fallback
-    window.addEventListener('load', () => {
-      if (window.twttr) {
-        window.twttr.widgets.load();
-        setTimeout(() => {
-          document.querySelectorAll('.twitter-tweet').forEach(tweet => {
-            if (!tweet.querySelector('iframe')) {
-              tweet.querySelector('.tweet-fallback').textContent = 'Tweet failed to load. Check the URL or try again later.';
-            } else {
-              tweet.querySelector('.tweet-fallback').style.display = 'none';
-            }
-          });
-        }, 3000);
-      } else {
-        document.querySelectorAll('.tweet-fallback').forEach(fallback => {
-          fallback.textContent = 'Twitter widget failed to load. Please refresh.';
-        });
-      }
-    });
-
-    // Pull-to-Refresh
-    let touchStartY = 0;
-    let touchEndY = 0;
-    document.addEventListener('touchstart', e => {
-      touchStartY = e.changedTouches[0].screenY;
-    });
-    document.addEventListener('touchend', e => {
-      touchEndY = e.changedTouches[0].screenY;
-      if (touchStartY - touchEndY < -100 && window.scrollY === 0) {
-        const overlay = document.getElementById('refreshOverlay');
-        overlay.style.display = 'flex';
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
-    });
-
-    // Lazy Load Tweets
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          window.twttr.widgets.load(entry.target);
-          observer.unobserve(entry.target);
-        }
+    // Search Tweets
+    const searchBar = document.getElementById("searchBar");
+    searchBar.addEventListener("keyup", function(e) {
+      let term = e.target.value.toLowerCase();
+      let tweets = document.querySelectorAll(".tweet");
+      tweets.forEach(tweet => {
+        tweet.style.display = tweet.innerText.toLowerCase().includes(term) ? "" : "none";
       });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.tweet-box').forEach(tweet => observer.observe(tweet));
+    });
   </script>
 </body>
 </html>
