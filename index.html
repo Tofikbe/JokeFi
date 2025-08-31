@@ -95,7 +95,7 @@
       100% { transform: scale(1); }
     }
 
-    /* Tweet Button */
+    /* Tweet Button with Image */
     .post-btn {
       display: inline-block;
       margin: 10px auto;
@@ -108,10 +108,18 @@
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
       transition: transform 0.2s, box-shadow 0.2s;
       font-weight: 600;
+      position: relative;
     }
     .post-btn:active {
       transform: scale(0.95);
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+    .post-btn img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: block;
     }
 
     /* Tweets Section */
@@ -199,41 +207,42 @@
     <span class="header-icon">🚀</span> JokeFi News - Crypto Universe
   </header>
 
-  <!-- Enhanced Tweet Button -->
+  <!-- Enhanced Tweet Button with Image -->
   <a class="post-btn" 
-     href="https://twitter.com/intent/tweet?text=🌌%20Dive%20into%20JokeFi%20News%20-%20The%20ultimate%20mobile%20platform%20for%20crypto%20enthusiasts!%20Get%20real-time%20Twitter%20updates,%20track%20market%20trends,%20and%20explore%20exclusive%20Web3%20insights.%20Stunning%20space-themed%20UI%20with%20100+%20features%20like%20pull-to-refresh,%20dark%20mode,%20and%20more!%20Join%20the%20crypto%20universe%20now!%20🔥%0A%0Ahttps%3A%2F%2Fjoke-fi-nu.vercel.app%2F%20%23JokeFi%20%23CryptoNews%20%23Web3%20%23Blockchain" 
+     href="https://twitter.com/intent/tweet?text=🌌%20Dive%20into%20JokeFi%20News%20-%20The%20ultimate%20mobile%20platform%20for%20crypto%20enthusiasts!%20Get%20real-time%20Twitter%20updates,%20track%20market%20trends,%20and%20explore%20exclusive%20Web3%20insights.%20Featuring%20Eastpoint%20Seoul%202025%20sponsors%20like%20Sui,%20Solana,%20and%20more!%20Join%20now!%20🔥%0A%0Ahttps%3A%2F%2Fjoke-fi-nu.vercel.app%2F%20%23JokeFi%20%23CryptoNews%20%23Web3%20%23Blockchain" 
      target="_blank">
      ✍️ Share JokeFi News
+     <img src="https://i.imgur.com/THshodqbit.jpg" alt="JokeFi News Event">
   </a>
 
   <!-- Tweets Section -->
   <div class="tweets" id="tweetsSection">
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1961903026761052434"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/i/trending/1961971997065572846"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CNBC/status/1961809223680954816"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/MarketWatch/status/1961778709070823482"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CNBC/status/1961764053694439456"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/barronsonline/status/1961663310035669109"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/YahooFinance/status/1961777440939810997"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Cryptowithkhan/status/1961870317724565797"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/BioProtocol/status/1961399300438605859"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1942242605766688899"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Laff38/status/1961778078419398940"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/yanaaa496/status/1961530690312573093"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1960212332266639828"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1959996150234140820"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1959787392262451538"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1959150396032643359"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/rovercrc/status/1962017983800250752"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CrpBillion/status/1961866143997804728"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/YahayaCrypto/status/1961432364690616458"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/misterrcrypto/status/1961852166538154335"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Ashcryptoreal/status/1961882957292982752"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Ashcryptoreal/status/1961423817567342847"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/rovercrc/status/1961754774338228252"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/misterrcrypto/status/1961761569169457356"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Steph_iscrypto/status/1961847636505321849"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
-    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/cryptocom/status/1961666997831569528"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1961903026761052434?t=DbwEglufqAkgLRDM9RqTTQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/i/trending/1961971997065572846?t=zHmv3Ri1HJZAHT-0WDppsA&s=09"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CNBC/status/1961809223680954816?t=0SHgQW2uiDhcO4c6zgfzTw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/MarketWatch/status/1961778709070823482?t=sUfqg6a28IuaorV4KKtWqA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CNBC/status/1961764053694439456?t=u2kX8UugZi-8bBwcggD1qg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/barronsonline/status/1961663310035669109?t=EvXnty8xSYnsxviykIGrGg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/YahooFinance/status/1961777440939810997?t=YEiRfw3od4VybFbxLtreoA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Cryptowithkhan/status/1961870317724565797?t=ghPgQmICgFlfLiScfilAQg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/BioProtocol/status/1961399300438605859?t=lZ_90SkgLys5ua8rgUTxUw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1942242605766688899?t=hnbxjgFmkCUMzE868gl6wA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Laff38/status/1961778078419398940?t=FGIcyg41mA9sROnD2NYo9Q&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/yanaaa496/status/1961530690312573093?t=csFMhlT_X7EUm-QevmD4Lg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1960212332266639828?t=fqpixgTc2MWvR8T21iNBMg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1959996150234140820?t=IpdvBUNDkpx6o5ybHujczg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/GoKiteAI/status/1959787392262451538?t=rtyv75KWbJjAnfY8Uu6QFg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Crypto_King877/status/1959150396032643359?t=UgqH0sxMJZvm8uqbDPnQiQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/rovercrc/status/1962017983800250752?t=NTBGj3BdVB2dH1RSUIfN6g&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/CrpBillion/status/1961866143997804728?t=itVqtPknID0gn7ZUFS8vKA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/YahayaCrypto/status/1961432364690616458?t=Wg5zk4XA_sHrvPfyIohrXQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/misterrcrypto/status/1961852166538154335?t=rWHb2Lyt9jDibCcg67xjKg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Ashcryptoreal/status/1961882957292982752?t=EeLFwfRPJapFlg0VCgeusA&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Ashcryptoreal/status/1961423817567342847?t=5es64wjDE1sSR2OJ7zMvDQ&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/rovercrc/status/1961754774338228252?t=9x--yHW__9qvLjRP_RnFQw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/misterrcrypto/status/1961761569169457356?t=Es49t3aL7J6MWlCeq-NINw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/Steph_iscrypto/status/1961847636505321849?t=70gQBu-Lb85sOWYeMRqiFg&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
+    <div class="tweet-box"><blockquote class="twitter-tweet" data-theme="dark"><a href="https://x.com/cryptocom/status/1961666997831569528?t=4O53W-P44yBvB8FmXl_USw&s=19"></a><div class="tweet-fallback">Loading tweet...</div></blockquote></div>
   </div>
 
   <script>
