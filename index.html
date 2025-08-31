@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Name Universe 4.0</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>The Name Universe Mobile</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap');
     * {
       box-sizing: border-box;
+      touch-action: manipulation;
     }
     body {
       margin: 0;
@@ -16,8 +19,10 @@
       overflow: hidden;
       font-family: 'Orbitron', sans-serif;
       color: #fff;
-      cursor: url('https://img.icons8.com/ios-filled/50/00ffcc/comet.png'), auto;
-      touch-action: manipulation;
+      cursor: default;
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
     }
 
     /* Background canvas */
@@ -51,7 +56,7 @@
       touch-action: none;
       animation: pulse 3s infinite ease-in-out, float 15s infinite linear;
       text-align: center;
-      font-size: 12px;
+      font-size: 3vw;
       overflow: hidden;
       transform-style: preserve-3d;
     }
@@ -73,9 +78,9 @@
     }
     @keyframes float {
       0% { transform: translate(0, 0); }
-      25% { transform: translate(20px, -20px); }
-      50% { transform: translate(-20px, 20px); }
-      75% { transform: translate(20px, 20px); }
+      25% { transform: translate(5vw, -5vw); }
+      50% { transform: translate(-5vw, 5vw); }
+      75% { transform: translate(5vw, 5vw); }
       100% { transform: translate(0, 0); }
     }
     .bubble-text {
@@ -116,50 +121,51 @@
     #popup-box {
       background: rgba(20, 20, 40, 0.9);
       border: 2px solid #0ff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 30px #0ff;
+      padding: 4vw;
+      border-radius: 4vw;
+      box-shadow: 0 0 8vw #0ff;
       text-align: center;
-      max-width: 90%;
-      width: 300px;
+      width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     #popup-box h2 {
       color: #0ff;
-      margin-bottom: 10px;
-      font-size: 1.5em;
+      margin-bottom: 3vw;
+      font-size: 5vw;
     }
     #nameInput, #colorPicker, #sizeSlider, #fontSelect, #shapeSelect, #categoryInput, #opacitySlider, #glowSlider, #rotationSlider, #textColorPicker, #fontSizeSlider, #animSpeedSlider, #zoomSlider, #nebulaColorPicker, #bgColorPicker {
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 8px;
+      padding: 3vw;
+      font-size: 4vw;
+      border-radius: 2vw;
       border: none;
       outline: none;
       width: 100%;
-      margin-bottom: 10px;
+      margin-bottom: 2vw;
       background: #222;
       color: #fff;
     }
     .slider-label {
       color: #0ff;
-      font-size: 12px;
-      margin-bottom: 5px;
+      font-size: 3.5vw;
+      margin-bottom: 1vw;
       display: block;
     }
     #submitBtn {
-      padding: 8px 20px;
-      font-size: 14px;
+      padding: 3vw 6vw;
+      font-size: 4vw;
       background: #0ff;
       border: none;
-      border-radius: 10px;
+      border-radius: 2vw;
       cursor: pointer;
       color: black;
       font-weight: bold;
-      box-shadow: 0 0 10px #0ff;
-      margin: 5px;
+      box-shadow: 0 0 3vw #0ff;
+      margin: 2vw;
     }
     #submitBtn:hover {
       background: #00aaff;
-      box-shadow: 0 0 20px #00aaff;
+      box-shadow: 0 0 5vw #00aaff;
     }
 
     /* Bubble name popup */
@@ -170,74 +176,81 @@
       transform: translate(-50%, -50%);
       background: rgba(0,0,30,0.95);
       border: 2px solid #0ff;
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0 0 30px #0ff;
+      padding: 4vw;
+      border-radius: 4vw;
+      box-shadow: 0 0 8vw #0ff;
       display: none;
       z-index: 20;
       color: #0ff;
-      font-size: 16px;
+      font-size: 4vw;
       text-align: center;
-      max-width: 90%;
-      width: 250px;
+      width: 80vw;
+      max-height: 80vh;
     }
     #namePopup button {
-      margin: 5px;
+      margin: 2vw;
       background: #0ff;
       border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
+      border-radius: 2vw;
+      padding: 2vw 4vw;
       cursor: pointer;
       font-weight: bold;
+      font-size: 4vw;
     }
 
     /* Menu button and controls */
     #menuBtn {
       position: fixed;
-      top: 10px;
-      right: 10px;
-      padding: 10px;
+      bottom: 3vw;
+      right: 3vw;
+      padding: 3vw;
       background: #0ff;
       border: none;
-      border-radius: 10px;
+      border-radius: 50%;
       cursor: pointer;
       color: black;
       font-weight: bold;
-      box-shadow: 0 0 10px #0ff;
-      z-index: 5;
+      box-shadow: 0 0 3vw #0ff;
+      z-index: 15;
+      font-size: 4vw;
+      width: 12vw;
+      height: 12vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #controls {
       position: fixed;
-      top: 50px;
-      right: 10px;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: rgba(20, 20, 40, 0.9);
-      border: 2px solid #0ff;
-      padding: 10px;
-      border-radius: 10px;
+      border-top: 2px solid #0ff;
+      padding: 4vw;
       display: none;
       flex-direction: column;
-      gap: 5px;
-      z-index: 5;
-      max-height: 80vh;
+      gap: 2vw;
+      z-index: 10;
+      max-height: 70vh;
       overflow-y: auto;
-      animation: slideIn 0.3s ease-in-out;
+      animation: slideUp 0.3s ease-in-out;
     }
     #controls.show {
       display: flex;
     }
-    @keyframes slideIn {
-      from { transform: translateX(100%); }
-      to { transform: translateX(0); }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
     /* Search bar */
     #searchInput {
-      padding: 8px;
-      font-size: 14px;
-      border-radius: 8px;
+      padding: 3vw;
+      font-size: 4vw;
+      border-radius: 2vw;
       border: none;
       outline: none;
-      width: 150px;
+      width: 100%;
       background: #222;
       color: #fff;
     }
@@ -246,8 +259,8 @@
     .bubble-label {
       position: absolute;
       color: #0ff;
-      font-size: 12px;
-      text-shadow: 0 0 5px #0ff;
+      font-size: 3vw;
+      text-shadow: 0 0 1vw #0ff;
       pointer-events: none;
     }
 
@@ -262,10 +275,10 @@
     /* Auto-save indicator */
     #saveIndicator {
       position: fixed;
-      bottom: 10px;
-      left: 10px;
+      bottom: 15vw;
+      left: 3vw;
       color: #0ff;
-      font-size: 12px;
+      font-size: 3.5vw;
       opacity: 0;
       transition: opacity 0.5s;
     }
@@ -273,28 +286,15 @@
       opacity: 1;
     }
 
-    /* Mobile adjustments */
-    @media (max-width: 600px) {
-      .bubble {
-        font-size: 10px;
-      }
-      #popup-box, #namePopup {
-        width: 80%;
-        padding: 15px;
-      }
-      #controls {
-        top: auto;
-        bottom: 50px;
-        right: 5px;
-        width: 200px;
-      }
-      #searchInput {
-        width: 100%;
-      }
-      #menuBtn {
-        top: 5px;
-        right: 5px;
-      }
+    /* Bubble info */
+    .bubble-info {
+      position: absolute;
+      background: rgba(0,0,30,0.95);
+      color: #0ff;
+      padding: 2vw;
+      border-radius: 2vw;
+      font-size: 3.5vw;
+      z-index: 5;
     }
 
     /* Light theme */
@@ -303,10 +303,10 @@
     }
     body.light-theme .bubble {
       background: radial-gradient(circle at 30% 30%, #ff0, #440);
-      box-shadow: 0 0 20px #ff0, 0 0 40px #440 inset;
+      box-shadow: 0 0 5vw #ff0, 0 0 10vw #440 inset;
     }
     body.light-theme .bubble::after {
-      box-shadow: 0 0 30px rgba(255,255,0,0.6);
+      box-shadow: 0 0 8vw rgba(255,255,0,0.6);
     }
     body.light-theme #popup-box, body.light-theme #namePopup, body.light-theme #controls {
       background: rgba(255,255,255,0.9);
@@ -319,7 +319,7 @@
     body.light-theme #submitBtn, body.light-theme #namePopup button, body.light-theme #menuBtn, body.light-theme #controls button {
       background: #ff0;
       color: #000;
-      box-shadow: 0 0 10px #ff0;
+      box-shadow: 0 0 3vw #ff0;
     }
   </style>
 </head>
@@ -337,7 +337,7 @@
       <label class="slider-label" for="colorPicker">Bubble Color</label>
       <input type="color" id="colorPicker" value="#00ffff" aria-label="Bubble color picker">
       <label class="slider-label" for="sizeSlider">Bubble Size: <span id="sizeValue">50%</span></label>
-      <input type="range" id="sizeSlider" min="30" max="150" value="50" aria-label="Bubble size slider">
+      <input type="range" id="sizeSlider" min="20" max="80" value="40" aria-label="Bubble size slider">
       <label class="slider-label" for="fontSelect">Font Style</label>
       <select id="fontSelect" aria-label="Font selector">
         <option value="Orbitron">Orbitron</option>
@@ -354,15 +354,15 @@
       <label class="slider-label" for="opacitySlider">Bubble Opacity: <span id="opacityValue">100%</span></label>
       <input type="range" id="opacitySlider" min="0.2" max="1" step="0.1" value="1" aria-label="Opacity slider">
       <label class="slider-label" for="glowSlider">Glow Intensity: <span id="glowValue">67%</span></label>
-      <input type="range" id="glowSlider" min="0" max="30" value="20" aria-label="Glow intensity slider">
+      <input type="range" id="glowSlider" min="0" max="15" value="10" aria-label="Glow intensity slider">
       <label class="slider-label" for="rotationSlider">Rotation Speed: <span id="rotationValue">50%</span></label>
-      <input type="range" id="rotationSlider" min="0" max="20" value="10" aria-label="Rotation speed slider">
+      <input type="range" id="rotationSlider" min="0" max="10" value="5" aria-label="Rotation speed slider">
       <label class="slider-label" for="textColorPicker">Text Color</label>
       <input type="color" id="textColorPicker" value="#ffffff" aria-label="Text color picker">
       <label class="slider-label" for="fontSizeSlider">Text Size: <span id="fontSizeValue">50%</span></label>
-      <input type="range" id="fontSizeSlider" min="8" max="24" value="12" aria-label="Text size slider">
+      <input type="range" id="fontSizeSlider" min="6" max="12" value="8" aria-label="Text size slider">
       <label class="slider-label" for="animSpeedSlider">Animation Speed: <span id="animSpeedValue">50%</span></label>
-      <input type="range" id="animSpeedSlider" min="1" max="10" value="5" aria-label="Animation speed slider">
+      <input type="range" id="animSpeedSlider" min="1" max="5" value="3" aria-label="Animation speed slider">
       <label class="slider-label" for="nameAlignSelect">Text Alignment</label>
       <select id="nameAlignSelect" aria-label="Text alignment selector">
         <option value="center">Center</option>
@@ -395,17 +395,18 @@
   </div>
 
   <!-- Menu button -->
-  <button id="menuBtn" aria-label="Toggle menu">Menu</button>
+  <button id="menuBtn" aria-label="Toggle menu">☰</button>
 
   <!-- Controls panel -->
   <div id="controls">
     <input type="text" id="searchInput" placeholder="Search bubbles..." aria-label="Search bubbles">
     <label class="slider-label" for="zoomSlider">Canvas Zoom: <span id="zoomValue">100%</span></label>
-    <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1" aria-label="Canvas zoom slider">
+    <input type="range" id="zoomSlider" min="0.5" max="1.5" step="0.1" value="1" aria-label="Canvas zoom slider">
     <label class="slider-label" for="nebulaColorPicker">Nebula Color</label>
     <input type="color" id="nebulaColorPicker" value="#0096ff" aria-label="Nebula color picker">
     <label class="slider-label" for="bgColorPicker">Background Color</label>
     <input type="color" id="bgColorPicker" value="#0a0f23" aria-label="Background color picker">
+    <label class="slider-label" for="languageSelect">Language</label>
     <select id="languageSelect" aria-label="Language selector">
       <option value="en">English</option>
       <option value="hi">Hindi</option>
@@ -413,7 +414,6 @@
     </select>
     <button id="themeToggle" aria-label="Toggle theme">Light Theme</button>
     <button id="musicToggle" aria-label="Toggle music">Music: Off</button>
-    <button id="fullscreenBtn" aria-label="Toggle fullscreen">Fullscreen</button>
     <button id="exportBtn" aria-label="Export bubbles">Export</button>
     <input type="file" id="importInput" accept=".json" style="display: none;" aria-label="Import bubbles">
     <button id="importBtn" aria-label="Import bubbles">Import</button>
@@ -462,7 +462,6 @@
     const searchInput = document.getElementById("searchInput");
     const themeToggle = document.getElementById("themeToggle");
     const musicToggle = document.getElementById("musicToggle");
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
     const exportBtn = document.getElementById("exportBtn");
     const importInput = document.getElementById("importInput");
     const importBtn = document.getElementById("importBtn");
@@ -495,30 +494,30 @@
     let isPerfMode = false;
     let isSnapOn = false;
     let isLimitOn = false;
-    const maxBubbles = 100;
+    const maxBubbles = 50;
 
     // Slider value updates
     function updateSliderValues() {
       sizeSlider.addEventListener("input", () => {
-        document.getElementById("sizeValue").textContent = `${Math.round((sizeSlider.value - 30) / 1.2)}%`;
+        document.getElementById("sizeValue").textContent = `${Math.round((sizeSlider.value - 20) / 0.6)}%`;
       });
       opacitySlider.addEventListener("input", () => {
         document.getElementById("opacityValue").textContent = `${Math.round(opacitySlider.value * 100)}%`;
       });
       glowSlider.addEventListener("input", () => {
-        document.getElementById("glowValue").textContent = `${Math.round((glowSlider.value / 30) * 100)}%`;
+        document.getElementById("glowValue").textContent = `${Math.round((glowSlider.value / 15) * 100)}%`;
       });
       rotationSlider.addEventListener("input", () => {
-        document.getElementById("rotationValue").textContent = `${Math.round((rotationSlider.value / 20) * 100)}%`;
+        document.getElementById("rotationValue").textContent = `${Math.round((rotationSlider.value / 10) * 100)}%`;
       });
       fontSizeSlider.addEventListener("input", () => {
-        document.getElementById("fontSizeValue").textContent = `${Math.round((fontSizeSlider.value - 8) / 0.16)}%`;
+        document.getElementById("fontSizeValue").textContent = `${Math.round((fontSizeSlider.value - 6) / 0.06)}%`;
       });
       animSpeedSlider.addEventListener("input", () => {
-        document.getElementById("animSpeedValue").textContent = `${Math.round((animSpeedSlider.value / 10) * 100)}%`;
+        document.getElementById("animSpeedValue").textContent = `${Math.round((animSpeedSlider.value / 5) * 100)}%`;
       });
       zoomSlider.addEventListener("input", () => {
-        document.getElementById("zoomValue").textContent = `${Math.round((zoomSlider.value / 2) * 100)}%`;
+        document.getElementById("zoomValue").textContent = `${Math.round((zoomSlider.value / 1.5) * 100)}%`;
         document.body.style.transform = `scale(${zoomSlider.value})`;
         document.body.style.transformOrigin = "center";
       });
@@ -532,6 +531,10 @@
       bubbleField();
       autoBackup();
       showTutorial();
+      // Encourage portrait mode
+      if (window.orientation !== 0) {
+        alert("For the best experience, please use portrait mode.");
+      }
     };
 
     // Submit new bubble
@@ -540,8 +543,8 @@
       if (name && (!isLimitOn || bubbles.length < maxBubbles)) {
         const bubbleData = {
           text: name,
-          x: Math.random() * (window.innerWidth - 100) + "px",
-          y: Math.random() * (window.innerHeight - 100) + "px",
+          x: Math.random() * (window.innerWidth - 80) + "px",
+          y: Math.random() * (window.innerHeight - 80) + "px",
           size: sizeSlider.value + "px",
           color: colorPicker.value,
           font: fontSelect.value,
@@ -565,6 +568,7 @@
         clickSound.play();
         nameInput.value = "";
         categoryInput.value = "";
+        if (navigator.vibrate) navigator.vibrate(50);
       } else if (isLimitOn && bubbles.length >= maxBubbles) {
         alert("Bubble limit reached!");
       }
@@ -649,26 +653,8 @@
       label.style.display = isLabelsOn ? "block" : "none";
       bubble.appendChild(label);
 
-      // Hover info
-      bubble.addEventListener("mouseenter", () => {
-        const info = document.createElement("div");
-        info.className = "bubble-info";
-        info.style.position = "absolute";
-        info.style.background = "rgba(0,0,30,0.95)";
-        info.style.color = "#0ff";
-        info.style.padding = "5px";
-        info.style.borderRadius = "5px";
-        info.style.fontSize = "12px";
-        info.textContent = `Name: ${data.text}\nCategory: ${data.category || "None"}`;
-        bubble.appendChild(info);
-      });
-      bubble.addEventListener("mouseleave", () => {
-        const info = bubble.querySelector(".bubble-info");
-        if (info) info.remove();
-      });
-
-      // Click event
-      bubble.addEventListener("click", (e) => {
+      // Touch events
+      bubble.addEventListener("touchstart", (e) => {
         e.stopPropagation();
         currentBubble = bubble;
         popupName.textContent = bubble.dataset.name;
@@ -677,6 +663,53 @@
         setTimeout(() => bubble.classList.remove("clicked"), 300);
         namePopup.style.display = "block";
         if (navigator.vibrate) navigator.vibrate(50);
+      });
+
+      // Swipe to delete
+      let touchStartX = 0;
+      bubble.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+      });
+      bubble.addEventListener("touchend", (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        if (Math.abs(touchEndX - touchStartX) > 100) {
+          const bubbleData = {
+            text: bubble.dataset.name,
+            x: bubble.style.left,
+            y: bubble.style.top,
+            size: bubble.style.width,
+            color: bubble.dataset.color,
+            font: bubble.dataset.font,
+            shape: bubble.dataset.shape,
+            category: bubble.dataset.category,
+            opacity: bubble.dataset.opacity,
+            glow: bubble.dataset.glow,
+            rotation: bubble.dataset.rotation,
+            textColor: bubble.dataset.textColor,
+            fontSize: bubble.dataset.fontSize,
+            animSpeed: bubble.dataset.animSpeed,
+            align: bubble.dataset.align,
+            textCase: bubble.dataset.textCase,
+            borderStyle: bubble.dataset.borderStyle
+          };
+          undoStack.push({ action: "delete", data: bubbleData });
+          redoStack = [];
+          createExplosion(bubble);
+          bubble.remove();
+          updateStorage();
+          deleteSound.play();
+        }
+      });
+
+      // Hover info (simulated for touch)
+      bubble.addEventListener("touchstart", (e) => {
+        const info = document.createElement("div");
+        info.className = "bubble-info";
+        info.style.left = parseFloat(bubble.style.left) + parseFloat(bubble.style.width) + "px";
+        info.style.top = bubble.style.top;
+        info.textContent = `Name: ${data.text}\nCategory: ${data.category || "None"}`;
+        bubble.appendChild(info);
+        setTimeout(() => info.remove(), 2000);
       });
 
       // Animation
@@ -694,18 +727,18 @@
       function down(e) {
         dragging = true;
         const rect = el.getBoundingClientRect();
-        offsetX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-        offsetY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
         el.style.zIndex = 100;
         dragSound.play();
       }
 
       function move(e) {
         if (!dragging) return;
-        let x = (e.touches ? e.touches[0].clientX : e.clientX) - offsetX;
-        let y = (e.touches ? e.touches[0].clientY : e.clientY) - offsetY;
+        let x = e.touches[0].clientX - offsetX;
+        let y = e.touches[0].clientY - offsetY;
         if (isSnapOn) {
-          const gridSize = 20;
+          const gridSize = 10;
           x = Math.round(x / gridSize) * gridSize;
           y = Math.round(y / gridSize) * gridSize;
         }
@@ -722,10 +755,6 @@
         updateStorage();
       }
 
-      el.addEventListener("mousedown", down);
-      el.addEventListener("mousemove", move);
-      el.addEventListener("mouseup", up);
-      el.addEventListener("mouseleave", up);
       el.addEventListener("touchstart", down);
       el.addEventListener("touchmove", move);
       el.addEventListener("touchend", up);
@@ -735,12 +764,12 @@
     function drawBubbleTrail(el, x, y) {
       const trail = document.createElement("div");
       trail.className = "particle";
-      trail.style.width = "5px";
-      trail.style.height = "5px";
+      trail.style.width = "2vw";
+      trail.style.height = "2vw";
       trail.style.left = x + parseFloat(el.style.width) / 2 + "px";
       trail.style.top = y + parseFloat(el.style.height) / 2 + "px";
       trail.style.background = el.dataset.color;
-      trail.style.boxShadow = `0 0 10px ${el.dataset.color}`;
+      trail.style.boxShadow = `0 0 3vw ${el.dataset.color}`;
       document.body.appendChild(trail);
       setTimeout(() => trail.remove(), 500);
     }
@@ -760,8 +789,8 @@
             const minDistance = (parseFloat(bubble.style.width) + parseFloat(b.style.width)) / 2;
             if (distance < minDistance) {
               const angle = Math.atan2(dy, dx);
-              bubble.style.left = parseFloat(bubble.style.left) + Math.cos(angle) * 5 + "px";
-              bubble.style.top = parseFloat(bubble.style.top) + Math.sin(angle) * 5 + "px";
+              bubble.style.left = parseFloat(bubble.style.left) + Math.cos(angle) * 2 + "px";
+              bubble.style.top = parseFloat(bubble.style.top) + Math.sin(angle) * 2 + "px";
               collisionSound.play();
             }
           }
@@ -771,7 +800,7 @@
       checkCollision();
     }
 
-    // Dynamic opacity based on distance from center
+    // Dynamic opacity
     function applyDynamicOpacity(bubble) {
       function updateOpacity() {
         if (isPerfMode) return;
@@ -791,6 +820,7 @@
     // Popup buttons
     closePopup.addEventListener("click", () => {
       namePopup.style.display = "none";
+      if (navigator.vibrate) navigator.vibrate(50);
     });
     editBtn.addEventListener("click", () => {
       const newName = prompt("Edit name:", currentBubble.dataset.name);
@@ -805,6 +835,7 @@
         popupName.textContent = newName;
         updateStorage();
         clickSound.play();
+        if (navigator.vibrate) navigator.vibrate(50);
       }
     });
     deleteBtn.addEventListener("click", () => {
@@ -834,37 +865,52 @@
       namePopup.style.display = "none";
       updateStorage();
       deleteSound.play();
+      if (navigator.vibrate) navigator.vibrate(100);
     });
 
     // Explosion effect
     function createExplosion(bubble) {
       const rect = bubble.getBoundingClientRect();
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 10; i++) {
         const particle = document.createElement("div");
         particle.className = "particle";
-        particle.style.width = "5px";
-        particle.style.height = "5px";
+        particle.style.width = "2vw";
+        particle.style.height = "2vw";
         particle.style.left = rect.left + rect.width / 2 + "px";
         particle.style.top = rect.top + rect.height / 2 + "px";
         particle.style.background = bubble.dataset.color;
         document.body.appendChild(particle);
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 5 + 2;
-        particle.style.transform = `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed}px)`;
-        setTimeout(() => particle.remove(), 1000);
+        const speed = Math.random() * 3 + 1;
+        particle.style.transform = `translate(${Math.cos(angle) * speed}vw, ${Math.sin(angle) * speed}vw)`;
+        setTimeout(() => particle.remove(), 800);
       }
     }
 
     // Menu toggle
     menuBtn.addEventListener("click", () => {
       controls.classList.toggle("show");
-      menuBtn.textContent = controls.classList.contains("show") ? "Close" : "Menu";
+      menuBtn.textContent = controls.classList.contains("show") ? "✕" : "☰";
+      if (navigator.vibrate) navigator.vibrate(50);
+    });
+
+    // Swipe to open menu
+    let touchStartY = 0;
+    document.addEventListener("touchstart", (e) => {
+      touchStartY = e.touches[0].clientY;
+    });
+    document.addEventListener("touchend", (e) => {
+      const touchEndY = e.changedTouches[0].clientY;
+      if (touchStartY - touchEndY > 100 && !controls.classList.contains("show")) {
+        menuBtn.click();
+      }
     });
 
     // Theme toggle
     themeToggle.addEventListener("click", () => {
       document.body.classList.toggle("light-theme");
       themeToggle.textContent = document.body.classList.contains("light-theme") ? "Dark Theme" : "Light Theme";
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Music toggle
@@ -876,17 +922,7 @@
         bgMusic.pause();
         musicToggle.textContent = "Music: Off";
       }
-    });
-
-    // Fullscreen toggle
-    fullscreenBtn.addEventListener("click", () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-        fullscreenBtn.textContent = "Exit Fullscreen";
-      } else {
-        document.exitFullscreen();
-        fullscreenBtn.textContent = "Fullscreen";
-      }
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Export bubbles
@@ -898,11 +934,13 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Import bubbles
     importBtn.addEventListener("click", () => {
       importInput.click();
+      if (navigator.vibrate) navigator.vibrate(50);
     });
     importInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
@@ -933,6 +971,7 @@
           redoStack.push({ action: "delete", data: action.data });
           updateStorage();
         }
+        if (navigator.vibrate) navigator.vibrate(50);
       }
     });
     redoBtn.addEventListener("click", () => {
@@ -950,6 +989,7 @@
             updateStorage();
           }
         }
+        if (navigator.vibrate) navigator.vibrate(50);
       }
     });
 
@@ -960,6 +1000,7 @@
         b.style.boxShadow = isGlowOn ? `0 0 ${b.dataset.glow}px ${b.dataset.color}, 0 0 ${b.dataset.glow * 2}px ${b.dataset.color} inset` : "none";
       });
       glowToggle.textContent = `Glow: ${isGlowOn ? "On" : "Off"}`;
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Label toggle
@@ -969,6 +1010,7 @@
         l.style.display = isLabelsOn ? "block" : "none";
       });
       labelToggle.textContent = `Labels: ${isLabelsOn ? "On" : "Off"}`;
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Spin toggle
@@ -978,6 +1020,7 @@
         b.style.animation = isSpinOn ? `spin ${20 / b.dataset.rotation}s linear infinite, float ${15 / b.dataset.animSpeed}s infinite linear` : `float ${15 / b.dataset.animSpeed}s infinite linear`;
       });
       spinToggle.textContent = `Spin: ${isSpinOn ? "On" : "Off"}`;
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Performance mode toggle
@@ -987,18 +1030,21 @@
         b.style.animation = isPerfMode ? "none" : `spin ${20 / b.dataset.rotation}s linear infinite, float ${15 / b.dataset.animSpeed}s infinite linear`;
       });
       perfModeToggle.textContent = `Perf Mode: ${isPerfMode ? "On" : "Off"}`;
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Snap toggle
     snapToggle.addEventListener("click", () => {
       isSnapOn = !isSnapOn;
       snapToggle.textContent = `Snap: ${isSnapOn ? "On" : "Off"}`;
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Limit toggle
     limitToggle.addEventListener("click", () => {
       isLimitOn = !isLimitOn;
       limitToggle.textContent = `Limit: ${isLimitOn ? "On" : "Off"}`;
+      if (navigator.vibrate) navigator.vibrate(50);
     });
 
     // Search bubbles
@@ -1010,8 +1056,8 @@
     });
 
     // Voice input
-    nameInput.addEventListener("click", () => {
-      if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+    nameInput.addEventListener("touchstart", () => {
+      if ( poppy.SpeechRecognition || window.webkitSpeechRecognition) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = languageSelect.value;
@@ -1030,7 +1076,7 @@
       document.body.style.background = `radial-gradient(ellipse at bottom, ${bgColorPicker.value} 0%, #000000 100%)`;
     });
 
-    // Language support (placeholder for translations)
+    // Language support
     languageSelect.addEventListener("change", () => {
       const lang = languageSelect.value;
       document.getElementById("popup-box").querySelector("h2").textContent = lang === "en" ? "Enter Your Name ✨" : lang === "hi" ? "अपना नाम दर्ज करें ✨" : "Ingresa tu nombre ✨";
@@ -1046,12 +1092,12 @@
     // Tutorial
     function showTutorial() {
       if (!localStorage.getItem("tutorialShown")) {
-        alert("Welcome to Name Universe 4.0! Drag bubbles to move, click to edit/delete, use the menu to customize, and enjoy the floating space bubbles!");
+        alert("Welcome to Name Universe Mobile! Tap bubbles to edit/delete, swipe up for menu, swipe bubbles to delete, and enjoy the space theme!");
         localStorage.setItem("tutorialShown", "true");
       }
     }
 
-    // Bubble field (replacing starfield)
+    // Bubble field
     function bubbleField() {
       const canvas = document.getElementById("bg");
       const ctx = canvas.getContext("2d");
@@ -1059,13 +1105,13 @@
       canvas.height = window.innerHeight;
 
       const bgBubbles = [];
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 20; i++) {
         bgBubbles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 10 + 5,
-          speedX: (Math.random() - 0.5) * 0.5,
-          speedY: (Math.random() - 0.5) * 0.5,
+          radius: Math.random() * 5 + 3,
+          speedX: (Math.random() - 0.5) * 0.3,
+          speedY: (Math.random() - 0.5) * 0.3,
           color: `hsl(${Math.random() * 360}, 70%, 80%)`
         });
       }
@@ -1089,12 +1135,12 @@
         });
 
         // Background particles
-        if (Math.random() < 0.02) {
+        if (Math.random() < 0.01) {
           const particle = {
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            radius: Math.random() * 3,
-            speed: Math.random() * 0.2
+            radius: Math.random() * 2,
+            speed: Math.random() * 0.1
           };
           ctx.fillStyle = "rgba(0, 150, 255, 0.3)";
           ctx.beginPath();
@@ -1113,20 +1159,7 @@
       });
     }
 
-    // Keyboard navigation
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && popup.style.display !== "none") {
-        submitBtn.click();
-      }
-      if (e.key === "Escape" && namePopup.style.display !== "none") {
-        closePopup.click();
-      }
-      if (e.key === "m") {
-        menuBtn.click();
-      }
-    });
-
-    // Bubble clustering (visual lines)
+    // Bubble clustering
     function drawBubbleConnections() {
       const canvas = document.createElement("canvas");
       canvas.style.position = "absolute";
@@ -1151,12 +1184,12 @@
                 Math.pow((rect1.left + rect1.width / 2) - (rect2.left + rect2.width / 2), 2) +
                 Math.pow((rect1.top + rect1.height / 2) - (rect2.top + rect2.height / 2), 2)
               );
-              if (distance < 200) {
+              if (distance < 50) {
                 ctx.beginPath();
                 ctx.moveTo(rect1.left + rect1.width / 2, rect1.top + rect1.height / 2);
                 ctx.lineTo(rect2.left + rect2.width / 2, rect2.top + rect2.height / 2);
                 ctx.strokeStyle = b1.dataset.color;
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 0.5;
                 ctx.stroke();
               }
             }
@@ -1167,6 +1200,11 @@
       updateConnections();
     }
     drawBubbleConnections();
+
+    // Prevent pinch zoom
+    document.addEventListener("gesturestart", (e) => e.preventDefault());
+    document.addEventListener("gesturechange", (e) => e.preventDefault());
+    document.addEventListener("gestureend", (e) => e.preventDefault());
   </script>
 </body>
 </html>
