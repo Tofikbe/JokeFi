@@ -2,277 +2,225 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>The Name Universe (Combined)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Name Universe – Version 2.0</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
     body {
       margin: 0;
-      height: 100vh;
-      background: radial-gradient(ellipse at bottom, #0a0f23 0%, #000000 100%);
       overflow: hidden;
       font-family: 'Orbitron', sans-serif;
-      color: #fff;
+      background: radial-gradient(circle at center, #000010, #000);
+      color: white;
+      height: 100vh;
+      width: 100vw;
     }
 
-    /* Mode selector */
-    #modePopup {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.9);
-      z-index: 100;
-    }
-    #modeBox {
-      background: rgba(20,20,40,0.95);
-      border: 2px solid #0ff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 30px #0ff;
-      text-align: center;
-    }
-    #modeBox h2 {
-      margin-bottom: 15px;
-      color: #0ff;
-    }
-    #modeBox button {
-      margin: 10px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      background: #0ff;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    /* Common popups */
-    #popup, #popupV2 {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.85);
-      z-index: 10;
-    }
-    .popup-box {
-      background: rgba(20,20,40,0.9);
-      border: 2px solid #0ff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px #0ff;
-      text-align: center;
-      width: 300px;
-    }
-    .popup-box h2 { color: #0ff; margin-bottom: 10px; }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: none;
-      text-align: center;
-    }
-    button {
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-    }
-
-    /* V1 Stars */
-    .star {
+    canvas {
       position: absolute;
-      color: #fff;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-      animation: float 20s infinite linear;
-    }
-    @keyframes float {
-      from { transform: translateY(0) rotate(0deg); }
-      to { transform: translateY(-200vh) rotate(360deg); }
+      top: 0;
+      left: 0;
+      z-index: 0;
     }
 
-    /* V2 */
-    canvas#bg { position: absolute; top:0; left:0; width:100%; height:100%; z-index:-1; }
+    .input-box {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      border: 1px solid #0ff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #0ff;
+      z-index: 5;
+    }
+
+    .input-box input {
+      padding: 8px;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+    }
+
+    .input-box button {
+      padding: 8px 15px;
+      background: #0ff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
     .bubble {
       position: absolute;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #0ff, #004);
-      box-shadow: 0 0 20px #0ff, 0 0 40px #00f inset;
-      display: flex; align-items:center; justify-content:center;
-      cursor: grab; transition: transform 0.2s;
-      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
     }
-    .bubble:active { cursor: grabbing; }
-    #namePopup {
-      position: fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background: rgba(0,0,30,0.95);
-      border: 2px solid #0ff; padding: 20px;
-      border-radius: 20px; box-shadow: 0 0 30px #0ff;
-      display: none; z-index:20; color:#0ff;
+
+    .bubble:hover {
+      transform: scale(1.3);
+      z-index: 10;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #0ff;
+      opacity: 0.8;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <!-- Mode Selector -->
-  <div id="modePopup">
-    <div id="modeBox">
-      <h2>Choose Your Universe</h2>
-      <button onclick="startV1()">Classic Mode ✨</button>
-      <button onclick="startV2()">Advanced Mode 🌌</button>
-    </div>
+  <canvas id="starfield"></canvas>
+
+  <div class="input-box">
+    <input type="text" id="nameInput" placeholder="Enter your name">
+    <button onclick="addName()">Add</button>
   </div>
 
-  <!-- V1 Input -->
-  <div id="popup" style="display:none;">
-    <div class="popup-box">
-      <h2>Enter Your Name ✨</h2>
-      <input type="text" id="nameInput" placeholder="Your Name">
-      <button id="submitBtn">Shine</button>
-    </div>
-  </div>
-
-  <!-- V2 Input -->
-  <div id="popupV2" style="display:none;">
-    <div class="popup-box">
-      <h2>Add Bubble 🌠</h2>
-      <input type="text" id="nameInputV2" placeholder="Your Name">
-      <button id="submitBtnV2">Create</button>
-    </div>
-  </div>
-
-  <!-- V2 Background -->
-  <canvas id="bg"></canvas>
-
-  <!-- V2 Bubble Popup -->
-  <div id="namePopup">
-    <div id="popupName"></div>
-    <button id="editBtn">Edit</button>
-    <button id="deleteBtn">Delete</button>
-    <button id="closePopup">Close</button>
-  </div>
+  <footer>Name Universe – Version 2.0</footer>
 
   <script>
-    let mode = null;
-    const modePopup = document.getElementById("modePopup");
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    function startV1(){
-      mode = "v1";
-      modePopup.style.display="none";
-      document.getElementById("popup").style.display="flex";
-      loadStars();
-    }
-    function startV2(){
-      mode = "v2";
-      modePopup.style.display="none";
-      document.getElementById("popupV2").style.display="flex";
-      loadBubbles();
-      starfield();
-    }
-
-    /* ---------- V1 Logic ---------- */
-    function loadStars(){
-      let names = JSON.parse(localStorage.getItem("stars"))||[];
-      names.forEach(n=>createStar(n));
-    }
-    document.getElementById("submitBtn").addEventListener("click",()=>{
-      const name = document.getElementById("nameInput").value.trim();
-      if(name){
-        createStar(name);
-        let names = JSON.parse(localStorage.getItem("stars"))||[];
-        names.push(name);
-        localStorage.setItem("stars",JSON.stringify(names));
-        document.getElementById("popup").style.display="none";
-      }
-    });
-    function createStar(name){
-      const star = document.createElement("div");
-      star.className="star"; star.innerText=name;
-      star.style.left=Math.random()*window.innerWidth+"px";
-      star.style.top=Math.random()*window.innerHeight+"px";
-      document.body.appendChild(star);
-    }
-
-    /* ---------- V2 Logic ---------- */
-    const popupName = document.getElementById("popupName");
-    const namePopup = document.getElementById("namePopup");
-    const editBtn=document.getElementById("editBtn"),deleteBtn=document.getElementById("deleteBtn"),closePopup=document.getElementById("closePopup");
-    let currentBubble=null;
-
-    function loadBubbles(){
-      let bubbles = JSON.parse(localStorage.getItem("bubbles2"))||[];
-      bubbles.forEach(b=>createBubble(b.text,b.x,b.y,b.size));
-    }
-    document.getElementById("submitBtnV2").addEventListener("click",()=>{
-      const name=document.getElementById("nameInputV2").value.trim();
-      if(name){
-        createBubble(name);
-        saveBubble({text:name});
-        document.getElementById("popupV2").style.display="none";
-      }
-    });
-    function saveBubble(b){
-      let bubbles=JSON.parse(localStorage.getItem("bubbles2"))||[];
-      bubbles.push(b);
-      localStorage.setItem("bubbles2",JSON.stringify(bubbles));
-    }
-    function updateStorage(){
-      const bubbles=Array.from(document.querySelectorAll(".bubble")).map(b=>({
-        text:b.dataset.name,x:b.style.left,y:b.style.top,size:b.style.width
-      }));
-      localStorage.setItem("bubbles2",JSON.stringify(bubbles));
-    }
-    function createBubble(name,x,y,size){
-      const bubble=document.createElement("div");
-      bubble.className="bubble"; bubble.dataset.name=name;
-      let s=size||"60px"; bubble.style.width=s; bubble.style.height=s;
-      bubble.style.left=x||Math.random()*500+"px";
-      bubble.style.top=y||Math.random()*500+"px";
-      bubble.addEventListener("click",(e)=>{
-        e.stopPropagation(); currentBubble=bubble;
-        popupName.textContent=name; namePopup.style.display="block";
+    // Shooting stars + background stars
+    let stars = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.5,
+        alpha: Math.random()
       });
-      enableDrag(bubble);
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${star.alpha})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+
+    // Bubble system
+    let bubbles = JSON.parse(localStorage.getItem("bubbles")) || [];
+
+    function randomColor() {
+      const colors = ["#0ff","#f0f","#ff0","#0f0","#f00","#00f","#fff"];
+      return colors[Math.floor(Math.random()*colors.length)];
+    }
+
+    function createBubble(name, x = Math.random()*window.innerWidth, y = Math.random()*window.innerHeight) {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = "★";
+      bubble.style.left = x + "px";
+      bubble.style.top = y + "px";
+      let size = 30 + Math.random() * 40;
+      bubble.style.width = size + "px";
+      bubble.style.height = size + "px";
+      bubble.style.background = randomColor();
+      bubble.dataset.name = name;
+
+      // Show name on click
+      bubble.onclick = () => {
+        alert("This star belongs to: " + bubble.dataset.name);
+      };
+
+      // Dragging
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      bubble.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+          bubble.style.left = (e.pageX - offsetX) + "px";
+          bubble.style.top = (e.pageY - offsetY) + "px";
+        }
+      });
+
+      window.addEventListener("mouseup", () => {
+        isDragging = false;
+      });
+
+      // Touch for mobile
+      bubble.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        offsetX = e.touches[0].clientX - bubble.offsetLeft;
+        offsetY = e.touches[0].clientY - bubble.offsetTop;
+      });
+
+      window.addEventListener("touchmove", (e) => {
+        if (isDragging) {
+          bubble.style.left = (e.touches[0].clientX - offsetX) + "px";
+          bubble.style.top = (e.touches[0].clientY - offsetY) + "px";
+        }
+      });
+
+      window.addEventListener("touchend", () => {
+        isDragging = false;
+      });
+
       document.body.appendChild(bubble);
     }
-    function enableDrag(el){
-      let drag=false,offX,offY;
-      el.addEventListener("mousedown",e=>{drag=true;offX=e.clientX-parseInt(el.style.left);offY=e.clientY-parseInt(el.style.top);});
-      window.addEventListener("mousemove",e=>{if(drag){el.style.left=(e.clientX-offX)+"px";el.style.top=(e.clientY-offY)+"px";}});
-      window.addEventListener("mouseup",()=>{drag=false;updateStorage();});
-      el.addEventListener("touchstart",e=>{drag=true;offX=e.touches[0].clientX-parseInt(el.style.left);offY=e.touches[0].clientY-parseInt(el.style.top);});
-      window.addEventListener("touchmove",e=>{if(drag){el.style.left=(e.touches[0].clientX-offX)+"px";el.style.top=(e.touches[0].clientY-offY)+"px";}});
-      window.addEventListener("touchend",()=>{drag=false;updateStorage();});
+
+    function addName() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (!name) return;
+      createBubble(name);
+      bubbles.push(name);
+      localStorage.setItem("bubbles", JSON.stringify(bubbles));
+      createTextStar(name);
+      document.getElementById("nameInput").value = "";
     }
-    closePopup.addEventListener("click",()=>namePopup.style.display="none");
-    editBtn.addEventListener("click",()=>{
-      const newName=prompt("Edit name:",currentBubble.dataset.name);
-      if(newName){currentBubble.dataset.name=newName;popupName.textContent=newName;updateStorage();}
-    });
-    deleteBtn.addEventListener("click",()=>{
-      currentBubble.remove();namePopup.style.display="none";updateStorage();
+
+    // Glowing text stars
+    function createTextStar(name) {
+      const div = document.createElement("div");
+      div.textContent = name;
+      div.style.position = "absolute";
+      div.style.left = Math.random()*window.innerWidth + "px";
+      div.style.top = Math.random()*window.innerHeight + "px";
+      div.style.color = randomColor();
+      div.style.fontSize = (15+Math.random()*15)+"px";
+      div.style.textShadow = "0 0 10px "+randomColor();
+      document.body.appendChild(div);
+    }
+
+    // Restore previous names
+    bubbles.forEach(name => {
+      createBubble(name);
+      createTextStar(name);
     });
 
-    /* ---------- Starfield ---------- */
-    function starfield(){
-      const canvas=document.getElementById("bg");
-      const ctx=canvas.getContext("2d");
-      canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-      const stars=[]; for(let i=0;i<200;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,radius:Math.random()*1.5,speed:Math.random()*0.5});}
-      const shootingStars=[];
-      function animate(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle="white";
-        stars.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,s.radius,0,Math.PI*2);ctx.fill();s.y+=s.speed;if(s.y>canvas.height)s.y=0;});
-        if(Math.random()<0.002)shootingStars.push({x:Math.random()*canvas.width,y:0,len:80});
-        ctx.strokeStyle="white";
-        shootingStars.forEach((st,i)=>{ctx.beginPath();ctx.moveTo(st.x,st.y);ctx.lineTo(st.x-st.len,st.y+st.len/2);ctx.stroke();st.x+=5;st.y+=5;if(st.y>canvas.height)shootingStars.splice(i,1);});
-        requestAnimationFrame(animate);
-      }
-      animate();
-    }
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
