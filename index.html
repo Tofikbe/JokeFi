@@ -2,266 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JokeFI AI Agent</title>
+  <title>The Name Universe</title>
   <style>
-    /* Background animation (space theme with gradient waves) */
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(-45deg, #0d0d1a, #1a1a40, #0d0d33, #000);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
       height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: white;
+      background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #000000 100%);
       overflow: hidden;
-    }
-    @keyframes gradientBG {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
+      font-family: 'Orbitron', sans-serif;
     }
 
-    /* Chat container */
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 70px 12px 80px;
-      display: flex;
-      flex-direction: column;
-    }
-    .message {
-      max-width: 80%;
-      padding: 10px 14px;
-      margin: 6px 0;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
-    .user {
-      align-self: flex-end;
-      background: #0078ff;
-      color: white;
-      border-bottom-right-radius: 4px;
-    }
-    .ai {
-      align-self: flex-start;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-bottom-left-radius: 4px;
+    /* Stars animation background */
+    .star {
+      position: absolute;
+      color: #fff;
+      font-size: 18px;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
+      animation: float 20s infinite linear;
     }
 
-    /* Input bar */
-    .input-area {
+    @keyframes float {
+      from { transform: translateY(0) rotate(0deg); }
+      to { transform: translateY(-200vh) rotate(360deg); }
+    }
+
+    /* Space input popup */
+    #popup {
       position: fixed;
-      bottom: 0;
-      width: 100%;
+      top: 0; left: 0; right: 0; bottom: 0;
       display: flex;
-      padding: 10px;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.85);
+      z-index: 10;
     }
-    .input-area input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 20px;
+
+    #popup-box {
+      background: rgba(20, 20, 40, 0.9);
+      border: 2px solid #0ff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #0ff;
+      text-align: center;
+    }
+
+    #popup-box h2 {
+      color: #0ff;
+      margin-bottom: 15px;
+    }
+
+    #nameInput {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
       border: none;
       outline: none;
-      font-size: 14px;
-    }
-    .input-area button {
-      margin-left: 8px;
-      padding: 0 16px;
-      border-radius: 20px;
-      border: none;
-      background: #0078ff;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+      text-align: center;
+      width: 200px;
     }
 
-    /* Menu button */
-    .menu-btn {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 1001;
-      background: rgba(255,255,255,0.1);
+    #submitBtn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #0ff;
       border: none;
       border-radius: 8px;
-      padding: 8px 10px;
-      color: white;
-      font-size: 18px;
       cursor: pointer;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 15px #0ff;
     }
-
-    /* Side menu */
-    .side-menu {
-      position: fixed;
-      top: 0;
-      left: -70%;
-      width: 70%;
-      height: 100%;
-      background: rgba(0,0,20,0.95);
-      backdrop-filter: blur(10px);
-      padding: 20px;
-      transition: left 0.3s ease;
-      z-index: 1000;
-    }
-    .side-menu.active {
-      left: 0;
-    }
-    .side-menu h2 {
-      margin-top: 0;
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
-    .side-menu button {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 10px;
-      background: #0078ff;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    /* Typing animation */
-    .thinking {
-      font-style: italic;
-      opacity: 0.7;
-    }
-
-    @media (max-width: 600px) {
-      .message { font-size: 13px; }
-      .input-area input { font-size: 13px; }
-      .input-area button { font-size: 13px; padding: 0 12px; }
+    #submitBtn:hover {
+      background: #00aaff;
+      box-shadow: 0 0 25px #00aaff;
     }
   </style>
 </head>
 <body>
-  <button class="menu-btn">☰</button>
-  <div class="side-menu" id="sideMenu">
-    <h2>Menu</h2>
-    <button onclick="clearChat()">Clear Chat</button>
-    <button onclick="saveChat()">Save Chat</button>
-    <button onclick="alert('Settings coming soon!')">Settings</button>
-    <button onclick="alert('JokeFI AI Agent v1.0 - Space Theme Chatbot')">About</button>
-  </div>
-
-  <div class="chat-container" id="chatContainer">
-    <div class="message ai">Hello 👋 I am <b>JokeFI AI Agent</b>. Ask me anything!</div>
-  </div>
-
-  <div class="input-area">
-    <input type="text" id="userInput" placeholder="Type your question..." />
-    <button onclick="sendMessage()">Send</button>
+  <!-- Space popup for name -->
+  <div id="popup">
+    <div id="popup-box">
+      <h2>Enter Your Name ✨</h2>
+      <input type="text" id="nameInput" placeholder="Your Name">
+      <br>
+      <button id="submitBtn">Shine</button>
+    </div>
   </div>
 
   <script>
-    const chatContainer = document.getElementById('chatContainer');
-    const userInput = document.getElementById('userInput');
-    const sideMenu = document.getElementById('sideMenu');
-    const menuBtn = document.querySelector('.menu-btn');
+    const popup = document.getElementById("popup");
+    const submitBtn = document.getElementById("submitBtn");
+    const nameInput = document.getElementById("nameInput");
 
-    // Sample Q&A (replace with 100 daily Q&A later)
-    const qaData = {
-      "what is ai": "AI means Artificial Intelligence, a technology that makes machines smart.",
-      "who is elon musk": "Elon Musk is the CEO of Tesla, SpaceX, and founder of X (Twitter).",
-      "tell me a joke": "Why don’t programmers like nature? It has too many bugs 😂",
-      "what is your name": "I am JokeFI AI Agent, nice to meet you!",
-      "weather today": "I can’t fetch live weather yet, but it looks like a great day! 🌤️",
-      "who are you": "I’m an AI created to chat, answer questions and make you laugh.",
-      "good morning": "Good morning! Hope you have an amazing day 🌞",
-      "good night": "Good night! Sleep well and dream big 🌙",
-      "what is blockchain": "Blockchain is a decentralized digital ledger that records transactions securely.",
-      "who is modi": "Narendra Modi is the Prime Minister of India."
+    // Load saved names
+    window.onload = () => {
+      let names = JSON.parse(localStorage.getItem("stars")) || [];
+      names.forEach(n => createStar(n));
     };
 
-    // Toggle menu
-    menuBtn.addEventListener('click', () => {
-      sideMenu.classList.toggle('active');
+    // On submit
+    submitBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if(name) {
+        createStar(name);
+        saveName(name);
+        popup.style.display = "none";
+      }
     });
 
-    // Send message
-    function sendMessage() {
-      const text = userInput.value.trim();
-      if (!text) return;
-      appendMessage(text, 'user');
-      userInput.value = '';
-      botReply(text);
+    function saveName(name){
+      let names = JSON.parse(localStorage.getItem("stars")) || [];
+      names.push(name);
+      localStorage.setItem("stars", JSON.stringify(names));
     }
 
-    function appendMessage(text, sender) {
-      const msg = document.createElement('div');
-      msg.classList.add('message', sender);
-      msg.innerHTML = text;
-      chatContainer.appendChild(msg);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+    function createStar(name){
+      const star = document.createElement("div");
+      star.className = "star";
+      star.innerText = name;
+
+      // Random position
+      star.style.left = Math.random() * window.innerWidth + "px";
+      star.style.top = Math.random() * window.innerHeight + "px";
+
+      // Random size & glow
+      let size = Math.random() * 20 + 15;
+      star.style.fontSize = size + "px";
+      star.style.textShadow = `0 0 ${size/2}px #0ff, 0 0 ${size}px #0ff`;
+
+      document.body.appendChild(star);
     }
-
-    function botReply(question) {
-      const thinking = document.createElement('div');
-      thinking.classList.add('message', 'ai', 'thinking');
-      thinking.textContent = "Thinking...";
-      chatContainer.appendChild(thinking);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-
-      setTimeout(() => {
-        thinking.remove();
-        let q = question.toLowerCase();
-        if (qaData[q]) {
-          typeMessage(qaData[q]);
-        } else {
-          typeMessage("I’m not sure about that 🤔 Redirecting to ChatGPT...");
-          // Here you can integrate real ChatGPT API
-        }
-      }, 2000);
-    }
-
-    function typeMessage(text) {
-      const msg = document.createElement('div');
-      msg.classList.add('message', 'ai');
-      chatContainer.appendChild(msg);
-      let i = 0;
-      const interval = setInterval(() => {
-        msg.textContent += text[i];
-        i++;
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        if (i >= text.length) clearInterval(interval);
-      }, 40);
-    }
-
-    // Clear chat
-    function clearChat() {
-      chatContainer.innerHTML = '<div class="message ai">Chat cleared! 👋</div>';
-      sideMenu.classList.remove('active');
-    }
-
-    // Save chat
-    function saveChat() {
-      let text = "";
-      document.querySelectorAll('.message').forEach(m => {
-        text += (m.classList.contains('user') ? "You: " : "AI: ") + m.innerText + "\n";
-      });
-      const blob = new Blob([text], {type: 'text/plain'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = "chat.txt";
-      a.click();
-      sideMenu.classList.remove('active');
-    }
-
-    // Send on Enter key
-    userInput.addEventListener('keydown', e => {
-      if (e.key === "Enter") sendMessage();
-    });
   </script>
 </body>
 </html>
