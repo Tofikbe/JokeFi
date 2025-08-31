@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>JokeFi News</title>
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   <style>
@@ -12,59 +12,86 @@
       background: black url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
       color: white;
       text-align: center;
+      overflow-x: hidden;
+      position: relative;
     }
+    /* Space Animation */
+    @keyframes floatStars {
+      0% { transform: translateY(100vh); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
+    }
+    .star {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      animation: floatStars linear infinite;
+    }
+    .star-1 { width: 2px; height: 2px; top: 10%; left: 20%; animation-duration: 5s; }
+    .star-2 { width: 3px; height: 3px; top: 30%; left: 70%; animation-duration: 7s; }
+    .star-3 { width: 1px; height: 1px; top: 60%; left: 40%; animation-duration: 4s; }
     header {
-      padding: 15px;
+      padding: 10px;
       background: linear-gradient(90deg, #6a00f4, #00c3ff);
-      font-size: 22px;
+      font-size: 18px;
       font-weight: bold;
       position: sticky;
       top: 0;
       z-index: 999;
     }
     .tweet-box {
-      margin: 20px auto;
-      max-width: 500px;
+      margin: 10px auto;
+      max-width: 90%;
       padding: 10px;
-      border-radius: 15px;
+      border-radius: 10px;
       background: rgba(255,255,255,0.05);
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
       animation: fadeIn 1s ease-in-out;
     }
     .post-btn {
       display: inline-block;
-      margin: 20px auto;
-      padding: 12px 20px;
-      font-size: 18px;
-      border-radius: 30px;
+      margin: 10px auto;
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 20px;
       background: linear-gradient(90deg,#ff0080,#7928ca);
       color: white;
       text-decoration: none;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
       transition: 0.3s;
     }
     .post-btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.8);
     }
     @keyframes fadeIn {
       from {opacity: 0; transform: translateY(20px);}
       to {opacity: 1; transform: translateY(0);}
     }
+    /* Mobile Optimization */
+    @media (min-width: 320px) and (max-width: 480px) {
+      .tweet-box { max-width: 100%; padding: 8px; }
+      header { font-size: 16px; padding: 8px; }
+      .post-btn { font-size: 14px; padding: 8px 12px; }
+    }
   </style>
 </head>
 <body>
+  <!-- Space Animation Stars -->
+  <div class="star star-1"></div>
+  <div class="star star-2"></div>
+  <div class="star star-3"></div>
 
   <header>🚀 JokeFi News</header>
 
-  <!-- Post button -->
+  <!-- Enhanced Post Button with Detailed Tweet -->
   <a class="post-btn" 
-     href="https://twitter.com/intent/tweet?text=Check%20out%20JokeFi%20News%20for%20the%20latest%20Crypto%20updates!%20🔥%0A%0Ahttps%3A%2F%2Fjoke-fi-nu.vercel.app%2F%20&url=https://postimg.cc/ZCCzymH1" 
+     href="https://twitter.com/intent/tweet?text=Discover%20JokeFi%20News%20-%20your%20ultimate%20mobile%20platform%20for%20real-time%20crypto%20updates,%20trends,%20and%20insights!%20Featuring%20live%20Twitter%20feeds,%20space-themed%20design,%20and%20exclusive%20crypto%20features.%20Check%20it%20out%20now!%20🔥%0A%0Ahttps%3A%2F%2Fjoke-fi-nu.vercel.app%2F%20%23JokeFi%20%23CryptoNews" 
      target="_blank">
-     ✍️ Post About JokeFi
+     ✍️ Share JokeFi News
   </a>
 
-  <!-- Tweets section -->
+  <!-- Tweets Section -->
   <div class="tweets">
     <div class="tweet-box"><blockquote class="twitter-tweet"><a href="https://x.com/GoKiteAI/status/1961903026761052434"></a></blockquote></div>
     <div class="tweet-box"><blockquote class="twitter-tweet"><a href="https://x.com/i/trending/1961971997065572846"></a></blockquote></div>
@@ -94,5 +121,16 @@
     <div class="tweet-box"><blockquote class="twitter-tweet"><a href="https://x.com/cryptocom/status/1961666997831569528"></a></blockquote></div>
   </div>
 
+  <script>
+    // Dynamically add stars for animation
+    function createStars() {
+      for (let i = 0; i < 3; i++) {
+        let star = document.createElement('div');
+        star.className = `star star-${i + 1}`;
+        document.body.appendChild(star);
+      }
+    }
+    createStars();
+  </script>
 </body>
 </html>
