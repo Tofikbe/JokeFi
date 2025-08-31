@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>The Name Universe 2.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Name Universe 3.0</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono&display=swap');
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
       height: 100vh;
@@ -12,14 +16,25 @@
       overflow: hidden;
       font-family: 'Orbitron', sans-serif;
       color: #fff;
+      cursor: url('https://img.icons8.com/ios-filled/50/00ffcc/comet.png'), auto;
+      touch-action: manipulation;
     }
 
-    /* Background stars */
+    /* Background canvas */
     canvas#bg {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
+    }
+
+    /* Nebula overlay */
+    .nebula {
+      position: absolute;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at center, rgba(0, 150, 255, 0.2), transparent 70%);
+      opacity: 0.5;
+      z-index: -2;
     }
 
     /* Bubbles */
@@ -32,18 +47,36 @@
       align-items: center;
       justify-content: center;
       cursor: grab;
-      transition: transform 0.2s ease;
-      touch-action: none; /* allow drag on mobile */
+      transition: transform 0.2s ease, opacity 0.5s;
+      touch-action: none;
+      animation: pulse 3s infinite ease-in-out;
+      text-align: center;
+      font-size: 12px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+    .bubble:hover {
+      transform: scale(1.1) rotateX(10deg) rotateY(10deg);
     }
     .bubble:active {
       cursor: grabbing;
     }
+    .bubble.star-shape {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+    .bubble.hexagon-shape {
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
 
-    /* Ripple click effect */
+    /* Ripple effect */
     .bubble::after {
       content: "";
       position: absolute;
-      border-radius: 50%;
+      border-radius: inherit;
       width: 100%; height: 100%;
       top: 0; left: 0;
       box-shadow: 0 0 30px rgba(0,255,255,0.6);
@@ -68,41 +101,44 @@
     #popup-box {
       background: rgba(20, 20, 40, 0.9);
       border: 2px solid #0ff;
-      padding: 30px;
-      border-radius: 20px;
+      padding: 20px;
+      border-radius: 15px;
       box-shadow: 0 0 30px #0ff;
       text-align: center;
-      max-width: 300px;
-      width: 90%;
+      max-width: 90%;
+      width: 300px;
     }
     #popup-box h2 {
       color: #0ff;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      font-size: 1.5em;
     }
-    #nameInput {
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
+    #nameInput, #colorPicker, #sizeSlider, #fontSelect, #shapeSelect, #categoryInput, #opacitySlider, #glowSlider {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
       border: none;
       outline: none;
-      text-align: center;
       width: 100%;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      background: #222;
+      color: #fff;
     }
-    #submitBtn {
-      padding: 10px 25px;
-      font-size: 16px;
+    #submitBtn, #themeToggle, #musicToggle, #fullscreenBtn, #exportBtn, #importBtn, #undoBtn, #redoBtn, #glowToggle, #labelToggle, #spinToggle {
+      padding: 8px 20px;
+      font-size: 14px;
       background: #0ff;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
       color: black;
       font-weight: bold;
-      box-shadow: 0 0 15px #0ff;
+      box-shadow: 0 0 10px #0ff;
+      margin: 5px;
     }
-    #submitBtn:hover {
+    #submitBtn:hover, #themeToggle:hover, #musicToggle:hover, #fullscreenBtn:hover, #exportBtn:hover, #importBtn:hover, #undoBtn:hover, #redoBtn:hover, #glowToggle:hover, #labelToggle:hover, #spinToggle:hover {
       background: #00aaff;
-      box-shadow: 0 0 25px #00aaff;
+      box-shadow: 0 0 20px #00aaff;
     }
 
     /* Bubble name popup */
@@ -113,139 +149,343 @@
       transform: translate(-50%, -50%);
       background: rgba(0,0,30,0.95);
       border: 2px solid #0ff;
-      padding: 20px 30px;
-      border-radius: 20px;
+      padding: 15px;
+      border-radius: 15px;
       box-shadow: 0 0 30px #0ff;
       display: none;
       z-index: 20;
       color: #0ff;
-      font-size: 20px;
+      font-size: 16px;
       text-align: center;
-      max-width: 300px;
+      max-width: 90%;
+      width: 250px;
     }
     #namePopup button {
-      margin-top: 10px;
+      margin: 5px;
       background: #0ff;
       border: none;
-      border-radius: 10px;
-      padding: 8px 16px;
+      border-radius: 8px;
+      padding: 6px 12px;
       cursor: pointer;
       font-weight: bold;
+    }
+
+    /* Controls panel */
+    #controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    /* Search bar */
+    #searchInput {
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      width: 150px;
+      background: #222;
+      color: #fff;
+    }
+
+    /* Bubble label */
+    .bubble-label {
+      position: absolute;
+      color: #0ff;
+      font-size: 12px;
+      text-shadow: 0 0 5px #0ff;
+      pointer-events: none;
+    }
+
+    /* Particle explosion */
+    .particle {
+      position: absolute;
+      background: #0ff;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      .bubble {
+        font-size: 10px;
+      }
+      #popup-box, #namePopup {
+        width: 80%;
+        padding: 15px;
+      }
+      #controls {
+        top: auto;
+        bottom: 10px;
+        right: 5px;
+        flex-direction: column;
+      }
+      #searchInput {
+        width: 100px;
+      }
+    }
+
+    /* Light theme */
+    body.light-theme {
+      background: radial-gradient(ellipse at bottom, #87CEEB 0%, #FFFFFF 100%);
+    }
+    body.light-theme .bubble {
+      background: radial-gradient(circle at 30% 30%, #ff0, #440);
+      box-shadow: 0 0 20px #ff0, 0 0 40px #440 inset;
+    }
+    body.light-theme .bubble::after {
+      box-shadow: 0 0 30px rgba(255,255,0,0.6);
+    }
+    body.light-theme #popup-box, body.light-theme #namePopup {
+      background: rgba(255,255,255,0.9);
+      border-color: #ff0;
+      color: #000;
+    }
+    body.light-theme #popup-box h2, body.light-theme #namePopup {
+      color: #ff0;
+    }
+    body.light-theme #submitBtn, body.light-theme #namePopup button, body.light-theme #controls button {
+      background: #ff0;
+      color: #000;
+      box-shadow: 0 0 10px #ff0;
     }
   </style>
 </head>
 <body>
-  <!-- Background stars -->
+  <!-- Background stars and nebula -->
   <canvas id="bg"></canvas>
+  <div class="nebula"></div>
 
   <!-- Input popup -->
   <div id="popup">
     <div id="popup-box">
       <h2>Enter Your Name ✨</h2>
-      <input type="text" id="nameInput" placeholder="Your Name">
-      <br>
-      <button id="submitBtn">Shine</button>
+      <input type="text" id="nameInput" placeholder="Your Name" maxlength="20" aria-label="Name input">
+      <input type="color" id="colorPicker" value="#00ffff" aria-label="Bubble color picker">
+      <input type="range" id="sizeSlider" min="30" max="150" value="50" aria-label="Bubble size slider">
+      <select id="fontSelect" aria-label="Font selector">
+        <option value="Orbitron">Orbitron</option>
+        <option value="Space Mono">Space Mono</option>
+      </select>
+      <select id="shapeSelect" aria-label="Shape selector">
+        <option value="circle">Circle</option>
+        <option value="star">Star</option>
+        <option value="hexagon">Hexagon</option>
+      </select>
+      <input type="text" id="categoryInput" placeholder="Category (optional)" aria-label="Category input">
+      <input type="range" id="opacitySlider" min="0.2" max="1" step="0.1" value="1" aria-label="Opacity slider">
+      <input type="range" id="glowSlider" min="0" max="30" value="20" aria-label="Glow intensity slider">
+      <button id="submitBtn" aria-label="Submit name">Shine</button>
     </div>
   </div>
 
   <!-- Bubble name popup -->
-  <div id="namePopup">
+  <div id="namePopup" role="dialog">
     <div id="popupName"></div>
-    <button id="editBtn">Edit</button>
-    <button id="deleteBtn">Delete</button>
-    <button id="closePopup">Close</button>
+    <button id="editBtn" aria-label="Edit bubble name">Edit</button>
+    <button id="deleteBtn" aria-label="Delete bubble">Delete</button>
+    <button id="closePopup" aria-label="Close popup">Close</button>
   </div>
+
+  <!-- Controls panel -->
+  <div id="controls">
+    <input type="text" id="searchInput" placeholder="Search bubbles..." aria-label="Search bubbles">
+    <button id="themeToggle" aria-label="Toggle theme">Light Theme</button>
+    <button id="musicToggle" aria-label="Toggle music">Music: Off</button>
+    <button id="fullscreenBtn" aria-label="Toggle fullscreen">Fullscreen</button>
+    <button id="exportBtn" aria-label="Export bubbles">Export</button>
+    <input type="file" id="importInput" accept=".json" style="display: none;" aria-label="Import bubbles">
+    <button id="importBtn" aria-label="Import bubbles">Import</button>
+    <button id="undoBtn" aria-label="Undo action">Undo</button>
+    <button id="redoBtn" aria-label="Redo action">Redo</button>
+    <button id="glowToggle" aria-label="Toggle glow">Glow: On</button>
+    <button id="labelToggle" aria-label="Toggle labels">Labels: Off</button>
+    <button id="spinToggle" aria-label="Toggle spin">Spin: On</button>
+  </div>
+
+  <!-- Audio for background music and sound effects -->
+  <audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+  <audio id="clickSound" src="https://www.soundjay.com/buttons/button-09.mp3"></audio>
+  <audio id="deleteSound" src="https://www.soundjay.com/misc/explosion-01.mp3"></audio>
 
   <script>
     const popup = document.getElementById("popup");
     const submitBtn = document.getElementById("submitBtn");
     const nameInput = document.getElementById("nameInput");
+    const colorPicker = document.getElementById("colorPicker");
+    const sizeSlider = document.getElementById("sizeSlider");
+    const fontSelect = document.getElementById("fontSelect");
+    const shapeSelect = document.getElementById("shapeSelect");
+    const categoryInput = document.getElementById("categoryInput");
+    const opacitySlider = document.getElementById("opacitySlider");
+    const glowSlider = document.getElementById("glowSlider");
     const namePopup = document.getElementById("namePopup");
     const popupName = document.getElementById("popupName");
     const closePopup = document.getElementById("closePopup");
     const editBtn = document.getElementById("editBtn");
     const deleteBtn = document.getElementById("deleteBtn");
+    const themeToggle = document.getElementById("themeToggle");
+    const musicToggle = document.getElementById("musicToggle");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const importInput = document.getElementById("importInput");
+    const importBtn = document.getElementById("importBtn");
+    const undoBtn = document.getElementById("undoBtn");
+    const redoBtn = document.getElementById("redoBtn");
+    const glowToggle = document.getElementById("glowToggle");
+    const labelToggle = document.getElementById("labelToggle");
+    const spinToggle = document.getElementById("spinToggle");
+    const searchInput = document.getElementById("searchInput");
+    const bgMusic = document.getElementById("bgMusic");
+    const clickSound = document.getElementById("clickSound");
+    const deleteSound = document.getElementById("deleteSound");
 
     let currentBubble = null;
+    let bubbles = [];
+    let undoStack = [];
+    let redoStack = [];
+    let isGlowOn = true;
+    let isLabelsOn = false;
+    let isSpinOn = true;
 
-    // Load saved bubbles
+    // Load saved bubbles and initialize
     window.onload = () => {
-      let names = JSON.parse(localStorage.getItem("bubbles2")) || [];
-      names.forEach(n => createBubble(n.text, n.x, n.y, n.size));
+      let savedBubbles = JSON.parse(localStorage.getItem("bubbles3")) || [];
+      savedBubbles.forEach(b => createBubble(b));
       starfield();
+      autoBackup();
+      showTutorial();
     };
 
     // Submit new bubble
     submitBtn.addEventListener("click", () => {
       const name = nameInput.value.trim();
-      if(name) {
-        createBubble(name);
-        saveBubble({text:name});
+      if (name) {
+        const bubbleData = {
+          text: name,
+          x: Math.random() * (window.innerWidth - 100) + "px",
+          y: Math.random() * (window.innerHeight - 100) + "px",
+          size: sizeSlider.value + "px",
+          color: colorPicker.value,
+          font: fontSelect.value,
+          shape: shapeSelect.value,
+          category: categoryInput.value.trim(),
+          opacity: opacitySlider.value,
+          glow: glowSlider.value
+        };
+        createBubble(bubbleData);
+        saveBubble(bubbleData);
+        undoStack.push({ action: "create", data: bubbleData });
+        redoStack = [];
         popup.style.display = "none";
+        clickSound.play();
+        nameInput.value = "";
+        categoryInput.value = "";
       }
     });
 
-    // Save bubbles
-    function saveBubble(bubble){
-      let bubbles = JSON.parse(localStorage.getItem("bubbles2")) || [];
+    // Save bubble to localStorage
+    function saveBubble(bubble) {
       bubbles.push(bubble);
-      localStorage.setItem("bubbles2", JSON.stringify(bubbles));
+      localStorage.setItem("bubbles3", JSON.stringify(bubbles));
     }
-    function updateStorage(){
-      const bubbles = Array.from(document.querySelectorAll(".bubble")).map(b => ({
+
+    // Update storage
+    function updateStorage() {
+      bubbles = Array.from(document.querySelectorAll(".bubble")).map(b => ({
         text: b.dataset.name,
         x: b.style.left,
         y: b.style.top,
-        size: b.style.width
+        size: b.style.width,
+        color: b.dataset.color,
+        font: b.dataset.font,
+        shape: b.dataset.shape,
+        category: b.dataset.category,
+        opacity: b.dataset.opacity,
+        glow: b.dataset.glow
       }));
-      localStorage.setItem("bubbles2", JSON.stringify(bubbles));
+      localStorage.setItem("bubbles3", JSON.stringify(bubbles));
     }
 
     // Create bubble
-    function createBubble(name, x, y, size){
+    function createBubble(data) {
       const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.dataset.name = name;
+      bubble.className = `bubble ${data.shape}-shape`;
+      bubble.dataset.name = data.text;
+      bubble.dataset.color = data.color;
+      bubble.dataset.font = data.font;
+      bubble.dataset.shape = data.shape;
+      bubble.dataset.category = data.category;
+      bubble.dataset.opacity = data.opacity;
+      bubble.dataset.glow = data.glow;
+      bubble.style.width = data.size;
+      bubble.style.height = data.size;
+      bubble.style.left = data.x;
+      bubble.style.top = data.y;
+      bubble.style.background = `radial-gradient(circle at 30% 30%, ${data.color}, #004)`;
+      bubble.style.fontFamily = data.font;
+      bubble.style.opacity = data.opacity;
+      bubble.style.boxShadow = `0 0 ${data.glow}px ${data.color}, 0 0 ${data.glow * 2}px ${data.color} inset`;
+      bubble.innerHTML = `<span class="bubble-text">${data.text}</span>`;
 
-      let s = size || (Math.random()*50+50)+"px";
-      bubble.style.width = s;
-      bubble.style.height = s;
-      bubble.style.left = x || Math.random()*(window.innerWidth-100)+"px";
-      bubble.style.top = y || Math.random()*(window.innerHeight-100)+"px";
+      // Create label
+      const label = document.createElement("div");
+      label.className = "bubble-label";
+      label.textContent = data.text;
+      label.style.display = isLabelsOn ? "block" : "none";
+      bubble.appendChild(label);
 
-      // click -> open popup
-      bubble.addEventListener("click", (e)=>{
+      // Click event
+      bubble.addEventListener("click", (e) => {
         e.stopPropagation();
         currentBubble = bubble;
         popupName.textContent = bubble.dataset.name;
         bubble.classList.add("clicked");
-        setTimeout(()=>bubble.classList.remove("clicked"),300);
+        clickSound.play();
+        setTimeout(() => bubble.classList.remove("clicked"), 300);
         namePopup.style.display = "block";
+        if (navigator.vibrate) navigator.vibrate(50);
       });
 
+      // Animation
+      bubble.style.animation = isSpinOn ? "spin 10s linear infinite, fadeIn 0.5s" : "fadeIn 0.5s";
       enableDrag(bubble);
       document.body.appendChild(bubble);
+      applyCollisionDetection(bubble);
+      applyGravity(bubble);
     }
 
     // Dragging support
-    function enableDrag(el){
+    function enableDrag(el) {
       let offsetX, offsetY, dragging = false;
 
-      function down(e){
+      function down(e) {
         dragging = true;
         const rect = el.getBoundingClientRect();
-        offsetX = (e.touches? e.touches[0].clientX : e.clientX) - rect.left;
-        offsetY = (e.touches? e.touches[0].clientY : e.clientY) - rect.top;
+        offsetX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        offsetY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        el.style.zIndex = 100;
       }
-      function move(e){
-        if(!dragging) return;
-        const x = (e.touches? e.touches[0].clientX : e.clientX) - offsetX;
-        const y = (e.touches? e.touches[0].clientY : e.clientY) - offsetY;
-        el.style.left = x+"px";
-        el.style.top = y+"px";
+
+      function move(e) {
+        if (!dragging) return;
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - offsetX;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - offsetY;
+        const maxX = window.innerWidth - parseFloat(el.style.width);
+        const maxY = window.innerHeight - parseFloat(el.style.height);
+        el.style.left = Math.max(0, Math.min(x, maxX)) + "px";
+        el.style.top = Math.max(0, Math.min(y, maxY)) + "px";
+        drawBubbleTrail(el, x, y);
       }
-      function up(){
+
+      function up() {
         dragging = false;
+        el.style.zIndex = 1;
         updateStorage();
       }
 
@@ -258,68 +498,358 @@
       el.addEventListener("touchend", up);
     }
 
+    // Bubble trail
+    function drawBubbleTrail(el, x, y) {
+      const trail = document.createElement("div");
+      trail.className = "particle";
+      trail.style.width = "5px";
+      trail.style.height = "5px";
+      trail.style.left = x + parseFloat(el.style.width) / 2 + "px";
+      trail.style.top = y + parseFloat(el.style.height) / 2 + "px";
+      trail.style.background = el.dataset.color;
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 500);
+    }
+
+    // Collision detection
+    function applyCollisionDetection(bubble) {
+      const bubbles = document.querySelectorAll(".bubble");
+      function checkCollision() {
+        bubbles.forEach(b => {
+          if (b !== bubble) {
+            const rect1 = bubble.getBoundingClientRect();
+            const rect2 = b.getBoundingClientRect();
+            const dx = (rect1.left + rect1.width / 2) - (rect2.left + rect2.width / 2);
+            const dy = (rect1.top + rect1.height / 2) - (rect2.top + rect2.height / 2);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const minDistance = (parseFloat(bubble.style.width) + parseFloat(b.style.width)) / 2;
+            if (distance < minDistance) {
+              const angle = Math.atan2(dy, dx);
+              bubble.style.left = parseFloat(bubble.style.left) + Math.cos(angle) * 5 + "px";
+              bubble.style.top = parseFloat(bubble.style.top) + Math.sin(angle) * 5 + "px";
+            }
+          }
+        });
+        requestAnimationFrame(checkCollision);
+      }
+      checkCollision();
+    }
+
+    // Gravity effect
+    function applyGravity(bubble) {
+      let velocity = 0;
+      function updateGravity() {
+        velocity += 0.05;
+        let y = parseFloat(bubble.style.top) + velocity;
+        if (y > window.innerHeight - parseFloat(bubble.style.height)) {
+          y = window.innerHeight - parseFloat(bubble.style.height);
+          velocity = -velocity * 0.5;
+        }
+        bubble.style.top = y + "px";
+        requestAnimationFrame(updateGravity);
+      }
+      updateGravity();
+    }
+
     // Popup buttons
-    closePopup.addEventListener("click", ()=> namePopup.style.display="none");
-    editBtn.addEventListener("click", ()=>{
+    closePopup.addEventListener("click", () => {
+      namePopup.style.display = "none";
+    });
+    editBtn.addEventListener("click", () => {
       const newName = prompt("Edit name:", currentBubble.dataset.name);
-      if(newName){
+      if (newName && newName.length <= 20) {
         currentBubble.dataset.name = newName;
+        currentBubble.querySelector(".bubble-text").textContent = newName;
+        currentBubble.querySelector(".bubble-label").textContent = newName;
         popupName.textContent = newName;
         updateStorage();
+        clickSound.play();
       }
     });
-    deleteBtn.addEventListener("click", ()=>{
+    deleteBtn.addEventListener("click", () => {
+      const bubbleData = {
+        text: currentBubble.dataset.name,
+        x: currentBubble.style.left,
+        y: currentBubble.style.top,
+        size: currentBubble.style.width,
+        color: currentBubble.dataset.color,
+        font: currentBubble.dataset.font,
+        shape: currentBubble.dataset.shape,
+        category: currentBubble.dataset.category,
+        opacity: currentBubble.dataset.opacity,
+        glow: currentBubble.dataset.glow
+      };
+      undoStack.push({ action: "delete", data: bubbleData });
+      redoStack = [];
+      createExplosion(currentBubble);
       currentBubble.remove();
-      namePopup.style.display="none";
+      namePopup.style.display = "none";
       updateStorage();
+      deleteSound.play();
     });
 
-    // Background stars + shooting stars
-    function starfield(){
+    // Explosion effect
+    function createExplosion(bubble) {
+      const rect = bubble.getBoundingClientRect();
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.width = "5px";
+        particle.style.height = "5px";
+        particle.style.left = rect.left + rect.width / 2 + "px";
+        particle.style.top = rect.top + rect.height / 2 + "px";
+        particle.style.background = bubble.dataset.color;
+        document.body.appendChild(particle);
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5 + 2;
+        particle.style.transform = `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed}px)`;
+        setTimeout(() => particle.remove(), 1000);
+      }
+    }
+
+    // Theme toggle
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light-theme");
+      themeToggle.textContent = document.body.classList.contains("light-theme") ? "Dark Theme" : "Light Theme";
+    });
+
+    // Music toggle
+    musicToggle.addEventListener("click", () => {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicToggle.textContent = "Music: On";
+      } else {
+        bgMusic.pause();
+        musicToggle.textContent = "Music: Off";
+      }
+    });
+
+    // Fullscreen toggle
+    fullscreenBtn.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        fullscreenBtn.textContent = "Exit Fullscreen";
+      } else {
+        document.exitFullscreen();
+        fullscreenBtn.textContent = "Fullscreen";
+      }
+    });
+
+    // Export bubbles
+    exportBtn.addEventListener("click", () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bubbles));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "bubbles.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    });
+
+    // Import bubbles
+    importBtn.addEventListener("click", () => {
+      importInput.click();
+    });
+    importInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const importedBubbles = JSON.parse(event.target.result);
+        document.querySelectorAll(".bubble").forEach(b => b.remove());
+        bubbles = [];
+        importedBubbles.forEach(b => createBubble(b));
+        updateStorage();
+      };
+      reader.readAsText(file);
+    });
+
+    // Undo/Redo
+    undoBtn.addEventListener("click", () => {
+      const action = undoStack.pop();
+      if (action) {
+        if (action.action === "create") {
+          const bubble = Array.from(document.querySelectorAll(".bubble")).find(b => b.dataset.name === action.data.text);
+          if (bubble) {
+            redoStack.push({ action: "create", data: action.data });
+            bubble.remove();
+            updateStorage();
+          }
+        } else if (action.action === "delete") {
+          createBubble(action.data);
+          redoStack.push({ action: "delete", data: action.data });
+          updateStorage();
+        }
+      }
+    });
+    redoBtn.addEventListener("click", () => {
+      const action = redoStack.pop();
+      if (action) {
+        if (action.action === "create") {
+          createBubble(action.data);
+          undoStack.push({ action: "create", data: action.data });
+          updateStorage();
+        } else if (action.action === "delete") {
+          const bubble = Array.from(document.querySelectorAll(".bubble")).find(b => b.dataset.name === action.data.text);
+          if (bubble) {
+            undoStack.push({ action: "delete", data: action.data });
+            bubble.remove();
+            updateStorage();
+          }
+        }
+      }
+    });
+
+    // Glow toggle
+    glowToggle.addEventListener("click", () => {
+      isGlowOn = !isGlowOn;
+      document.querySelectorAll(".bubble").forEach(b => {
+        b.style.boxShadow = isGlowOn ? `0 0 ${b.dataset.glow}px ${b.dataset.color}, 0 0 ${b.dataset.glow * 2}px ${b.dataset.color} inset` : "none";
+      });
+      glowToggle.textContent = `Glow: ${isGlowOn ? "On" : "Off"}`;
+    });
+
+    // Label toggle
+    labelToggle.addEventListener("click", () => {
+      isLabelsOn = !isLabelsOn;
+      document.querySelectorAll(".bubble-label").forEach(l => {
+        l.style.display = isLabelsOn ? "block" : "none";
+      });
+      labelToggle.textContent = `Labels: ${isLabelsOn ? "On" : "Off"}`;
+    });
+
+    // Spin toggle
+    spinToggle.addEventListener("click", () => {
+      isSpinOn = !isSpinOn;
+      document.querySelectorAll(".bubble").forEach(b => {
+        b.style.animation = isSpinOn ? "spin 10s linear infinite, pulse 3s infinite ease-in-out" : "pulse 3s infinite ease-in-out";
+      });
+      spinToggle.textContent = `Spin: ${isSpinOn ? "On" : "Off"}`;
+    });
+
+    // Search bubbles
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      document.querySelectorAll(".bubble").forEach(b => {
+        b.style.opacity = b.dataset.name.toLowerCase().includes(query) || b.dataset.category.toLowerCase().includes(query) ? 1 : 0.3;
+      });
+    });
+
+    // Voice input
+    nameInput.addEventListener("click", () => {
+      if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US";
+        recognition.start();
+        recognition.onresult = (event) => {
+          nameInput.value = event.results[0][0].transcript;
+        };
+      }
+    });
+
+    // Auto-backup
+    function autoBackup() {
+      updateStorage();
+      setTimeout(autoBackup, 60000);
+    }
+
+    // Tutorial
+    function showTutorial() {
+      if (!localStorage.getItem("tutorialShown")) {
+        alert("Welcome to Name Universe 3.0! Drag bubbles to move them, click to edit/delete, use controls to customize, and explore the space theme!");
+        localStorage.setItem("tutorialShown", "true");
+      }
+    }
+
+    // Starfield with parallax and dynamic colors
+    function starfield() {
       const canvas = document.getElementById("bg");
       const ctx = canvas.getContext("2d");
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
       const stars = [];
-      for(let i=0;i<200;i++){
+      for (let i = 0; i < 300; i++) {
         stars.push({
-          x: Math.random()*canvas.width,
-          y: Math.random()*canvas.height,
-          radius: Math.random()*1.5,
-          speed: Math.random()*0.5
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          speed: Math.random() * 0.5 + 0.2,
+          color: `hsl(${Math.random() * 360}, 70%, 80%)`
         });
       }
       const shootingStars = [];
 
-      function animate(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = "white";
-        stars.forEach(s=>{
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+          ctx.fillStyle = s.color;
           ctx.beginPath();
-          ctx.arc(s.x,s.y,s.radius,0,Math.PI*2);
+          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
           ctx.fill();
-          s.y+=s.speed;
-          if(s.y>canvas.height) s.y=0;
+          s.y += s.speed;
+          if (s.y > canvas.height) s.y = 0;
         });
 
-        // shooting star
-        if(Math.random()<0.002){
-          shootingStars.push({x:Math.random()*canvas.width,y:0,len:Math.random()*80+50});
+        // Shooting stars with trails
+        if (Math.random() < 0.005) {
+          shootingStars.push({ x: Math.random() * canvas.width, y: 0, len: Math.random() * 80 + 50, color: `hsl(${Math.random() * 360}, 70%, 80%)` });
         }
-        ctx.strokeStyle="white";
-        shootingStars.forEach((st,i)=>{
+        shootingStars.forEach((st, i) => {
+          ctx.strokeStyle = st.color;
           ctx.beginPath();
-          ctx.moveTo(st.x,st.y);
-          ctx.lineTo(st.x-st.len,st.y+st.len/2);
+          ctx.moveTo(st.x, st.y);
+          ctx.lineTo(st.x - st.len, st.y + st.len / 2);
           ctx.stroke();
-          st.x+=5; st.y+=5;
-          if(st.y>canvas.height) shootingStars.splice(i,1);
+          st.x += 5;
+          st.y += 5;
+          if (st.y > canvas.height) shootingStars.splice(i, 1);
         });
+
+        // Nebula particles
+        if (Math.random() < 0.01) {
+          const particle = {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 3,
+            speed: Math.random() * 0.2
+          };
+          ctx.fillStyle = "rgba(0, 150, 255, 0.3)";
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         requestAnimationFrame(animate);
       }
       animate();
+
+      // Handle canvas resize
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && popup.style.display !== "none") {
+        submitBtn.click();
+      }
+      if (e.key === "Escape" && namePopup.style.display !== "none") {
+        closePopup.click();
+      }
+    });
+
+    // Bubble connections (placeholder for visual lines)
+    function drawConnections() {
+      // Implementation depends on specific requirements for connecting related bubbles
+    }
+
+    // Share feature (placeholder)
+    function generateShareLink() {
+      // Implementation depends on server-side support
+      alert("Share feature coming soon!");
     }
   </script>
 </body>
