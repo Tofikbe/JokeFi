@@ -15,6 +15,12 @@
       text-align: center;
       overflow-x: hidden;
       position: relative;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light-mode {
+      background: linear-gradient(-45deg, #e6f3ff, #b3d9ff, #80bfff, #e6f3ff);
+      color: #333;
     }
 
     @keyframes gradient {
@@ -35,8 +41,17 @@
 
     .wallet {
       padding: 40px 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      z-index: 100;
+      border-radius: 12px;
     }
 
     .balance {
@@ -92,6 +107,23 @@
       animation-delay: calc(0.2s * var(--i));
     }
 
+    .task-section.collapsed .task-list {
+      display: none;
+    }
+
+    .task-section.collapsed h3::after {
+      content: '▶';
+    }
+
+    .task-section h3 {
+      cursor: pointer;
+    }
+
+    .task-section h3::after {
+      content: '▼';
+      margin-left: 10px;
+    }
+
     @keyframes slideIn {
       to { opacity: 1; transform: translateY(0); }
     }
@@ -105,6 +137,7 @@
       padding: 15px;
       border-radius: 12px;
       transition: all 0.3s ease;
+      position: relative;
     }
 
     .task:hover {
@@ -121,6 +154,24 @@
     .task-info {
       text-align: left;
       font-size: 16px;
+      position: relative;
+    }
+
+    .task-info:hover .tooltip {
+      display: block;
+    }
+
+    .tooltip {
+      display: none;
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      top: -30px;
+      left: 0;
+      z-index: 10;
     }
 
     .task button {
@@ -221,7 +272,7 @@
       font-weight: bold;
     }
 
-    .form-group input {
+    .form-group input, .form-group select {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
@@ -231,7 +282,7 @@
       font-size: 16px;
     }
 
-    .form-group input:disabled {
+    .form-group input:disabled, .form-group select:disabled {
       background: rgba(255, 255, 255, 0.05);
       color: #ccc;
     }
@@ -242,7 +293,6 @@
       border-radius: 8px;
     }
 
-    /* New Styles for Improvements */
     .error-message {
       color: #ff4d4d;
       font-size: 14px;
@@ -294,35 +344,188 @@
       border-radius: 8px;
       transition: width 0.3s ease;
     }
+
+    .progress-circle {
+      width: 50px;
+      height: 50px;
+      margin: 10px auto;
+      position: relative;
+    }
+
+    .progress-circle svg {
+      transform: rotate(-90deg);
+    }
+
+    .progress-circle circle {
+      fill: none;
+      stroke: #00ccff;
+      stroke-width: 5;
+      stroke-dasharray: 150;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .progress-circle text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff4d4d;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      display: none;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .profile-section img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .filter-bar input, .filter-bar select {
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .leaderboard, .dashboard, .achievements, .activity-log, .feedback-form {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .canvas-container {
+      margin: 20px 0;
+    }
   </style>
 </head>
 <body>
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+  </div>
   <div class="particles" id="particles"></div>
   <div class="wallet">
-    <div class="balance">Balance: ₹<span id="balance">0.00</span></div>
-
-    <div>
-      <span class="btn" onclick="dailyClaim()">Claim Daily Bonus</span>
-      <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
-      <span class="btn" onclick="openPopup('buy')">Buy Credits</span>
-      <span class="btn" onclick="resetAll()">Reset (For Testing)</span>
+    <div class="header">
+      <div class="profile-section">
+        <img src="https://i.postimg.cc/4NqX0y1R/default-avatar.png" alt="Avatar">
+        <div>
+          <span id="profileName">Guest User</span><br>
+          <small>Level: <span id="userLevel">1</span> | Points: <span id="userPoints">0</span></small>
+        </div>
+      </div>
+      <div class="balance">Balance: <span id="currency">₹</span><span id="balance">0.00</span></div>
+      <div>
+        <span class="btn" onclick="dailyClaim()">Claim Daily Bonus</span>
+        <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
+        <span class="btn" onclick="openPopup('buy')">Buy Credits</span>
+        <span class="btn" onclick="openPopup('dashboard')">Dashboard</span>
+        <span class="btn" onclick="toggleTheme()">Toggle Theme</span>
+        <span class="btn" onclick="adjustFontSize(2)">A+</span>
+        <span class="btn" onclick="adjustFontSize(-2)">A-</span>
+        <span class="btn" onclick="openPopup('spin')">Spin Wheel</span>
+        <span class="btn" onclick="resetAll()">Reset</span>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="taskSearch" placeholder="Search Tasks..." oninput="filterTasks()">
+        <select id="taskFilter" onchange="filterTasks()">
+          <option value="all">All Tasks</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
+        <select id="taskSort" onchange="sortTasks()">
+          <option value="default">Default</option>
+          <option value="reward">Reward</option>
+          <option value="name">Name</option>
+        </select>
+        <select id="currencySelect" onchange="changeCurrency()">
+          <option value="INR">₹ (INR)</option>
+          <option value="USD">$ (USD)</option>
+          <option value="EUR">€ (EUR)</option>
+        </select>
+      </div>
     </div>
 
     <hr>
 
     <div class="task-section" style="--i: 1">
-      <h3>Medium Tasks</h3>
-      <div id="mediumTasks" class="task-list"></div>
+      <h3 onclick="toggleSection(this)">Daily Tasks <span class="notification-badge" id="dailyBadge">0</span></h3>
+      <div id="dailyTasks" class="task-list"></div>
     </div>
 
     <div class="task-section" style="--i: 2">
-      <h3>High Tasks</h3>
-      <div id="highTasks" class="task-list"></div>
+      <h3 onclick="toggleSection(this)">Medium Tasks <span class="notification-badge" id="mediumBadge">0</span></h3>
+      <div id="mediumTasks" class="task-list"></div>
     </div>
 
     <div class="task-section" style="--i: 3">
-      <h3>Special Collaboration</h3>
+      <h3 onclick="toggleSection(this)">High Tasks <span class="notification-badge" id="highBadge">0</span></h3>
+      <div id="highTasks" class="task-list"></div>
+    </div>
+
+    <div class="task-section" style="--i: 4">
+      <h3 onclick="toggleSection(this)">Special Collaboration <span class="notification-badge" id="specialBadge">0</span></h3>
       <div id="specialTasks" class="task-list"></div>
+    </div>
+
+    <div class="leaderboard">
+      <h3>Leaderboard</h3>
+      <div id="leaderboard"></div>
+    </div>
+
+    <div class="achievements">
+      <h3>Achievements</h3>
+      <div id="achievements"></div>
+    </div>
+
+    <div class="activity-log">
+      <h3>Activity Log</h3>
+      <div id="activityLog"></div>
+      <button class="btn" onclick="exportLog()">Export as CSV</button>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="earningsGraph" width="400" height="200"></canvas>
     </div>
   </div>
 
@@ -341,12 +544,16 @@
       <p>Scan the QR code to add funds to your wallet</p>
       <div class="qr-code">
         <img src="https://i.postimg.cc/WFcpfHkj/qr-code.png" alt="QR Code">
-        <p>Minimum Amount: ₹200</p>
+        <p>Minimum Amount: <span id="buyMin">₹200</span></p>
       </div>
       <div class="form-group">
-        <label for="buyAmount">Enter Amount (₹)</label>
+        <label for="buyAmount">Enter Amount</label>
         <input type="number" id="buyAmount" min="200" placeholder="Minimum ₹200">
         <div class="error-message" id="buyError"></div>
+      </div>
+      <div class="form-group">
+        <label for="referralCode">Referral Code (Optional)</label>
+        <input type="text" id="referralCode" placeholder="Enter Referral Code">
       </div>
       <button onclick="confirmBuy()">Confirm Purchase</button>
       <button onclick="closePopup('buy')">Close</button>
@@ -366,7 +573,7 @@
           <input type="text" id="name" placeholder="Enter Name" disabled>
         </div>
         <div class="form-group withdraw-amount">
-          <label for="withdrawAmount">Withdraw Amount (₹)</label>
+          <label for="withdrawAmount">Withdraw Amount</label>
           <input type="number" id="withdrawAmount" min="100" placeholder="Minimum ₹100">
           <div class="error-message" id="withdrawError"></div>
           <div class="success-message" id="withdrawSuccess"></div>
@@ -374,14 +581,67 @@
         <button id="editBtn" onclick="enableEdit()">Edit Details</button>
         <button id="saveBtn" onclick="saveWithdrawDetails()" style="display: none;">Save Details</button>
         <button id="withdrawBtn" onclick="confirmWithdraw()">Withdraw Now</button>
+        <button onclick="openPopup('withdrawHistory')">View Withdraw History</button>
         <button onclick="closePopup('withdraw')">Close</button>
       </div>
+    </div>
+  </div>
+
+  <div class="popup" id="dashboardPopup">
+    <div class="popup-content">
+      <h3>Dashboard</h3>
+      <div class="dashboard">
+        <p>Total Tasks Completed: <span id="totalTasks">0</span></p>
+        <p>Total Earnings: <span id="currencyDash">₹</span><span id="totalEarnings">0.00</span></p>
+        <p>Current Streak: <span id="streakCount">0</span> days</p>
+        <p>Level: <span id="dashLevel">1</span></p>
+      </div>
+      <button onclick="closePopup('dashboard')">Close</button>
+    </div>
+  </div>
+
+  <div class="popup" id="spinPopup">
+    <div class="popup-content">
+      <h3>Spin the Wheel</h3>
+      <canvas id="spinWheel" width="200" height="200"></canvas>
+      <button onclick="spinWheel()">Spin Now</button>
+      <button onclick="closePopup('spin')">Close</button>
+    </div>
+  </div>
+
+  <div class="popup" id="withdrawHistoryPopup">
+    <div class="popup-content">
+      <h3>Withdraw History</h3>
+      <div id="withdrawHistory"></div>
+      <button onclick="closePopup('withdrawHistory')">Close</button>
+    </div>
+  </div>
+
+  <div class="popup" id="feedbackPopup">
+    <div class="popup-content">
+      <h3>Submit Feedback</h3>
+      <div class="form-group">
+        <label for="feedbackText">Your Feedback</label>
+        <textarea id="feedbackText" rows="4" style="width: 100%; border-radius: 8px;"></textarea>
+      </div>
+      <button onclick="submitFeedback()">Submit</button>
+      <button onclick="closePopup('feedback')">Close</button>
+    </div>
+  </div>
+
+  <div class="popup" id="sessionTimeoutPopup">
+    <div class="popup-content">
+      <h3>Session Timeout</h3>
+      <p>Your session has been inactive for too long. Please refresh.</p>
+      <button onclick="location.reload()">Refresh</button>
     </div>
   </div>
 
   <div class="back-to-top" onclick="scrollToTop()">↑</div>
 
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script>
     // Initialize Particles.js
     particlesJS("particles", {
@@ -397,21 +657,48 @@
       interactivity: { enable: false }
     });
 
-    // Load Balance from localStorage
+    // Show Loading Screen
+    document.getElementById("loadingScreen").style.display = "flex";
+    setTimeout(() => {
+      document.getElementById("loadingScreen").style.display = "none";
+    }, 1000);
+
+    // Initialize Data
     let balance = parseFloat(localStorage.getItem("balance")) || 0;
-    document.getElementById("balance").innerText = balance.toFixed(2);
-
-    // Track completed tasks
+    let points = parseInt(localStorage.getItem("points")) || 0;
+    let level = Math.floor(points / 100) + 1;
     let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || {};
-
-    // Withdraw Details
     let withdrawDetails = JSON.parse(localStorage.getItem("withdrawDetails")) || {};
+    let withdrawHistory = JSON.parse(localStorage.getItem("withdrawHistory")) || [];
+    let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
+    let achievements = JSON.parse(localStorage.getItem("achievements")) || [];
+    let streak = parseInt(localStorage.getItem("streak")) || 0;
+    let lastLogin = parseInt(localStorage.getItem("lastLogin")) || 0;
+    let profile = JSON.parse(localStorage.getItem("profile")) || { name: "Guest User" };
+    let currency = localStorage.getItem("currency") || "INR";
+    let conversionRates = { INR: 1, USD: 0.012, EUR: 0.011 };
+    let taskCompletionsToday = parseInt(localStorage.getItem("taskCompletionsToday")) || 0;
+    let lastTaskDate = localStorage.getItem("lastTaskDate") || "";
+    let feedbackList = JSON.parse(localStorage.getItem("feedbackList")) || [];
+
+    // Update UI
+    document.getElementById("balance").innerText = (balance * conversionRates[currency]).toFixed(2);
+    document.getElementById("currency").innerText = currency === "INR" ? "₹" : currency === "USD" ? "$" : "€";
+    document.getElementById("profileName").innerText = profile.name;
+    document.getElementById("userLevel").innerText = level;
+    document.getElementById("userPoints").innerText = points;
     if (withdrawDetails.upiId && withdrawDetails.name) {
       document.getElementById("upiId").value = withdrawDetails.upiId;
       document.getElementById("name").value = withdrawDetails.name;
     }
 
-    // Task Lists (Added more tasks for variety)
+    // Task Lists
+    const dailyTasks = [
+      { text: "Check Daily News", link: "https://news.google.com", reward: 0.2 },
+      { text: "Watch Tutorial Video", link: "https://youtube.com", reward: 0.3 },
+      { text: "Visit Tech Blog", link: "https://techcrunch.com", reward: 0.2 }
+    ];
+
     const mediumTasks = [
       { text: "Follow Google on Twitter", link: "https://twitter.com/Google", reward: 0.5 },
       { text: "Subscribe to YouTube Channel", link: "https://youtube.com/@Google", reward: 0.5 },
@@ -423,42 +710,54 @@
       { text: "Open Translate", link: "https://translate.google.com", reward: 0.5 },
       { text: "Visit Google Photos", link: "https://photos.google.com", reward: 0.5 },
       { text: "Search Cricket Score", link: "https://www.google.com/search?q=cricket+score", reward: 0.5 },
-      { text: "Follow xAI on Twitter", link: "https://twitter.com/xai", reward: 0.5 }, // Added new
-      { text: "Visit OpenAI Website", link: "https://openai.com", reward: 0.5 } // Added new
+      { text: "Follow xAI on Twitter", link: "https://twitter.com/xai", reward: 0.5 },
+      { text: "Visit OpenAI Website", link: "https://openai.com", reward: 0.5 }
     ];
 
     const highTasks = [
-      { text: "Upload video to YouTube", link: "https://youtube.com", reward: 5 },
+      { text: "Upload video to YouTube", link: "https://youtube.com", reward: 5, requiresProof: true },
       { text: "Join Telegram", link: "https://telegram.org", reward: 7 },
       { text: "Tweet trending hashtag", link: "https://twitter.com/explore", reward: 8 },
       { text: "Post story on Instagram", link: "https://instagram.com", reward: 6 },
       { text: "Share on Facebook", link: "https://facebook.com", reward: 9 },
       { text: "Write blog on Medium", link: "https://medium.com", reward: 10 },
       { text: "Join Discord", link: "https://discord.com", reward: 7 },
-      { text: "Upload GitHub Repo", link: "https://github.com", reward: 9 },
+      { text: "Upload GitHub Repo", link: "https://github.com", reward: 9, requiresProof: true },
       { text: "Comment on Reddit", link: "https://reddit.com", reward: 6 },
       { text: "Post on Quora", link: "https://quora.com", reward: 5 },
-      { text: "Create LinkedIn Post", link: "https://linkedin.com", reward: 8 }, // Added new
-      { text: "Review App on Play Store", link: "https://play.google.com", reward: 7 } // Added new
+      { text: "Create LinkedIn Post", link: "https://linkedin.com", reward: 8 },
+      { text: "Review App on Play Store", link: "https://play.google.com", reward: 7 }
     ];
 
     const specialRewards = [30, 40, 50, 70, 80, 60, 35, 100, 88, 77, 90, 120];
     const specialTasks = [
-      { text: "Google Ads Campaign", link: "https://ads.google.com" },
-      { text: "Collaborate with Influencer", link: "https://twitter.com" },
-      { text: "Launch Twitter Space", link: "https://twitter.com" },
-      { text: "Host YouTube Live", link: "https://youtube.com" },
-      { text: "Write Whitepaper", link: "https://docs.google.com" },
-      { text: "Create NFT Artwork", link: "https://opensea.io" },
+      { text: "Google Ads Campaign", link: "https://ads.google.com", requiresProof: true },
+      { text: "Collaborate with Influencer", link: "https://twitter.com", requiresProof: true },
+      { text: "Launch Twitter Space", link: "https://twitter.com", requiresProof: true },
+      { text: "Host YouTube Live", link: "https://youtube.com", requiresProof: true },
+      { text: "Write Whitepaper", link: "https://docs.google.com", requiresProof: true },
+      { text: "Create NFT Artwork", link: "https://opensea.io", requiresProof: true },
       { text: "Promote on Discord", link: "https://discord.com" },
-      { text: "Make Short Film", link: "https://vimeo.com" },
-      { text: "Launch Podcast", link: "https://spotify.com" },
-      { text: "Create Online Course", link: "https://udemy.com" },
-      { text: "Build Simple App", link: "https://codepen.io", reward: 90 }, // Added new
-      { text: "Design Logo", link: "https://canva.com", reward: 120 } // Added new
+      { text: "Make Short Film", link: "https://vimeo.com", requiresProof: true },
+      { text: "Launch Podcast", link: "https://spotify.com", requiresProof: true },
+      { text: "Create Online Course", link: "https://udemy.com", requiresProof: true },
+      { text: "Build Simple App", link: "https://codepen.io", reward: 90, requiresProof: true },
+      { text: "Design Logo", link: "https://canva.com", reward: 120, requiresProof: true }
     ];
 
-    // Render Tasks with Progress Bar
+    // Bonus Task (Random Daily)
+    const bonusTasks = [
+      { text: "Share Task Wallet on Twitter", link: "https://twitter.com", reward: 15, timeLimit: 3600 }
+    ];
+
+    // Achievements
+    const achievementList = [
+      { id: "tasks10", name: "Task Novice", description: "Complete 10 tasks", points: 50, condition: () => Object.keys(completedTasks).length >= 10 },
+      { id: "earn100", name: "Money Maker", description: "Earn ₹100", points: 100, condition: () => balance >= 100 },
+      { id: "streak5", name: "Streak Star", description: "Maintain a 5-day streak", points: 150, condition: () => streak >= 5 }
+    ];
+
+    // Render Tasks
     function renderTasks(list, id, rewards = null) {
       let html = "";
       let completedCount = 0;
@@ -466,58 +765,120 @@
         let reward = task.reward || rewards[i % rewards.length];
         let taskId = `${id}-${i}`;
         let isCompleted = completedTasks[taskId];
+        let isLocked = task.dependsOn && !completedTasks[task.dependsOn];
         if (isCompleted) completedCount++;
         html += `
-          <div class="task ${isCompleted ? 'completed' : ''}">
-            <div class="task-info">${task.text}<br><small>Earn ₹${reward}</small></div>
+          <div class="task ${isCompleted ? 'completed' : isLocked ? 'locked' : ''}">
+            <div class="task-info">
+              ${task.text}<br>
+              <small>Earn ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${reward * conversionRates[currency]}</small>
+              <div class="tooltip">${task.description || "Complete this task to earn rewards."}</div>
+              ${task.timeLimit ? `<small>Time Left: <span id="timer-${taskId}"></span></small>` : ''}
+              ${isLocked ? `<small>Unlock by completing: ${list.find(t => t.id === task.dependsOn)?.text}</small>` : ''}
+            </div>
             ${isCompleted ? 
               '<button disabled>Completed</button>' : 
-              `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link || ''}')">Complete</button>`}
+              isLocked ? 
+              '<button disabled>Locked</button>' :
+              `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link || ''}', ${task.requiresProof || false})">
+                ${task.requiresProof ? 'Upload Proof' : 'Complete'}
+              </button>`}
           </div>`;
       });
       document.getElementById(id).innerHTML = html;
 
-      // Add progress bar below the task list
-      const progressHtml = `
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${(completedCount / list.length) * 100}%"></div>
-        </div>
-        <small>${completedCount} / ${list.length} Tasks Completed</small>
-      `;
+      // Progress Circle
+      const progress = (completedCount / list.length) * 100;
+      const circle = `<svg><circle cx="25" cy="25" r="20" stroke-dashoffset="${150 - (progress * 1.5)}"></circle></svg><text x="25" y="25">${Math.round(progress)}%</text>`;
+      const progressHtml = `<div class="progress-circle">${circle}</div><small>${completedCount} / ${list.length} Tasks Completed</small>`;
       document.getElementById(id).insertAdjacentHTML('afterend', progressHtml);
+
+      // Update Notification Badge
+      document.getElementById(`${id.replace('Tasks', '')}Badge`).innerText = list.length - completedCount;
+
+      // Start timers for time-limited tasks
+      list.forEach((task, i) => {
+        if (task.timeLimit && !completedTasks[`${id}-${i}`]) {
+          startTaskTimer(`${id}-${i}`, task.timeLimit);
+        }
+      });
     }
 
+    // Task Timer
+    function startTaskTimer(taskId, timeLimit) {
+      let timeLeft = timeLimit * 1000;
+      let timerId = setInterval(() => {
+        if (timeLeft <= 0 || completedTasks[taskId]) {
+          clearInterval(timerId);
+          document.getElementById(`timer-${taskId}`).innerText = "Expired";
+          return;
+        }
+        let m = Math.floor((timeLeft % 3600000) / 60000);
+        let s = Math.floor((timeLeft % 60000) / 1000);
+        document.getElementById(`timer-${taskId}`).innerText = `${m}:${String(s).padStart(2, '0')}`;
+        timeLeft -= 1000;
+      }, 1000);
+    }
+
+    // Render All Tasks
+    renderTasks(dailyTasks, "dailyTasks");
     renderTasks(mediumTasks, "mediumTasks");
     renderTasks(highTasks, "highTasks");
     renderTasks(specialTasks, "specialTasks", specialRewards);
 
-    // Complete Task with Confirmation
-    function completeTask(taskId, amount, btn, link) {
+    // Complete Task
+    function completeTask(taskId, amount, btn, link, requiresProof) {
       if (completedTasks[taskId]) return;
-      if (!confirm("Are you sure you completed this task? This action will open the link.")) return;
+      if (taskCompletionsToday >= 10) {
+        alert("Daily task limit reached (10 tasks). Try again tomorrow.");
+        return;
+      }
+      if (requiresProof) {
+        let proof = prompt("Please provide a link to your proof (e.g., screenshot URL):");
+        if (!proof || !proof.startsWith("http")) {
+          alert("Invalid proof link.");
+          return;
+        }
+        logActivity(`Submitted proof for task ${taskId}: ${proof}`);
+      }
+      if (!confirm("Are you sure you completed this task?")) return;
       btn.disabled = true;
       btn.innerText = "Processing";
       btn.innerHTML += '<span class="spinner"></span>';
-      
+
       setTimeout(() => {
         if (link) window.open(link, "_blank");
         balance += amount;
+        points += Math.floor(amount * 10);
+        level = Math.floor(points / 100) + 1;
+        taskCompletionsToday++;
+        localStorage.setItem("taskCompletionsToday", taskCompletionsToday);
+        localStorage.setItem("lastTaskDate", new Date().toDateString());
         updateBalance();
         completedTasks[taskId] = true;
         localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
+        localStorage.setItem("points", points);
+        document.getElementById("userLevel").innerText = level;
+        document.getElementById("userPoints").innerText = points;
         btn.innerText = "Completed";
         btn.parentElement.classList.add("completed");
-        // Re-render to update progress
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        logActivity(`Completed task ${taskId} for ₹${amount}`);
+        checkAchievements();
+        updateLeaderboard();
+        updateDashboard();
+        renderTasks(dailyTasks, "dailyTasks");
         renderTasks(mediumTasks, "mediumTasks");
         renderTasks(highTasks, "highTasks");
         renderTasks(specialTasks, "specialTasks", specialRewards);
       }, 2000);
     }
 
-    // Update Balance Helper
+    // Update Balance
     function updateBalance() {
       localStorage.setItem("balance", balance.toFixed(2));
-      document.getElementById("balance").innerText = balance.toFixed(2);
+      document.getElementById("balance").innerText = (balance * conversionRates[currency]).toFixed(2);
+      updateEarningsGraph();
     }
 
     // Daily Claim
@@ -529,10 +890,15 @@
         startClaimTimer(86400000 - (now - lastClaim));
         return;
       }
-      balance += 5;
+      balance += 5 * (streak >= 5 ? 1.5 : 1); // Streak multiplier
+      points += 50;
+      streak++;
+      localStorage.setItem("streak", streak);
       updateBalance();
       localStorage.setItem("lastClaim", now);
-      alert("Daily Bonus ₹5 Claimed!");
+      logActivity("Claimed daily bonus ₹5");
+      checkAchievements();
+      alert(`Daily Bonus ₹${5 * (streak >= 5 ? 1.5 : 1)} Claimed! Streak: ${streak} days`);
     }
 
     // Claim Timer
@@ -552,23 +918,29 @@
       }, 1000);
     }
 
-    // Buy Feature with Better Validation
+    // Buy Feature
     function confirmBuy() {
       let amount = parseFloat(document.getElementById("buyAmount").value);
+      let referralCode = document.getElementById("referralCode").value.trim();
       let errorEl = document.getElementById("buyError");
       errorEl.style.display = 'none';
-      if (isNaN(amount) || amount < 200) {
-        errorEl.textContent = "Please enter an amount of at least ₹200.";
+      if (isNaN(amount) || amount < 200 * conversionRates[currency]) {
+        errorEl.textContent = `Please enter an amount of at least ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${200 * conversionRates[currency]}.`;
         errorEl.style.display = 'block';
         return;
       }
-      balance += amount;
+      if (referralCode && referralCode === "TASKWALLET2025") {
+        amount *= 1.1; // 10% bonus for valid referral
+        logActivity(`Used referral code for 10% bonus on ₹${amount}`);
+      }
+      balance += amount / conversionRates[currency];
+      points += Math.floor(amount * 5);
       updateBalance();
-      alert(`Successfully added ₹${amount} to your balance! (Simulated)`);
+      alert(`Successfully added ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${amount.toFixed(2)} to your balance!`);
       closePopup('buy');
     }
 
-    // Withdraw Feature with Amount and Simulation
+    // Withdraw Feature
     function confirmWithdraw() {
       let amount = parseFloat(document.getElementById("withdrawAmount").value);
       let errorEl = document.getElementById("withdrawError");
@@ -580,37 +952,38 @@
         errorEl.style.display = 'block';
         return;
       }
-      if (isNaN(amount) || amount < 100) {
-        errorEl.textContent = "Please enter an amount of at least ₹100.";
+      if (isNaN(amount) || amount < 100 * conversionRates[currency]) {
+        errorEl.textContent = `Please enter an amount of at least ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${100 * conversionRates[currency]}.`;
         errorEl.style.display = 'block';
         return;
       }
-      if (amount > balance) {
+      if (amount / conversionRates[currency] > balance) {
         errorEl.textContent = "Insufficient balance.";
         errorEl.style.display = 'block';
         return;
       }
-      balance -= amount;
+      if (withdrawHistory.filter(h => new Date(h.date).toDateString() === new Date().toDateString()).length >= 2) {
+        errorEl.textContent = "Daily withdrawal limit reached (2 per day).";
+        errorEl.style.display = 'block';
+        return;
+      }
+      balance -= amount / conversionRates[currency];
+      withdrawHistory.push({ amount, date: new Date().toISOString(), upiId: withdrawDetails.upiId });
+      localStorage.setItem("withdrawHistory", JSON.stringify(withdrawHistory));
       updateBalance();
-      successEl.textContent = `₹${amount} withdrawn to ${withdrawDetails.upiId} (Simulated).`;
+      logActivity(`Withdrew ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${amount.toFixed(2)} to ${withdrawDetails.upiId}`);
+      successEl.textContent = `${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${amount.toFixed(2)} withdrawn to ${withdrawDetails.upiId} (Simulated). Email sent to user@example.com.`;
       successEl.style.display = 'block';
+      updateWithdrawHistory();
       setTimeout(() => {
         closePopup('withdraw');
       }, 3000);
     }
 
-    // Enable Edit
-    function enableEdit() {
-      document.getElementById("upiId").disabled = false;
-      document.getElementById("name").disabled = false;
-      document.getElementById("saveBtn").style.display = "inline-block";
-      document.getElementById("editBtn").style.display = "none";
-    }
-
-    // Save Withdraw Details with Validation
+    // Save Withdraw Details
     function saveWithdrawDetails() {
-      let upiId = document.getElementById("upiId").value.trim();
-      let name = document.getElementById("name").value.trim();
+      let upiId = sanitizeInput(document.getElementById("upiId").value.trim());
+      let name = sanitizeInput(document.getElementById("name").value.trim());
       if (!upiId.includes('@') || !name) {
         alert("Please enter a valid UPI ID (e.g., user@upi) and Name.");
         return;
@@ -621,7 +994,273 @@
       document.getElementById("name").disabled = true;
       document.getElementById("saveBtn").style.display = "none";
       document.getElementById("editBtn").style.display = "inline-block";
+      logActivity("Saved withdrawal details");
       alert("Withdraw details saved successfully!");
+    }
+
+    // Withdraw History
+    function updateWithdrawHistory() {
+      let html = withdrawHistory.map(h => `<p>${new Date(h.date).toLocaleString()}: ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${h.amount.toFixed(2)} to ${h.upiId}</p>`).join('');
+      document.getElementById("withdrawHistory").innerHTML = html || "<p>No withdrawals yet.</p>";
+    }
+    updateWithdrawHistory();
+
+    // Activity Log
+    function logActivity(message) {
+      activityLog.push({ message, date: new Date().toISOString() });
+      localStorage.setItem("activityLog", JSON.stringify(activityLog));
+      updateActivityLog();
+    }
+
+    function updateActivityLog() {
+      let html = activityLog.slice(-10).map(log => `<p>${new Date(log.date).toLocaleString()}: ${log.message}</p>`).join('');
+      document.getElementById("activityLog").innerHTML = html || "<p>No activity yet.</p>";
+    }
+    updateActivityLog();
+
+    // Export Log
+    function exportLog() {
+      const csv = activityLog.map(log => `${new Date(log.date).toLocaleString()},"${log.message}"`).join('\n');
+      const blob = new Blob([`Date,Activity\n${csv}`], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'activity_log.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Achievements
+    function checkAchievements() {
+      achievementList.forEach(ach => {
+        if (!achievements.includes(ach.id) && ach.condition()) {
+          achievements.push(ach.id);
+          points += ach.points;
+          localStorage.setItem("achievements", JSON.stringify(achievements));
+          localStorage.setItem("points", points);
+          alert(`Achievement Unlocked: ${ach.name} (+${ach.points} points)`);
+        }
+      });
+      updateAchievements();
+    }
+
+    function updateAchievements() {
+      let html = achievementList.map(ach => `
+        <p>${ach.name}: ${ach.description} ${achievements.includes(ach.id) ? '✅' : '🔒'}</p>
+      `).join('');
+      document.getElementById("achievements").innerHTML = html || "<p>No achievements yet.</p>";
+    }
+    updateAchievements();
+
+    // Leaderboard (Simulated)
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [
+      { name: "User1", points: 500 },
+      { name: profile.name, points: points },
+      { name: "User3", points: 300 }
+    ];
+
+    function updateLeaderboard() {
+      leaderboard = leaderboard.filter(u => u.name !== profile.name);
+      leaderboard.push({ name: profile.name, points });
+      leaderboard.sort((a, b) => b.points - a.points);
+      localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+      let html = leaderboard.slice(0, 5).map((user, i) => `<p>${i + 1}. ${user.name}: ${user.points} points</p>`).join('');
+      document.getElementById("leaderboard").innerHTML = html || "<p>No leaderboard data.</p>";
+    }
+    updateLeaderboard();
+
+    // Dashboard
+    function updateDashboard() {
+      document.getElementById("totalTasks").innerText = Object.keys(completedTasks).length;
+      document.getElementById("totalEarnings").innerText = (balance * conversionRates[currency]).toFixed(2);
+      document.getElementById("currencyDash").innerText = currency === "INR" ? "₹" : currency === "USD" ? "$" : "€";
+      document.getElementById("streakCount").innerText = streak;
+      document.getElementById("dashLevel").innerText = level;
+    }
+    updateDashboard();
+
+    // Earnings Graph
+    let earningsData = JSON.parse(localStorage.getItem("earningsData")) || [];
+    const ctx = document.getElementById("earningsGraph").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: earningsData.map((_, i) => `Day ${i + 1}`),
+        datasets: [{
+          label: 'Earnings',
+          data: earningsData,
+          borderColor: '#00ccff',
+          fill: false
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    function updateEarningsGraph() {
+      earningsData.push(balance);
+      if (earningsData.length > 30) earningsData.shift();
+      localStorage.setItem("earningsData", JSON.stringify(earningsData));
+      chart.data.labels = earningsData.map((_, i) => `Day ${i + 1}`);
+      chart.data.datasets[0].data = earningsData;
+      chart.update();
+    }
+    updateEarningsGraph();
+
+    // Spin Wheel
+    const spinWheelCanvas = document.getElementById("spinWheel").getContext("2d");
+    const wheelRewards = [1, 2, 5, 10, 0, 3, 7, 0];
+    let wheelAngle = 0;
+    let spinning = false;
+
+    function drawWheel() {
+      spinWheelCanvas.clearRect(0, 0, 200, 200);
+      spinWheelCanvas.beginPath();
+      for (let i = 0; i < 8; i++) {
+        spinWheelCanvas.fillStyle = i % 2 ? "#0077ff" : "#00ccff";
+        spinWheelCanvas.beginPath();
+        spinWheelCanvas.moveTo(100, 100);
+        spinWheelCanvas.arc(100, 100, 100, (i * Math.PI / 4) + wheelAngle, ((i + 1) * Math.PI / 4) + wheelAngle);
+        spinWheelCanvas.fill();
+        spinWheelCanvas.fillStyle = "white";
+        spinWheelCanvas.font = "16px Arial";
+        spinWheelCanvas.save();
+        spinWheelCanvas.translate(100, 100);
+        spinWheelCanvas.rotate((i * Math.PI / 4) + (Math.PI / 8) + wheelAngle);
+        spinWheelCanvas.fillText(`₹${wheelRewards[i]}`, 50, 0);
+        spinWheelCanvas.restore();
+      }
+    }
+    drawWheel();
+
+    function spinWheel() {
+      if (spinning) return;
+      let lastSpin = parseInt(localStorage.getItem("lastSpin")) || 0;
+      let now = Date.now();
+      if (lastSpin && now - lastSpin < 86400000) {
+        alert("You can spin again tomorrow!");
+        return;
+      }
+      spinning = true;
+      let spin = Math.random() * 360 + 720;
+      let interval = setInterval(() => {
+        wheelAngle += 0.1;
+        drawWheel();
+        spin -= 0.1;
+        if (spin <= 0) {
+          clearInterval(interval);
+          spinning = false;
+          let rewardIndex = Math.floor(((wheelAngle % (2 * Math.PI)) / (Math.PI / 4))) % 8;
+          let reward = wheelRewards[rewardIndex];
+          if (reward > 0) {
+            balance += reward;
+            updateBalance();
+            logActivity(`Won ₹${reward} from spin wheel`);
+            alert(`You won ₹${reward}!`);
+          } else {
+            alert("Better luck next time!");
+          }
+          localStorage.setItem("lastSpin", Date.now());
+        }
+      }, 16);
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+    }
+    if (localStorage.getItem("theme") === "light") toggleTheme();
+
+    // Font Size Adjustment
+    let fontSize = parseInt(localStorage.getItem("fontSize")) || 16;
+    document.body.style.fontSize = `${fontSize}px`;
+
+    function adjustFontSize(change) {
+      fontSize += change;
+      if (fontSize < 12) fontSize = 12;
+      if (fontSize > 24) fontSize = 24;
+      document.body.style.fontSize = `${fontSize}px`;
+      localStorage.setItem("fontSize", fontSize);
+    }
+
+    // Task Filtering
+    function filterTasks() {
+      const search = document.getElementById("taskSearch").value.toLowerCase();
+      const filter = document.getElementById("taskFilter").value;
+      const allTasks = { dailyTasks, mediumTasks, highTasks, specialTasks };
+      Object.keys(allTasks).forEach(id => {
+        const tasks = allTasks[id];
+        const container = document.getElementById(id);
+        let html = "";
+        let completedCount = 0;
+        tasks.forEach((task, i) => {
+          let taskId = `${id}-${i}`;
+          let isCompleted = completedTasks[taskId];
+          if (isCompleted) completedCount++;
+          if (
+            (filter === "all" || (filter === "completed" && isCompleted) || (filter === "pending" && !isCompleted)) &&
+            task.text.toLowerCase().includes(search)
+          ) {
+            let reward = task.reward || specialRewards[i % specialRewards.length];
+            html += `
+              <div class="task ${isCompleted ? 'completed' : ''}">
+                <div class="task-info">
+                  ${task.text}<br>
+                  <small>Earn ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${reward * conversionRates[currency]}</small>
+                  <div class="tooltip">${task.description || "Complete this task to earn rewards."}</div>
+                </div>
+                ${isCompleted ? 
+                  '<button disabled>Completed</button>' : 
+                  `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link || ''}', ${task.requiresProof || false})">
+                    ${task.requiresProof ? 'Upload Proof' : 'Complete'}
+                  </button>`}
+              </div>`;
+          }
+        });
+        container.innerHTML = html;
+        const progress = (completedCount / tasks.length) * 100;
+        const circle = `<svg><circle cx="25" cy="25" r="20" stroke-dashoffset="${150 - (progress * 1.5)}"></circle></svg><text x="25" y="25">${Math.round(progress)}%</text>`;
+        const progressHtml = `<div class="progress-circle">${circle}</div><small>${completedCount} / ${tasks.length} Tasks Completed</small>`;
+        container.nextElementSibling.innerHTML = progressHtml;
+        document.getElementById(`${id.replace('Tasks', '')}Badge`).innerText = tasks.length - completedCount;
+      });
+    }
+
+    // Task Sorting
+    function sortTasks() {
+      const sortBy = document.getElementById("taskSort").value;
+      const allTasks = { dailyTasks, mediumTasks, highTasks, specialTasks };
+      Object.keys(allTasks).forEach(id => {
+        allTasks[id].sort((a, b) => {
+          if (sortBy === "reward") return (b.reward || specialRewards[0]) - (a.reward || specialRewards[0]);
+          if (sortBy === "name") return a.text.localeCompare(b.text);
+          return 0;
+        });
+      });
+      renderTasks(dailyTasks, "dailyTasks");
+      renderTasks(mediumTasks, "mediumTasks");
+      renderTasks(highTasks, "highTasks");
+      renderTasks(specialTasks, "specialTasks", specialRewards);
+      filterTasks();
+    }
+
+    // Currency Change
+    function changeCurrency() {
+      currency = document.getElementById("currencySelect").value;
+      localStorage.setItem("currency", currency);
+      document.getElementById("currency").innerText = currency === "INR" ? "₹" : currency === "USD" ? "$" : "€";
+      document.getElementById("buyMin").innerText = `${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${200 * conversionRates[currency]}`;
+      updateBalance();
+      updateDashboard();
+      renderTasks(dailyTasks, "dailyTasks");
+      renderTasks(mediumTasks, "mediumTasks");
+      renderTasks(highTasks, "highTasks");
+      renderTasks(specialTasks, "specialTasks", specialRewards);
+    }
+
+    // Collapsible Sections
+    function toggleSection(element) {
+      element.parentElement.classList.toggle("collapsed");
     }
 
     // Popup Control
@@ -643,17 +1282,63 @@
       }
     }
 
-    // Back to Top
+    // Session Timeout
+    let timeout;
+    function resetTimeout() {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        document.getElementById("sessionTimeoutPopup").style.display = "flex";
+      }, 30 * 60 * 1000); // 30 minutes
+    }
+    document.addEventListener("mousemove", resetTimeout);
+    document.addEventListener("keydown", resetTimeout);
+    resetTimeout();
+
+    // Input Sanitization
+    function sanitizeInput(input) {
+      const div = document.createElement("div");
+      div.textContent = input;
+      return div.innerHTML;
+    }
+
+    // Daily Login Bonus
+    function checkDailyLogin() {
+      let now = new Date().toDateString();
+      if (lastLogin !== now) {
+        balance += 1;
+        updateBalance();
+        logActivity("Claimed daily login bonus ₹1");
+        localStorage.setItem("lastLogin", now);
+        alert("Daily Login Bonus: ₹1");
+      }
+    }
+    checkDailyLogin();
+
+    // Feedback Form
+    function submitFeedback() {
+      let feedback = sanitizeInput(document.getElementById("feedbackText").value);
+      if (!feedback) {
+        alert("Please enter feedback.");
+        return;
+      }
+      feedbackList.push({ feedback, date: new Date().toISOString() });
+      localStorage.setItem("feedbackList", JSON.stringify(feedbackList));
+      logActivity("Submitted feedback");
+      alert("Thank you for your feedback!");
+      closePopup('feedback');
+    }
+
+    // Scroll to Top
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Show/Hide Back to Top Button
+    // Show/Hide Back to Top
     window.addEventListener("scroll", () => {
       document.querySelector(".back-to-top").style.display = window.scrollY > 300 ? "block" : "none";
     });
 
-    // Reset All for Testing
+    // Reset All
     function resetAll() {
       if (confirm("Reset all data? This will clear balance, tasks, and details.")) {
         localStorage.clear();
