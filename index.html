@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(-45deg, #1a0033, #330066, #6600cc, #1a0033);
+      background: linear-gradient(-45deg, #001a33, #003366, #0077ff, #001a33);
       background-size: 400% 400%;
       animation: gradient 15s ease infinite;
       color: white;
@@ -50,15 +50,15 @@
     }
 
     @keyframes glow {
-      from { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
-      to { text-shadow: 0 0 20px #ff55ff, 0 0 30px #ff55ff; }
+      from { text-shadow: 0 0 10px #00ccff, 0 0 20px #00ccff; }
+      to { text-shadow: 0 0 20px #0077ff, 0 0 30px #0077ff; }
     }
 
     .btn {
       display: inline-block;
       margin: 10px;
       padding: 12px 24px;
-      background: linear-gradient(45deg, #8000ff, #ff00ff);
+      background: linear-gradient(45deg, #0077ff, #00ccff);
       border-radius: 12px;
       color: white;
       font-size: 16px;
@@ -69,7 +69,7 @@
 
     .btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+      box-shadow: 0 5px 15px rgba(0, 204, 255, 0.5);
     }
 
     .btn:disabled {
@@ -80,7 +80,7 @@
     }
 
     hr {
-      border: 1px solid rgba(255, 0, 255, 0.3);
+      border: 1px solid rgba(0, 204, 255, 0.3);
       margin: 20px 0;
     }
 
@@ -100,7 +100,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(128, 0, 255, 0.2);
+      background: rgba(0, 119, 255, 0.2);
       margin: 10px;
       padding: 15px;
       border-radius: 12px;
@@ -109,7 +109,7 @@
 
     .task:hover {
       transform: translateY(-3px);
-      background: rgba(180, 0, 255, 0.3);
+      background: rgba(0, 204, 255, 0.3);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
@@ -123,20 +123,19 @@
       font-size: 16px;
     }
 
-    .task a, .task button {
-      background: #8000ff;
+    .task button {
+      background: #0077ff;
       color: white;
       border: none;
       padding: 10px 15px;
       border-radius: 8px;
       font-weight: bold;
-      text-decoration: none;
       cursor: pointer;
       transition: background 0.3s ease;
     }
 
-    .task a:hover, .task button:hover {
-      background: #ff00ff;
+    .task button:hover {
+      background: #00ccff;
     }
 
     .task button:disabled {
@@ -158,7 +157,7 @@
     }
 
     .popup-content {
-      background: rgba(50, 0, 80, 0.95);
+      background: rgba(0, 50, 80, 0.95);
       padding: 30px;
       border-radius: 15px;
       width: 90%;
@@ -177,14 +176,14 @@
       font-size: 24px;
       margin: 15px 0;
       font-weight: bold;
-      color: #ff55ff;
+      color: #00ccff;
     }
 
     .back-to-top {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #8000ff;
+      background: #0077ff;
       color: white;
       padding: 10px 15px;
       border-radius: 50%;
@@ -193,12 +192,12 @@
     }
 
     .back-to-top:hover {
-      background: #ff00ff;
+      background: #00ccff;
     }
 
     .spinner {
       border: 3px solid #f3f3f3;
-      border-top: 3px solid #ff00ff;
+      border-top: 3px solid #00ccff;
       border-radius: 50%;
       width: 20px;
       height: 20px;
@@ -210,6 +209,37 @@
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+
+    .form-group {
+      margin: 15px 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 16px;
+    }
+
+    .form-group input:disabled {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ccc;
+    }
+
+    .qr-code img {
+      max-width: 200px;
+      margin: 15px 0;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -251,19 +281,39 @@
     </div>
   </div>
 
-  <div class="popup" id="withdrawPopup">
+  <div class="popup" id="buyPopup">
     <div class="popup-content">
-      <h3>Withdraw</h3>
-      <p>Withdraw feature coming soon!</p>
-      <button onclick="closePopup('withdraw')">Close</button>
+      <h3>Buy Credits</h3>
+      <p>Scan the QR code to add funds to your wallet</p>
+      <div class="qr-code">
+        <img src="https://i.postimg.cc/WFcpfHkj/qr-code.png" alt="QR Code">
+        <p>Minimum Amount: ₹200</p>
+      </div>
+      <div class="form-group">
+        <label for="buyAmount">Enter Amount (₹)</label>
+        <input type="number" id="buyAmount" min="200" placeholder="Minimum ₹200">
+      </div>
+      <button onclick="confirmBuy()">Confirm Purchase</button>
+      <button onclick="closePopup('buy')">Close</button>
     </div>
   </div>
 
-  <div class="popup" id="buyPopup">
+  <div class="popup" id="withdrawPopup">
     <div class="popup-content">
-      <h3>Buy</h3>
-      <p>Buy feature coming soon!</p>
-      <button onclick="closePopup('buy')">Close</button>
+      <h3>Withdraw Funds</h3>
+      <div id="withdrawForm">
+        <div class="form-group">
+          <label for="upiId">UPI ID</label>
+          <input type="text" id="upiId" placeholder="Enter UPI ID" disabled>
+        </div>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Enter Name" disabled>
+        </div>
+        <button id="editBtn" onclick="enableEdit()">Edit</button>
+        <button id="saveBtn" onclick="saveWithdrawDetails()" style="display: none;">Save</button>
+        <button onclick="closePopup('withdraw')">Close</button>
+      </div>
     </div>
   </div>
 
@@ -275,7 +325,7 @@
     particlesJS("particles", {
       particles: {
         number: { value: 50, density: { enable: true, value_area: 800 } },
-        color: { value: "#ff00ff" },
+        color: { value: "#00ccff" },
         shape: { type: "circle" },
         opacity: { value: 0.3, random: true },
         size: { value: 3, random: true },
@@ -285,12 +335,20 @@
       interactivity: { enable: false }
     });
 
-    // LocalStorage Balance
-    let balance = parseFloat(localStorage.getItem("balance")) || 0;
+    // Reset and Initialize Balance
+    let balance = 0;
+    localStorage.setItem("balance", balance.toFixed(2));
     document.getElementById("balance").innerText = balance.toFixed(2);
 
     // Track completed tasks
     let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || {};
+
+    // Withdraw Details
+    let withdrawDetails = JSON.parse(localStorage.getItem("withdrawDetails")) || {};
+    if (withdrawDetails.upiId && withdrawDetails.name) {
+      document.getElementById("upiId").value = withdrawDetails.upiId;
+      document.getElementById("name").value = withdrawDetails.name;
+    }
 
     // Task Lists
     const mediumTasks = [
@@ -408,6 +466,44 @@
       updateTimer();
     }
 
+    // Buy Feature
+    function confirmBuy() {
+      let amount = parseFloat(document.getElementById("buyAmount").value);
+      if (isNaN(amount) || amount < 200) {
+        alert("Please enter an amount of at least ₹200.");
+        return;
+      }
+      balance += amount;
+      localStorage.setItem("balance", balance.toFixed(2));
+      document.getElementById("balance").innerText = balance.toFixed(2);
+      alert(`Successfully added ₹${amount} to your balance!`);
+      closePopup('buy');
+    }
+
+    // Withdraw Feature
+    function enableEdit() {
+      document.getElementById("upiId").disabled = false;
+      document.getElementById("name").disabled = false;
+      document.getElementById("saveBtn").style.display = "inline-block";
+      document.getElementById("editBtn").style.display = "none";
+    }
+
+    function saveWithdrawDetails() {
+      let upiId = document.getElementById("upiId").value.trim();
+      let name = document.getElementById("name").value.trim();
+      if (!upiId || !name) {
+        alert("Please enter both UPI ID and Name.");
+        return;
+      }
+      withdrawDetails = { upiId, name };
+      localStorage.setItem("withdrawDetails", JSON.stringify(withdrawDetails));
+      document.getElementById("upiId").disabled = true;
+      document.getElementById("name").disabled = true;
+      document.getElementById("saveBtn").style.display = "none";
+      document.getElementById("editBtn").style.display = "inline-block";
+      alert("Withdraw details saved successfully!");
+    }
+
     // Popup Control
     function openPopup(type) {
       document.getElementById(type + "Popup").style.display = "flex";
@@ -415,6 +511,12 @@
 
     function closePopup(type) {
       document.getElementById(type + "Popup").style.display = "none";
+      if (type === 'withdraw') {
+        document.getElementById("upiId").disabled = true;
+        document.getElementById("name").disabled = true;
+        document.getElementById("saveBtn").style.display = "none";
+        document.getElementById("editBtn").style.display = "inline-block";
+      }
     }
 
     // Back to Top
