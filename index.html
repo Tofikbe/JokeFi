@@ -8,79 +8,99 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(160deg, #000000 70%, #4b0082 30%);
+      background: radial-gradient(circle at top, #2a003f 0%, #000 100%);
       color: white;
       text-align: center;
+      overflow-x: hidden;
     }
     .wallet {
       padding: 20px;
     }
     .balance {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 5px purple; }
+      to { text-shadow: 0 0 20px #ff00ff; }
     }
     .btn {
       display: inline-block;
-      margin: 8px;
+      margin: 10px;
       padding: 12px 20px;
-      background: purple;
-      border-radius: 10px;
+      background: linear-gradient(45deg, #8000ff, #b400ff);
+      border-radius: 12px;
       color: white;
       font-size: 16px;
       font-weight: bold;
+      transition: transform 0.2s ease;
+    }
+    .btn:hover {
+      transform: scale(1.05);
     }
     hr {
-      border: 1px solid #4b0082;
+      border: 1px solid purple;
       margin: 15px 0;
     }
     .task-section {
-      margin: 15px 0;
+      margin: 20px 0;
     }
     .task {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(75, 0, 130, 0.4);
+      background: rgba(128,0,255,0.3);
       margin: 8px;
       padding: 12px;
       border-radius: 12px;
+      transition: transform 0.2s ease;
+    }
+    .task:hover {
+      transform: scale(1.03);
+      background: rgba(180,0,255,0.4);
     }
     .task-info {
       text-align: left;
       font-size: 14px;
     }
-    .task button {
+    .task a {
       background: purple;
       color: white;
       border: none;
       padding: 8px 12px;
       border-radius: 8px;
       font-weight: bold;
+      text-decoration: none;
     }
     .popup {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.7);
       display: none;
       justify-content: center;
       align-items: center;
     }
     .popup-content {
-      background: rgba(75,0,130,0.9);
-      padding: 20px;
+      background: rgba(50,0,80,0.95);
+      padding: 25px;
       border-radius: 15px;
       width: 90%;
       color: white;
       text-align: center;
+      animation: popupFade 0.3s ease;
     }
-    input {
-      margin: 6px 0;
-      padding: 8px;
-      width: 90%;
-      border-radius: 8px;
-      border: none;
+    @keyframes popupFade {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .timer {
+      font-size: 22px;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ff55ff;
     }
   </style>
 </head>
@@ -116,163 +136,122 @@
   </div>
 </div>
 
-<!-- Withdraw Popup -->
-<div class="popup" id="withdrawPopup">
+<!-- Claim Timer Popup -->
+<div class="popup" id="claimPopup">
   <div class="popup-content">
-    <h3>Withdraw Details</h3>
-    <input type="text" id="userName" placeholder="Enter Name">
-    <input type="text" id="upiId" placeholder="Enter UPI ID">
-    <input type="text" id="accountNo" placeholder="Enter Account Number">
-    <input type="text" id="ifsc" placeholder="Enter IFSC Code">
-    <br>
-    <button onclick="saveWithdrawDetails()">Save</button>
-    <button onclick="closePopup('withdraw')">Close</button>
-  </div>
-</div>
-
-<!-- Buy Popup -->
-<div class="popup" id="buyPopup">
-  <div class="popup-content">
-    <h3>Buy</h3>
-    <p>Send minimum ₹200 to this QR</p>
-    <img src="https://i.postimg.cc/WFcpfHkj/qr.png" width="150" height="150" alt="QR Code">
-    <p>Minimum ₹200 only</p>
-    <button onclick="startCashback()">I Sent ₹200</button>
-    <button onclick="closePopup('buy')">Close</button>
+    <h3>Daily Claim Already Used</h3>
+    <p>Next claim available in:</p>
+    <div class="timer" id="claimTimer">24:00:00</div>
+    <button onclick="closePopup('claim')">Close</button>
   </div>
 </div>
 
 <script>
-  // ---- LocalStorage Balance ----
+  // LocalStorage Balance
   let balance = parseFloat(localStorage.getItem("balance")) || 0;
   document.getElementById("balance").innerText = balance.toFixed(2);
 
-  // ---- Task Lists ----
-  const mediumTasksList = [
-    "Follow Google on Twitter","Subscribe to a YouTube Channel",
-    "Search 'OpenAI' on Google","Read Wikipedia article on AI",
-    "Follow Instagram official account","Like a Facebook Page",
-    "Search 'Bitcoin price' on Google","Read news on Google News",
-    "Search 'Aptos blockchain'","Search 'Best restaurants near me'",
-    "Check Gmail login page","Search 'Weather today'",
-    "Search 'Top Movies 2025'","Search 'Latest Tech News'",
-    "Visit Google Maps","Search 'Cricket Score'",
-    "Search 'Stock Market News'","Search 'Top 10 Songs'",
-    "Check Google Drive login","Search 'Translate Hello Hindi'"
+  // Task Lists with Links
+  const mediumTasks = [
+    {text:"Follow Google on Twitter", link:"https://twitter.com/Google", reward:0.5},
+    {text:"Subscribe to YouTube Channel", link:"https://youtube.com/@Google", reward:0.5},
+    {text:"Visit Instagram Page", link:"https://instagram.com/google", reward:0.5},
+    {text:"Check Wikipedia AI Page", link:"https://en.wikipedia.org/wiki/Artificial_intelligence", reward:0.5},
+    {text:"Open Gmail", link:"https://mail.google.com", reward:0.5},
+    {text:"Visit Google Maps", link:"https://maps.google.com", reward:0.5},
+    {text:"Read Tech News", link:"https://techcrunch.com", reward:0.5},
+    {text:"Open Translate", link:"https://translate.google.com", reward:0.5},
+    {text:"Visit Google Photos", link:"https://photos.google.com", reward:0.5},
+    {text:"Search Cricket Score", link:"https://www.google.com/search?q=cricket+score", reward:0.5}
+  ];
+  const highTasks = [
+    {text:"Upload video to YouTube", link:"https://youtube.com", reward:5},
+    {text:"Join Telegram", link:"https://telegram.org", reward:7},
+    {text:"Tweet trending hashtag", link:"https://twitter.com/explore", reward:8},
+    {text:"Post story on Instagram", link:"https://instagram.com", reward:6},
+    {text:"Share on Facebook", link:"https://facebook.com", reward:9},
+    {text:"Write blog on Medium", link:"https://medium.com", reward:10},
+    {text:"Join Discord", link:"https://discord.com", reward:7},
+    {text:"Upload GitHub Repo", link:"https://github.com", reward:9},
+    {text:"Comment on Reddit", link:"https://reddit.com", reward:6},
+    {text:"Post on Quora", link:"https://quora.com", reward:5}
+  ];
+  const specialRewards = [30,40,50,70,80,60,35,100,88,77];
+  const specialTasks = [
+    {text:"Google Ads Campaign", link:"https://ads.google.com"},
+    {text:"Collaborate with Influencer", link:"https://twitter.com"},
+    {text:"Launch Twitter Space", link:"https://twitter.com"},
+    {text:"Host YouTube Live", link:"https://youtube.com"},
+    {text:"Write Whitepaper", link:"https://docs.google.com"},
+    {text:"Create NFT Artwork", link:"https://opensea.io"},
+    {text:"Promote on Discord", link:"https://discord.com"},
+    {text:"Make Short Film", link:"https://vimeo.com"},
+    {text:"Launch Podcast", link:"https://spotify.com"},
+    {text:"Create Online Course", link:"https://udemy.com"}
   ];
 
-  const highTasksList = [
-    "Write a blog on Medium","Upload video to YouTube",
-    "Post story on Instagram","Create Twitter Thread",
-    "Join Telegram Group","Review an App",
-    "Share a LinkedIn Post","Upload GitHub Repo",
-    "Comment on Reddit","Make a Podcast Clip",
-    "Post on Quora","Join Discord Server",
-    "Upload Instagram Reel","Share YouTube Shorts",
-    "Post a Facebook Reel","Tweet trending hashtag",
-    "Write on Substack","Post on Pinterest",
-    "Post on Snapchat","Make a TikTok Video"
-  ];
-
-  const specialRewards = [30,40,50,70,80,60,35,100,88,77,44,33,22,66];
-
-  const specialTasksList = [
-    "Google Ads Campaign","Collaborate with Influencer",
-    "Launch Twitter Space","Host YouTube Live",
-    "Write Whitepaper","Build a Website",
-    "Create NFT Artwork","Run Giveaway",
-    "Create Instagram Ad","Promote on Discord",
-    "Make Short Film","Music Remix",
-    "Write eBook","Launch Podcast",
-    "Create Mobile App","Organize Webinar",
-    "Digital Marketing Campaign","Create Startup Pitch",
-    "Develop Chrome Extension","Create Online Course"
-  ];
-
-  // ---- Render Tasks ----
-  function renderTasks() {
-    let mediumHTML = "";
-    mediumTasksList.forEach((t,i)=>{
-      mediumHTML += `<div class="task"><div class="task-info">${t}<br><small>Earn ₹0.5</small></div>
-      <button onclick="completeTask(0.5,this)">Complete</button></div>`;
+  // Render Tasks
+  function renderTasks(list, id, rewards=null) {
+    let html = "";
+    list.forEach((task,i)=>{
+      let reward = task.reward || rewards[i % rewards.length];
+      html += `<div class="task">
+        <div class="task-info">${task.text}<br><small>Earn ₹${reward}</small></div>
+        <a href="${task.link}" target="_blank" onclick="addReward(${reward}, this)">Complete</a>
+      </div>`;
     });
-    document.getElementById("mediumTasks").innerHTML = mediumHTML;
-
-    let highHTML = "";
-    highTasksList.forEach((t,i)=>{
-      let reward = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
-      highHTML += `<div class="task"><div class="task-info">${t}<br><small>Earn ₹${reward}</small></div>
-      <button onclick="completeTask(${reward},this)">Complete</button></div>`;
-    });
-    document.getElementById("highTasks").innerHTML = highHTML;
-
-    let specialHTML = "";
-    specialTasksList.forEach((t,i)=>{
-      let reward = specialRewards[i % specialRewards.length];
-      specialHTML += `<div class="task"><div class="task-info">${t}<br><small>Earn ₹${reward}</small></div>
-      <button onclick="completeTask(${reward},this)">Complete</button></div>`;
-    });
-    document.getElementById("specialTasks").innerHTML = specialHTML;
+    document.getElementById(id).innerHTML = html;
   }
-  renderTasks();
+  renderTasks(mediumTasks,"mediumTasks");
+  renderTasks(highTasks,"highTasks");
+  renderTasks(specialTasks,"specialTasks",specialRewards);
 
-  // ---- Complete Task ----
-  function completeTask(amount, btn){
-    btn.disabled = true;
+  // Add Reward
+  function addReward(amount, btn){
     btn.innerText = "Completed";
-    setTimeout(() => {
+    btn.style.pointerEvents = "none";
+    setTimeout(()=>{
       balance += amount;
       localStorage.setItem("balance", balance);
       document.getElementById("balance").innerText = balance.toFixed(2);
-    }, 5000);
+    },5000);
   }
 
-  // ---- Daily Claim ----
+  // Daily Claim with 24h Timer
   function dailyClaim(){
+    let lastClaim = localStorage.getItem("lastClaim");
+    let now = Date.now();
+    if(lastClaim && now - lastClaim < 86400000){
+      document.getElementById("claimPopup").style.display="flex";
+      startClaimTimer(86400000 - (now - lastClaim));
+      return;
+    }
     balance += 5;
     localStorage.setItem("balance", balance);
     document.getElementById("balance").innerText = balance.toFixed(2);
+    localStorage.setItem("lastClaim", now);
     alert("Daily Bonus ₹5 Claimed!");
   }
 
-  // ---- Withdraw ----
-  function saveWithdrawDetails(){
-    let details = {
-      name: document.getElementById("userName").value,
-      upi: document.getElementById("upiId").value,
-      acc: document.getElementById("accountNo").value,
-      ifsc: document.getElementById("ifsc").value
-    };
-    localStorage.setItem("withdrawDetails", JSON.stringify(details));
-    alert("Withdraw Details Saved!");
-  }
-
-  // ---- Buy Cashback ----
-  function startCashback(){
-    alert("₹200 Cashback will be credited in 5 minutes!");
-    setTimeout(()=>{
-      balance += 200;
-      localStorage.setItem("balance", balance);
-      document.getElementById("balance").innerText = balance.toFixed(2);
-      alert("₹200 Cashback Added!");
-    },300000); // 5 minutes
-  }
-
-  // ---- Popup Control ----
-  function openPopup(type){
-    document.getElementById(type+"Popup").style.display = "flex";
-    if(type=="withdraw"){
-      let saved = JSON.parse(localStorage.getItem("withdrawDetails"));
-      if(saved){
-        document.getElementById("userName").value = saved.name;
-        document.getElementById("upiId").value = saved.upi;
-        document.getElementById("accountNo").value = saved.acc;
-        document.getElementById("ifsc").value = saved.ifsc;
+  // Claim Timer
+  function startClaimTimer(remaining){
+    function updateTimer(){
+      let h = Math.floor(remaining/3600000);
+      let m = Math.floor((remaining%3600000)/60000);
+      let s = Math.floor((remaining%60000)/1000);
+      document.getElementById("claimTimer").innerText =
+        `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if(remaining>0) {
+        remaining -= 1000;
+        setTimeout(updateTimer,1000);
       }
     }
+    updateTimer();
   }
+
+  // Popup Control
   function closePopup(type){
-    document.getElementById(type+"Popup").style.display = "none";
+    document.getElementById(type+"Popup").style.display="none";
   }
 </script>
 
