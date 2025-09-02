@@ -75,6 +75,13 @@
       color: white;
       text-align: center;
     }
+    input {
+      margin: 6px 0;
+      padding: 8px;
+      width: 90%;
+      border-radius: 8px;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -90,76 +97,179 @@
 
   <hr>
 
+  <!-- Medium Tasks -->
   <div class="task-section">
     <h3>Medium Tasks</h3>
-    <div class="task">
-      <div class="task-info">Follow us on Instagram<br><small>Earn ₹1</small></div>
-      <button onclick="completeTask(1,this)">Complete</button>
-    </div>
-    <div class="task">
-      <div class="task-info">Share post on Twitter<br><small>Earn ₹10</small></div>
-      <button onclick="completeTask(10,this)">Complete</button>
-    </div>
+    <div id="mediumTasks"></div>
   </div>
 
+  <!-- High Tasks -->
   <div class="task-section">
     <h3>High Tasks</h3>
-    <div class="task">
-      <div class="task-info">Create a YouTube video<br><small>Earn ₹100</small></div>
-      <button onclick="completeTask(100,this)">Complete</button>
-    </div>
+    <div id="highTasks"></div>
   </div>
 
+  <!-- Special Tasks -->
   <div class="task-section">
     <h3>Special Collaboration</h3>
-    <div class="task">
-      <div class="task-info">Partner Campaign Task<br><small>Earn ₹1000</small></div>
-      <button onclick="completeTask(1000,this)">Complete</button>
-    </div>
+    <div id="specialTasks"></div>
   </div>
 </div>
 
-<!-- POPUPS -->
+<!-- Withdraw Popup -->
 <div class="popup" id="withdrawPopup">
   <div class="popup-content">
-    <h3>Withdraw</h3>
-    <p>Minimum withdrawal: ₹100</p>
-    <p><b>Name:</b> Demo User<br>
-       <b>Account No:</b> 1234567890<br>
-       <b>IFSC:</b> DEMO000111</p>
+    <h3>Withdraw Details</h3>
+    <input type="text" id="userName" placeholder="Enter Name">
+    <input type="text" id="upiId" placeholder="Enter UPI ID">
+    <input type="text" id="accountNo" placeholder="Enter Account Number">
+    <input type="text" id="ifsc" placeholder="Enter IFSC Code">
+    <br>
+    <button onclick="saveWithdrawDetails()">Save</button>
     <button onclick="closePopup('withdraw')">Close</button>
   </div>
 </div>
 
+<!-- Buy Popup -->
 <div class="popup" id="buyPopup">
   <div class="popup-content">
     <h3>Buy</h3>
-    <p>Send minimum ₹100 to this QR</p>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=demo@upi" alt="QR Code">
+    <p>Send minimum ₹200 to this QR</p>
+    <img src="https://i.postimg.cc/WFcpfHkj/qr.png" width="150" height="150" alt="QR Code">
+    <p>Minimum ₹200 only</p>
+    <button onclick="startCashback()">I Sent ₹200</button>
     <button onclick="closePopup('buy')">Close</button>
   </div>
 </div>
 
 <script>
-  let balance = 0;
+  // ---- LocalStorage Balance ----
+  let balance = parseFloat(localStorage.getItem("balance")) || 0;
+  document.getElementById("balance").innerText = balance.toFixed(2);
 
+  // ---- Task Lists ----
+  const mediumTasksList = [
+    "Follow Google on Twitter","Subscribe to a YouTube Channel",
+    "Search 'OpenAI' on Google","Read Wikipedia article on AI",
+    "Follow Instagram official account","Like a Facebook Page",
+    "Search 'Bitcoin price' on Google","Read news on Google News",
+    "Search 'Aptos blockchain'","Search 'Best restaurants near me'",
+    "Check Gmail login page","Search 'Weather today'",
+    "Search 'Top Movies 2025'","Search 'Latest Tech News'",
+    "Visit Google Maps","Search 'Cricket Score'",
+    "Search 'Stock Market News'","Search 'Top 10 Songs'",
+    "Check Google Drive login","Search 'Translate Hello Hindi'"
+  ];
+
+  const highTasksList = [
+    "Write a blog on Medium","Upload video to YouTube",
+    "Post story on Instagram","Create Twitter Thread",
+    "Join Telegram Group","Review an App",
+    "Share a LinkedIn Post","Upload GitHub Repo",
+    "Comment on Reddit","Make a Podcast Clip",
+    "Post on Quora","Join Discord Server",
+    "Upload Instagram Reel","Share YouTube Shorts",
+    "Post a Facebook Reel","Tweet trending hashtag",
+    "Write on Substack","Post on Pinterest",
+    "Post on Snapchat","Make a TikTok Video"
+  ];
+
+  const specialRewards = [30,40,50,70,80,60,35,100,88,77,44,33,22,66];
+
+  const specialTasksList = [
+    "Google Ads Campaign","Collaborate with Influencer",
+    "Launch Twitter Space","Host YouTube Live",
+    "Write Whitepaper","Build a Website",
+    "Create NFT Artwork","Run Giveaway",
+    "Create Instagram Ad","Promote on Discord",
+    "Make Short Film","Music Remix",
+    "Write eBook","Launch Podcast",
+    "Create Mobile App","Organize Webinar",
+    "Digital Marketing Campaign","Create Startup Pitch",
+    "Develop Chrome Extension","Create Online Course"
+  ];
+
+  // ---- Render Tasks ----
+  function renderTasks() {
+    let mediumHTML = "";
+    mediumTasksList.forEach((t,i)=>{
+      mediumHTML += `<div class="task"><div class="task-info">${t}<br><small>Earn ₹0.5</small></div>
+      <button onclick="completeTask(0.5,this)">Complete</button></div>`;
+    });
+    document.getElementById("mediumTasks").innerHTML = mediumHTML;
+
+    let highHTML = "";
+    highTasksList.forEach((t,i)=>{
+      let reward = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
+      highHTML += `<div class="task"><div class="task-info">${t}<br><small>Earn ₹${reward}</small></div>
+      <button onclick="completeTask(${reward},this)">Complete</button></div>`;
+    });
+    document.getElementById("highTasks").innerHTML = highHTML;
+
+    let specialHTML = "";
+    specialTasksList.forEach((t,i)=>{
+      let reward = specialRewards[i % specialRewards.length];
+      specialHTML += `<div class="task"><div class="task-info">${t}<br><small>Earn ₹${reward}</small></div>
+      <button onclick="completeTask(${reward},this)">Complete</button></div>`;
+    });
+    document.getElementById("specialTasks").innerHTML = specialHTML;
+  }
+  renderTasks();
+
+  // ---- Complete Task ----
   function completeTask(amount, btn){
     btn.disabled = true;
     btn.innerText = "Completed";
     setTimeout(() => {
       balance += amount;
-      document.getElementById("balance").innerText = balance;
+      localStorage.setItem("balance", balance);
+      document.getElementById("balance").innerText = balance.toFixed(2);
     }, 5000);
   }
 
+  // ---- Daily Claim ----
   function dailyClaim(){
     balance += 5;
-    document.getElementById("balance").innerText = balance;
+    localStorage.setItem("balance", balance);
+    document.getElementById("balance").innerText = balance.toFixed(2);
     alert("Daily Bonus ₹5 Claimed!");
   }
 
+  // ---- Withdraw ----
+  function saveWithdrawDetails(){
+    let details = {
+      name: document.getElementById("userName").value,
+      upi: document.getElementById("upiId").value,
+      acc: document.getElementById("accountNo").value,
+      ifsc: document.getElementById("ifsc").value
+    };
+    localStorage.setItem("withdrawDetails", JSON.stringify(details));
+    alert("Withdraw Details Saved!");
+  }
+
+  // ---- Buy Cashback ----
+  function startCashback(){
+    alert("₹200 Cashback will be credited in 5 minutes!");
+    setTimeout(()=>{
+      balance += 200;
+      localStorage.setItem("balance", balance);
+      document.getElementById("balance").innerText = balance.toFixed(2);
+      alert("₹200 Cashback Added!");
+    },300000); // 5 minutes
+  }
+
+  // ---- Popup Control ----
   function openPopup(type){
     document.getElementById(type+"Popup").style.display = "flex";
+    if(type=="withdraw"){
+      let saved = JSON.parse(localStorage.getItem("withdrawDetails"));
+      if(saved){
+        document.getElementById("userName").value = saved.name;
+        document.getElementById("upiId").value = saved.upi;
+        document.getElementById("accountNo").value = saved.acc;
+        document.getElementById("ifsc").value = saved.ifsc;
+      }
+    }
   }
   function closePopup(type){
     document.getElementById(type+"Popup").style.display = "none";
