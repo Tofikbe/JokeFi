@@ -7,253 +7,425 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: radial-gradient(circle at top, #2a003f 0%, #000 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(-45deg, #1a0033, #330066, #6600cc, #1a0033);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
       color: white;
       text-align: center;
       overflow-x: hidden;
+      position: relative;
     }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
     .wallet {
-      padding: 20px;
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
+
     .balance {
-      font-size: 30px;
+      font-size: 36px;
       font-weight: bold;
-      margin-bottom: 15px;
-      animation: glow 2s infinite alternate;
+      margin-bottom: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
     }
+
     @keyframes glow {
-      from { text-shadow: 0 0 5px purple; }
-      to { text-shadow: 0 0 20px #ff00ff; }
+      from { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+      to { text-shadow: 0 0 20px #ff55ff, 0 0 30px #ff55ff; }
     }
+
     .btn {
       display: inline-block;
       margin: 10px;
-      padding: 12px 20px;
-      background: linear-gradient(45deg, #8000ff, #b400ff);
+      padding: 12px 24px;
+      background: linear-gradient(45deg, #8000ff, #ff00ff);
       border-radius: 12px;
       color: white;
       font-size: 16px;
       font-weight: bold;
-      transition: transform 0.2s ease;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .btn:hover {
-      transform: scale(1.05);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
     }
+
+    .btn:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
     hr {
-      border: 1px solid purple;
-      margin: 15px 0;
-    }
-    .task-section {
+      border: 1px solid rgba(255, 0, 255, 0.3);
       margin: 20px 0;
     }
+
+    .task-section {
+      margin: 30px 0;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.5s ease forwards;
+      animation-delay: calc(0.2s * var(--i));
+    }
+
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .task {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(128,0,255,0.3);
-      margin: 8px;
-      padding: 12px;
+      background: rgba(128, 0, 255, 0.2);
+      margin: 10px;
+      padding: 15px;
       border-radius: 12px;
-      transition: transform 0.2s ease;
+      transition: all 0.3s ease;
     }
+
     .task:hover {
-      transform: scale(1.03);
-      background: rgba(180,0,255,0.4);
+      transform: translateY(-3px);
+      background: rgba(180, 0, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
+
+    .task.completed {
+      background: rgba(0, 128, 0, 0.2);
+      opacity: 0.7;
+    }
+
     .task-info {
       text-align: left;
-      font-size: 14px;
+      font-size: 16px;
     }
-    .task a {
-      background: purple;
+
+    .task a, .task button {
+      background: #8000ff;
       color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 10px 15px;
       border-radius: 8px;
       font-weight: bold;
       text-decoration: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
+
+    .task a:hover, .task button:hover {
+      background: #ff00ff;
+    }
+
+    .task button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
     .popup {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
       display: none;
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
+
     .popup-content {
-      background: rgba(50,0,80,0.95);
-      padding: 25px;
+      background: rgba(50, 0, 80, 0.95);
+      padding: 30px;
       border-radius: 15px;
       width: 90%;
+      max-width: 400px;
       color: white;
       text-align: center;
       animation: popupFade 0.3s ease;
     }
+
     @keyframes popupFade {
       from { transform: scale(0.8); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
+
     .timer {
-      font-size: 22px;
-      margin-top: 10px;
+      font-size: 24px;
+      margin: 15px 0;
       font-weight: bold;
       color: #ff55ff;
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #8000ff;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+    }
+
+    .back-to-top:hover {
+      background: #ff00ff;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #ff00ff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
+  <div class="particles" id="particles"></div>
+  <div class="wallet">
+    <div class="balance">Balance: ₹<span id="balance">0.00</span></div>
 
-<div class="wallet">
-  <div class="balance">Balance: ₹<span id="balance">0</span></div>
+    <div>
+      <span class="btn" onclick="dailyClaim()">Claim</span>
+      <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
+      <span class="btn" onclick="openPopup('buy')">Buy</span>
+    </div>
 
-  <div>
-    <span class="btn" onclick="dailyClaim()">Claim</span>
-    <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
-    <span class="btn" onclick="openPopup('buy')">Buy</span>
+    <hr>
+
+    <div class="task-section" style="--i: 1">
+      <h3>Medium Tasks</h3>
+      <div id="mediumTasks"></div>
+    </div>
+
+    <div class="task-section" style="--i: 2">
+      <h3>High Tasks</h3>
+      <div id="highTasks"></div>
+    </div>
+
+    <div class="task-section" style="--i: 3">
+      <h3>Special Collaboration</h3>
+      <div id="specialTasks"></div>
+    </div>
   </div>
 
-  <hr>
-
-  <!-- Medium Tasks -->
-  <div class="task-section">
-    <h3>Medium Tasks</h3>
-    <div id="mediumTasks"></div>
+  <div class="popup" id="claimPopup">
+    <div class="popup-content">
+      <h3>Daily Claim Already Used</h3>
+      <p>Next claim available in:</p>
+      <div class="timer" id="claimTimer">24:00:00</div>
+      <button onclick="closePopup('claim')">Close</button>
+    </div>
   </div>
 
-  <!-- High Tasks -->
-  <div class="task-section">
-    <h3>High Tasks</h3>
-    <div id="highTasks"></div>
+  <div class="popup" id="withdrawPopup">
+    <div class="popup-content">
+      <h3>Withdraw</h3>
+      <p>Withdraw feature coming soon!</p>
+      <button onclick="closePopup('withdraw')">Close</button>
+    </div>
   </div>
 
-  <!-- Special Tasks -->
-  <div class="task-section">
-    <h3>Special Collaboration</h3>
-    <div id="specialTasks"></div>
+  <div class="popup" id="buyPopup">
+    <div class="popup-content">
+      <h3>Buy</h3>
+      <p>Buy feature coming soon!</p>
+      <button onclick="closePopup('buy')">Close</button>
+    </div>
   </div>
-</div>
 
-<!-- Claim Timer Popup -->
-<div class="popup" id="claimPopup">
-  <div class="popup-content">
-    <h3>Daily Claim Already Used</h3>
-    <p>Next claim available in:</p>
-    <div class="timer" id="claimTimer">24:00:00</div>
-    <button onclick="closePopup('claim')">Close</button>
-  </div>
-</div>
+  <div class="back-to-top" onclick="scrollToTop()">↑</div>
 
-<script>
-  // LocalStorage Balance
-  let balance = parseFloat(localStorage.getItem("balance")) || 0;
-  document.getElementById("balance").innerText = balance.toFixed(2);
-
-  // Task Lists with Links
-  const mediumTasks = [
-    {text:"Follow Google on Twitter", link:"https://twitter.com/Google", reward:0.5},
-    {text:"Subscribe to YouTube Channel", link:"https://youtube.com/@Google", reward:0.5},
-    {text:"Visit Instagram Page", link:"https://instagram.com/google", reward:0.5},
-    {text:"Check Wikipedia AI Page", link:"https://en.wikipedia.org/wiki/Artificial_intelligence", reward:0.5},
-    {text:"Open Gmail", link:"https://mail.google.com", reward:0.5},
-    {text:"Visit Google Maps", link:"https://maps.google.com", reward:0.5},
-    {text:"Read Tech News", link:"https://techcrunch.com", reward:0.5},
-    {text:"Open Translate", link:"https://translate.google.com", reward:0.5},
-    {text:"Visit Google Photos", link:"https://photos.google.com", reward:0.5},
-    {text:"Search Cricket Score", link:"https://www.google.com/search?q=cricket+score", reward:0.5}
-  ];
-  const highTasks = [
-    {text:"Upload video to YouTube", link:"https://youtube.com", reward:5},
-    {text:"Join Telegram", link:"https://telegram.org", reward:7},
-    {text:"Tweet trending hashtag", link:"https://twitter.com/explore", reward:8},
-    {text:"Post story on Instagram", link:"https://instagram.com", reward:6},
-    {text:"Share on Facebook", link:"https://facebook.com", reward:9},
-    {text:"Write blog on Medium", link:"https://medium.com", reward:10},
-    {text:"Join Discord", link:"https://discord.com", reward:7},
-    {text:"Upload GitHub Repo", link:"https://github.com", reward:9},
-    {text:"Comment on Reddit", link:"https://reddit.com", reward:6},
-    {text:"Post on Quora", link:"https://quora.com", reward:5}
-  ];
-  const specialRewards = [30,40,50,70,80,60,35,100,88,77];
-  const specialTasks = [
-    {text:"Google Ads Campaign", link:"https://ads.google.com"},
-    {text:"Collaborate with Influencer", link:"https://twitter.com"},
-    {text:"Launch Twitter Space", link:"https://twitter.com"},
-    {text:"Host YouTube Live", link:"https://youtube.com"},
-    {text:"Write Whitepaper", link:"https://docs.google.com"},
-    {text:"Create NFT Artwork", link:"https://opensea.io"},
-    {text:"Promote on Discord", link:"https://discord.com"},
-    {text:"Make Short Film", link:"https://vimeo.com"},
-    {text:"Launch Podcast", link:"https://spotify.com"},
-    {text:"Create Online Course", link:"https://udemy.com"}
-  ];
-
-  // Render Tasks
-  function renderTasks(list, id, rewards=null) {
-    let html = "";
-    list.forEach((task,i)=>{
-      let reward = task.reward || rewards[i % rewards.length];
-      html += `<div class="task">
-        <div class="task-info">${task.text}<br><small>Earn ₹${reward}</small></div>
-        <a href="${task.link}" target="_blank" onclick="addReward(${reward}, this)">Complete</a>
-      </div>`;
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    // Initialize Particles.js
+    particlesJS("particles", {
+      particles: {
+        number: { value: 50, density: { enable: true, value_area: 800 } },
+        color: { value: "#ff00ff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.3, random: true },
+        size: { value: 3, random: true },
+        line_linked: { enable: false },
+        move: { enable: true, speed: 1, direction: "none", random: true }
+      },
+      interactivity: { enable: false }
     });
-    document.getElementById(id).innerHTML = html;
-  }
-  renderTasks(mediumTasks,"mediumTasks");
-  renderTasks(highTasks,"highTasks");
-  renderTasks(specialTasks,"specialTasks",specialRewards);
 
-  // Add Reward
-  function addReward(amount, btn){
-    btn.innerText = "Completed";
-    btn.style.pointerEvents = "none";
-    setTimeout(()=>{
-      balance += amount;
-      localStorage.setItem("balance", balance);
-      document.getElementById("balance").innerText = balance.toFixed(2);
-    },5000);
-  }
-
-  // Daily Claim with 24h Timer
-  function dailyClaim(){
-    let lastClaim = localStorage.getItem("lastClaim");
-    let now = Date.now();
-    if(lastClaim && now - lastClaim < 86400000){
-      document.getElementById("claimPopup").style.display="flex";
-      startClaimTimer(86400000 - (now - lastClaim));
-      return;
-    }
-    balance += 5;
-    localStorage.setItem("balance", balance);
+    // LocalStorage Balance
+    let balance = parseFloat(localStorage.getItem("balance")) || 0;
     document.getElementById("balance").innerText = balance.toFixed(2);
-    localStorage.setItem("lastClaim", now);
-    alert("Daily Bonus ₹5 Claimed!");
-  }
 
-  // Claim Timer
-  function startClaimTimer(remaining){
-    function updateTimer(){
-      let h = Math.floor(remaining/3600000);
-      let m = Math.floor((remaining%3600000)/60000);
-      let s = Math.floor((remaining%60000)/1000);
-      document.getElementById("claimTimer").innerText =
-        `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if(remaining>0) {
-        remaining -= 1000;
-        setTimeout(updateTimer,1000);
-      }
+    // Track completed tasks
+    let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || {};
+
+    // Task Lists
+    const mediumTasks = [
+      { text: "Follow Google on Twitter", link: "https://twitter.com/Google", reward: 0.5 },
+      { text: "Subscribe to YouTube Channel", link: "https://youtube.com/@Google", reward: 0.5 },
+      { text: "Visit Instagram Page", link: "https://instagram.com/google", reward: 0.5 },
+      { text: "Check Wikipedia AI Page", link: "https://en.wikipedia.org/wiki/Artificial_intelligence", reward: 0.5 },
+      { text: "Open Gmail", link: "https://mail.google.com", reward: 0.5 },
+      { text: "Visit Google Maps", link: "https://maps.google.com", reward: 0.5 },
+      { text: "Read Tech News", link: "https://techcrunch.com", reward: 0.5 },
+      { text: "Open Translate", link: "https://translate.google.com", reward: 0.5 },
+      { text: "Visit Google Photos", link: "https://photos.google.com", reward: 0.5 },
+      { text: "Search Cricket Score", link: "https://www.google.com/search?q=cricket+score", reward: 0.5 }
+    ];
+
+    const highTasks = [
+      { text: "Upload video to YouTube", link: "https://youtube.com", reward: 5 },
+      { text: "Join Telegram", link: "https://telegram.org", reward: 7 },
+      { text: "Tweet trending hashtag", link: "https://twitter.com/explore", reward: 8 },
+      { text: "Post story on Instagram", link: "https://instagram.com", reward: 6 },
+      { text: "Share on Facebook", link: "https://facebook.com", reward: 9 },
+      { text: "Write blog on Medium", link: "https://medium.com", reward: 10 },
+      { text: "Join Discord", link: "https://discord.com", reward: 7 },
+      { text: "Upload GitHub Repo", link: "https://github.com", reward: 9 },
+      { text: "Comment on Reddit", link: "https://reddit.com", reward: 6 },
+      { text: "Post on Quora", link: "https://quora.com", reward: 5 }
+    ];
+
+    const specialRewards = [30, 40, 50, 70, 80, 60, 35, 100, 88, 77];
+    const specialTasks = [
+      { text: "Google Ads Campaign", link: "https://ads.google.com" },
+      { text: "Collaborate with Influencer", link: "https://twitter.com" },
+      { text: "Launch Twitter Space", link: "https://twitter.com" },
+      { text: "Host YouTube Live", link: "https://youtube.com" },
+      { text: "Write Whitepaper", link: "https://docs.google.com" },
+      { text: "Create NFT Artwork", link: "https://opensea.io" },
+      { text: "Promote on Discord", link: "https://discord.com" },
+      { text: "Make Short Film", link: "https://vimeo.com" },
+      { text: "Launch Podcast", link: "https://spotify.com" },
+      { text: "Create Online Course", link: "https://udemy.com" }
+    ];
+
+    // Render Tasks
+    function renderTasks(list, id, rewards = null) {
+      let html = "";
+      list.forEach((task, i) => {
+        let reward = task.reward || rewards[i % rewards.length];
+        let taskId = `${id}-${i}`;
+        let isCompleted = completedTasks[taskId];
+        html += `
+          <div class="task ${isCompleted ? 'completed' : ''}">
+            <div class="task-info">${task.text}<br><small>Earn ₹${reward}</small></div>
+            ${isCompleted ? 
+              '<button disabled>Completed</button>' : 
+              `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link}')">Complete</button>`}
+          </div>`;
+      });
+      document.getElementById(id).innerHTML = html;
     }
-    updateTimer();
-  }
 
-  // Popup Control
-  function closePopup(type){
-    document.getElementById(type+"Popup").style.display="none";
-  }
-</script>
+    renderTasks(mediumTasks, "mediumTasks");
+    renderTasks(highTasks, "highTasks");
+    renderTasks(specialTasks, "specialTasks", specialRewards);
 
+    // Complete Task
+    function completeTask(taskId, amount, btn, link) {
+      if (completedTasks[taskId]) return;
+      btn.disabled = true;
+      btn.innerText = "Processing";
+      btn.innerHTML += '<span class="spinner"></span>';
+      
+      setTimeout(() => {
+        window.open(link, "_blank");
+        balance += amount;
+        localStorage.setItem("balance", balance.toFixed(2));
+        document.getElementById("balance").innerText = balance.toFixed(2);
+        completedTasks[taskId] = true;
+        localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
+        btn.innerText = "Completed";
+        btn.parentElement.classList.add("completed");
+      }, 2000);
+    }
+
+    // Daily Claim
+    function dailyClaim() {
+      let lastClaim = parseInt(localStorage.getItem("lastClaim")) || 0;
+      let now = Date.now();
+      if (lastClaim && now - lastClaim < 86400000) {
+        document.getElementById("claimPopup").style.display = "flex";
+        startClaimTimer(86400000 - (now - lastClaim));
+        return;
+      }
+      balance += 5;
+      localStorage.setItem("balance", balance.toFixed(2));
+      document.getElementById("balance").innerText = balance.toFixed(2);
+      localStorage.setItem("lastClaim", now);
+      alert("Daily Bonus ₹5 Claimed!");
+    }
+
+    // Claim Timer
+    function startClaimTimer(remaining) {
+      function updateTimer() {
+        if (remaining <= 0) {
+          document.getElementById("claimPopup").style.display = "none";
+          return;
+        }
+        let h = Math.floor(remaining / 3600000);
+        let m = Math.floor((remaining % 3600000) / 60000);
+        let s = Math.floor((remaining % 60000) / 1000);
+        document.getElementById("claimTimer").innerText =
+          `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        remaining -= 1000;
+        setTimeout(updateTimer, 1000);
+      }
+      updateTimer();
+    }
+
+    // Popup Control
+    function openPopup(type) {
+      document.getElementById(type + "Popup").style.display = "flex";
+    }
+
+    function closePopup(type) {
+      document.getElementById(type + "Popup").style.display = "none";
+    }
+
+    // Back to Top
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Show/Hide Back to Top Button
+    window.addEventListener("scroll", () => {
+      document.querySelector(".back-to-top").style.display = window.scrollY > 300 ? "block" : "none";
+    });
+  </script>
 </body>
 </html>
