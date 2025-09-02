@@ -3,741 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Crypto News Pro - Latest cryptocurrency tweets with a space-themed experience">
-  <meta name="keywords" content="crypto, cryptocurrency, news, tweets, blockchain, space">
-  <meta name="author" content="Crypto News Pro">
-  <title>Crypto News Pro</title>
-  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Task Wallet</title>
   <style>
-    /* ===================== GLOBAL STYLES ===================== */
-    :root {
-      --primary-color: #00ffcc;
-      --bg-dark: #1e1e2f;
-      --bg-light: #f9f9f9;
-      --text-dark: #fff;
-      --text-light: #000;
-      --card-bg-dark: rgba(255, 255, 255, 0.05);
-      --card-bg-light: rgba(0, 0, 0, 0.05);
-      --space-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Orbitron', Arial, sans-serif; /* Space-themed font */
-      background: linear-gradient(135deg, #1e1e2f, #121212); /* Original dark gradient */
-      color: var(--text-dark);
-      overflow-x: hidden;
-      transition: background 0.5s ease, color 0.5s ease;
-      scroll-behavior: smooth;
-    }
-
-    .light-mode {
-      background: linear-gradient(135deg, #f9f9f9, #e0e0e0); /* Original light gradient */
-      color: var(--text-light);
-    }
-
-    h1 {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(160deg, #000000 70%, #4b0082 30%);
+      color: white;
       text-align: center;
-      padding: 30px 20px;
-      font-size: clamp(1.8rem, 5vw, 2.5rem);
-      color: var(--primary-color);
-      text-shadow: var(--space-shadow);
-      letter-spacing: 2px;
     }
-
-    /* ===================== NAVBAR ===================== */
-    nav {
+    .wallet {
+      padding: 20px;
+    }
+    .balance {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .btn {
+      display: inline-block;
+      margin: 8px;
+      padding: 12px 20px;
+      background: purple;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    hr {
+      border: 1px solid #4b0082;
+      margin: 15px 0;
+    }
+    .task-section {
+      margin: 15px 0;
+    }
+    .task {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 30px;
-      background: rgba(0, 0, 0, 0.6);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(6px);
-      box-shadow: var(--space-shadow);
+      background: rgba(75, 0, 130, 0.4);
+      margin: 8px;
+      padding: 12px;
+      border-radius: 12px;
     }
-
-    nav h2 {
-      color: var(--primary-color);
-      font-size: clamp(1.2rem, 3vw, 1.8rem);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .task-info {
+      text-align: left;
+      font-size: 14px;
     }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-links a {
-      color: var(--text-dark);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s;
-    }
-
-    .nav-links a:hover {
-      color: var(--primary-color);
-      text-shadow: var(--space-shadow);
-    }
-
-    .theme-toggle, .voice-btn, .export-btn, .add-tweet-btn {
-      background: var(--primary-color);
-      color: var(--text-light);
+    .task button {
+      background: purple;
+      color: white;
       border: none;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: var(--space-shadow);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: bold;
     }
-
-    .theme-toggle:hover, .voice-btn:hover, .export-btn:hover, .add-tweet-btn:hover {
-      background: #fff;
-      color: var(--primary-color);
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-    }
-
-    /* ===================== SEARCH BAR ===================== */
-    .search-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 20px auto;
-      max-width: 600px;
-      position: relative;
-    }
-
-    .search-bar input {
-      width: 100%;
-      padding: 12px 50px 12px 20px;
-      border-radius: 25px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-dark);
-      transition: background 0.3s;
-      box-shadow: var(--space-shadow);
-    }
-
-    .light-mode .search-bar input {
-      background: rgba(0, 0, 0, 0.1);
-      color: var(--text-light);
-    }
-
-    .search-bar button {
-      position: absolute;
-      right: 10px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-    }
-
-    .search-bar button img {
-      width: 20px;
-      filter: invert(1);
-    }
-
-    /* ===================== TWEET CONTAINER ===================== */
-    .tweet-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .tweet-card {
-      background: var(--card-bg-dark);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: var(--space-shadow);
-      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .light-mode .tweet-card {
-      background: var(--card-bg-light);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .tweet-card:hover {
-      transform: translateY(-8px);
-      background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 6px 20px rgba(0, 255, 204, 0.5);
-    }
-
-    iframe {
-      border-radius: 15px;
-      width: 100%;
-      min-height: 400px;
-      border: none;
-      loading: lazy;
-    }
-
-    .tweet-error {
-      color: #ff6666;
-      text-align: center;
-      padding: 10px;
-    }
-
-    /* ===================== BUTTONS ===================== */
-    .bookmark-btn, .share-btn, .delete-btn {
-      margin: 10px 5px 0;
-      background: var(--primary-color);
-      border: none;
-      color: var(--text-light);
-      padding: 8px 15px;
-      border-radius: 15px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: var(--space-shadow);
-    }
-
-    .bookmark-btn:hover, .share-btn:hover, .delete-btn:hover {
-      background: #fff;
-      color: var(--primary-color);
-      transform: scale(1.05);
-    }
-
-    /* ===================== SPACE-THEMED BACKGROUND ANIMATION ===================== */
-    #particles {
+    .popup {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    /* ===================== NOTIFICATION ===================== */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--primary-color);
-      color: var(--text-light);
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.5s ease;
-      z-index: 1001;
-      box-shadow: var(--space-shadow);
-      border: 1px solid rgba(0, 255, 204, 0.5);
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ===================== MODAL ===================== */
-    .modal {
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
       display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 2000;
-      align-items: center;
       justify-content: center;
-    }
-
-    .modal-content {
-      background: var(--bg-dark);
-      padding: 20px;
-      border-radius: 15px;
-      max-width: 500px;
-      width: 90%;
-      color: var(--text-dark);
-      box-shadow: var(--space-shadow);
-      border: 1px solid var(--primary-color);
-    }
-
-    .light-mode .modal-content {
-      background: var(--bg-light);
-      color: var(--text-light);
-    }
-
-    .modal-content h3 {
-      margin-bottom: 15px;
-      color: var(--primary-color);
-      text-shadow: var(--space-shadow);
-    }
-
-    .modal-content ul {
-      list-style: none;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .modal-content ul li {
-      padding: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      justify-content: space-between;
       align-items: center;
     }
-
-    .modal-content ul li a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
-    .modal-content button {
-      margin-top: 15px;
-      background: var(--primary-color);
-      color: var(--text-light);
-      border: none;
-      padding: 8px 15px;
-      border-radius: 15px;
-      cursor: pointer;
-      box-shadow: var(--space-shadow);
-    }
-
-    /* ===================== ADD TWEET FORM ===================== */
-    .add-tweet-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .add-tweet-form input {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-dark);
-    }
-
-    .light-mode .add-tweet-form input {
-      background: rgba(0, 0, 0, 0.1);
-      color: var(--text-light);
-    }
-
-    /* ===================== RESPONSIVE DESIGN ===================== */
-    @media (max-width: 768px) {
-      .tweet-container {
-        grid-template-columns: 1fr;
-        padding: 10px;
-      }
-
-      nav {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .nav-links {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      h1 {
-        font-size: 1.8rem;
-      }
-    }
-
-    /* ===================== ACCESSIBILITY ===================== */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-
-    button:focus, input:focus {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-    }
-
-    /* ===================== LOADER ===================== */
-    .loader {
-      text-align: center;
-      color: var(--primary-color);
-      font-size: 1.2rem;
+    .popup-content {
+      background: rgba(75,0,130,0.9);
       padding: 20px;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
+      border-radius: 15px;
+      width: 90%;
+      color: white;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
-  <nav>
-    <h2>Crypto News Pro</h2>
-    <div class="nav-links">
-      <a href="#home" aria-label="Home">Home</a>
-      <a href="#bookmarks" onclick="showBookmarks()">Bookmarks</a>
-      <a href="#add-tweet" onclick="showAddTweetModal()">Add Tweet</a>
-      <a href="#trending">Trending</a>
-    </div>
-    <div>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">Toggle Theme</button>
-      <button class="voice-btn" onclick="toggleVoiceSearch()" aria-label="Voice Search">🎙️</button>
-      <button class="export-btn" onclick="exportBookmarks()" aria-label="Export Bookmarks">Export</button>
-    </div>
-  </nav>
-  <h1>Latest Crypto Tweets</h1>
-  <div class="search-bar">
-    <input type="text" id="search" placeholder="Search tweets..." aria-label="Search tweets">
-    <button onclick="startVoiceSearch()" aria-label="Start Voice Search">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/microphone.png" alt="Voice Search">
-    </button>
+
+<div class="wallet">
+  <div class="balance">Balance: ₹<span id="balance">0</span></div>
+
+  <div>
+    <span class="btn" onclick="dailyClaim()">Claim</span>
+    <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
+    <span class="btn" onclick="openPopup('buy')">Buy</span>
   </div>
-  <div class="tweet-container" id="tweets">
-    <!-- Tweets will load here -->
-  </div>
-  <div class="modal" id="bookmarkModal">
-    <div class="modal-content">
-      <h3>Saved Bookmarks</h3>
-      <ul id="bookmarkList"></ul>
-      <button onclick="closeModal()">Close</button>
+
+  <hr>
+
+  <div class="task-section">
+    <h3>Medium Tasks</h3>
+    <div class="task">
+      <div class="task-info">Follow us on Instagram<br><small>Earn ₹1</small></div>
+      <button onclick="completeTask(1,this)">Complete</button>
+    </div>
+    <div class="task">
+      <div class="task-info">Share post on Twitter<br><small>Earn ₹10</small></div>
+      <button onclick="completeTask(10,this)">Complete</button>
     </div>
   </div>
-  <div class="modal" id="addTweetModal">
-    <div class="modal-content">
-      <h3>Add New Tweet</h3>
-      <form class="add-tweet-form" onsubmit="addTweet(event)">
-        <input type="text" id="newTweetUrl" placeholder="Enter tweet URL (e.g., https://x.com/username/status/123)" required>
-        <button type="submit">Add Tweet</button>
-      </form>
-      <button onclick="closeModal()">Close</button>
+
+  <div class="task-section">
+    <h3>High Tasks</h3>
+    <div class="task">
+      <div class="task-info">Create a YouTube video<br><small>Earn ₹100</small></div>
+      <button onclick="completeTask(100,this)">Complete</button>
     </div>
   </div>
-  <div class="toast" id="toast">Action completed!</div>
 
-  <script>
-    // ===================== TWEET LIST =====================
-    const tweets = [
-      "https://twitter.com/GoKiteAI/status/1961903026761052434",
-      "https://twitter.com/i/trending/1961971997065572846",
-      "https://twitter.com/CNBC/status/1961809223680954816",
-      "https://twitter.com/MarketWatch/status/1961778709070823482",
-      "https://twitter.com/CNBC/status/1961764053694439456",
-      "https://twitter.com/barronsonline/status/1961663310035669109",
-      "https://twitter.com/YahooFinance/status/1961777440939810997",
-      "https://twitter.com/Cryptowithkhan/status/1961870317724565797",
-      "https://twitter.com/BioProtocol/status/1961399300438605859",
-      "https://twitter.com/GoKiteAI/status/1942242605766688899",
-      "https://twitter.com/Laff38/status/1961778078419398940",
-      "https://twitter.com/yanaaa496/status/1961530690312573093",
-      "https://twitter.com/Crypto_King877/status/1960212332266639828",
-      "https://twitter.com/Crypto_King877/status/1959996150234140820",
-      "https://twitter.com/GoKiteAI/status/1959787392262451538",
-      "https://twitter.com/Crypto_King877/status/1959150396032643359",
-      "https://twitter.com/rovercrc/status/1962017983800250752",
-      "https://twitter.com/CrpBillion/status/1961866143997804728",
-      "https://twitter.com/YahayaCrypto/status/1961432364690616458",
-      "https://twitter.com/misterrcrypto/status/1961852166538154335",
-      "https://twitter.com/Ashcryptoreal/status/1961882957292982752",
-      "https://twitter.com/Ashcryptoreal/status/1961423817567342847",
-      "https://twitter.com/rovercrc/status/1961754774338228252",
-      "https://twitter.com/misterrcrypto/status/1961761569169457356",
-      "https://twitter.com/Steph_iscrypto/status/1961847636505321849",
-      "https://twitter.com/cryptocom/status/1961666997831569528",
-      // Original tweets
-      "https://twitter.com/APompliano/status/177234567890",
-      "https://twitter.com/ThalaLabs/status/177234567891",
-      "https://twitter.com/AriesMarkets/status/177234567892",
-      "https://twitter.com/amnisfinance/status/177234567893"
-    ];
+  <div class="task-section">
+    <h3>Special Collaboration</h3>
+    <div class="task">
+      <div class="task-info">Partner Campaign Task<br><small>Earn ₹1000</small></div>
+      <button onclick="completeTask(1000,this)">Complete</button>
+    </div>
+  </div>
+</div>
 
-    // ===================== LOAD TWEETS =====================
-    const tweetContainer = document.getElementById('tweets');
+<!-- POPUPS -->
+<div class="popup" id="withdrawPopup">
+  <div class="popup-content">
+    <h3>Withdraw</h3>
+    <p>Minimum withdrawal: ₹100</p>
+    <p><b>Name:</b> Demo User<br>
+       <b>Account No:</b> 1234567890<br>
+       <b>IFSC:</b> DEMO000111</p>
+    <button onclick="closePopup('withdraw')">Close</button>
+  </div>
+</div>
 
-    function loadTweets() {
-      tweetContainer.innerHTML = '<div class="loader">Loading Tweets...</div>';
-      let loadedTweets = JSON.parse(localStorage.getItem('tweets')) || tweets;
-      tweetContainer.innerHTML = '';
-      loadedTweets.forEach((url, index) => {
-        // Validate tweet URL
-        if (!isValidTweetUrl(url)) {
-          const card = document.createElement('div');
-          card.className = 'tweet-card';
-          card.innerHTML = `<div class="tweet-error">Invalid tweet URL: ${url}</div>`;
-          tweetContainer.appendChild(card);
-          return;
-        }
-        const card = document.createElement('div');
-        card.className = 'tweet-card';
-        card.setAttribute('data-tweet-id', index);
-        card.innerHTML = `
-          <iframe src="https://twitframe.com/show?url=${encodeURIComponent(url)}" frameborder="0" loading="lazy"></iframe>
-          <button class="bookmark-btn" onclick="bookmarkTweet('${url}')">Bookmark</button>
-          <button class="share-btn" onclick="shareTweet('${url}')">Share</button>
-          <button class="delete-btn" onclick="deleteTweet('${url}')">Delete</button>
-        `;
-        tweetContainer.appendChild(card);
-      });
-      lazyLoadIframes();
-    }
+<div class="popup" id="buyPopup">
+  <div class="popup-content">
+    <h3>Buy</h3>
+    <p>Send minimum ₹100 to this QR</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=demo@upi" alt="QR Code">
+    <button onclick="closePopup('buy')">Close</button>
+  </div>
+</div>
 
-    // ===================== VALIDATE TWEET URL =====================
-    function isValidTweetUrl(url) {
-      const tweetRegex = /^https:\/\/(twitter|x)\.com\/[a-zA-Z0-9_]+\/status\/[0-9]+/;
-      return tweetRegex.test(url);
-    }
+<script>
+  let balance = 0;
 
-    // ===================== LAZY LOADING =====================
-    function lazyLoadIframes() {
-      const iframes = document.querySelectorAll('iframe');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const iframe = entry.target;
-            iframe.src = iframe.getAttribute('data-src') || iframe.src;
-            observer.unobserve(iframe);
-          }
-        });
-      }, { rootMargin: '0px 0px 100px 0px' });
-      iframes.forEach(iframe => {
-        iframe.setAttribute('data-src', iframe.src);
-        observer.observe(iframe);
-      });
-    }
+  function completeTask(amount, btn){
+    btn.disabled = true;
+    btn.innerText = "Completed";
+    setTimeout(() => {
+      balance += amount;
+      document.getElementById("balance").innerText = balance;
+    }, 5000);
+  }
 
-    // ===================== BOOKMARKS =====================
-    function bookmarkTweet(url) {
-      if (!isValidTweetUrl(url)) {
-        showToast('Invalid tweet URL!');
-        return;
-      }
-      let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-      if (!bookmarks.includes(url)) {
-        bookmarks.push({ url, timestamp: Date.now() });
-        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        showToast('Added to Bookmarks!');
-      } else {
-        showToast('Already in Bookmarks!');
-      }
-    }
+  function dailyClaim(){
+    balance += 5;
+    document.getElementById("balance").innerText = balance;
+    alert("Daily Bonus ₹5 Claimed!");
+  }
 
-    function showBookmarks() {
-      const modal = document.getElementById('bookmarkModal');
-      const bookmarkList = document.getElementById('bookmarkList');
-      let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-      bookmarkList.innerHTML = bookmarks.length
-        ? bookmarks.map(({ url, timestamp }) => `
-            <li>
-              <a href="${url}" target="_blank">${url}</a>
-              <button class="delete-btn" onclick="deleteBookmark('${url}')">Delete</button>
-            </li>
-          `).join('')
-        : '<li>No bookmarks yet!</li>';
-      modal.style.display = 'flex';
-    }
+  function openPopup(type){
+    document.getElementById(type+"Popup").style.display = "flex";
+  }
+  function closePopup(type){
+    document.getElementById(type+"Popup").style.display = "none";
+  }
+</script>
 
-    function deleteBookmark(url) {
-      let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-      bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
-      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-      showBookmarks();
-      showToast('Bookmark deleted!');
-    }
-
-    // ===================== ADD TWEET =====================
-    function showAddTweetModal() {
-      const modal = document.getElementById('addTweetModal');
-      modal.style.display = 'flex';
-    }
-
-    function addTweet(event) {
-      event.preventDefault();
-      const urlInput = document.getElementById('newTweetUrl');
-      let url = urlInput.value.trim().replace('x.com', 'twitter.com');
-      if (!isValidTweetUrl(url)) {
-        showToast('Please enter a valid tweet URL!');
-        return;
-      }
-      let savedTweets = JSON.parse(localStorage.getItem('tweets')) || tweets.slice();
-      if (!savedTweets.includes(url)) {
-        savedTweets.push(url);
-        localStorage.setItem('tweets', JSON.stringify(savedTweets));
-        loadTweets();
-        showToast('Tweet added successfully!');
-        urlInput.value = '';
-        closeModal();
-      } else {
-        showToast('Tweet already exists!');
-      }
-    }
-
-    // ===================== DELETE TWEET =====================
-    function deleteTweet(url) {
-      let savedTweets = JSON.parse(localStorage.getItem('tweets')) || tweets.slice();
-      savedTweets = savedTweets.filter(tweet => tweet !== url);
-      localStorage.setItem('tweets', JSON.stringify(savedTweets));
-      loadTweets();
-      showToast('Tweet deleted!');
-    }
-
-    // ===================== EXPORT BOOKMARKS =====================
-    function exportBookmarks() {
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-      const blob = new Blob([JSON.stringify(bookmarks, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'bookmarks.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('Bookmarks exported!');
-    }
-
-    // ===================== VOICE SEARCH =====================
-    let recognition = null;
-    function toggleVoiceSearch() {
-      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-        showToast('Voice search not supported in this browser.');
-        return;
-      }
-      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'en-US';
-      recognition.interimResults = true;
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('search').value = transcript;
-        filterTweets(transcript);
-      };
-      recognition.onend = () => showToast('Voice search stopped.');
-      recognition.start();
-      showToast('Voice search activated!');
-    }
-
-    function startVoiceSearch() {
-      if (recognition) recognition.stop();
-      toggleVoiceSearch();
-    }
-
-    // ===================== SEARCH =====================
-    document.getElementById('search').addEventListener('input', (e) => {
-      filterTweets(e.target.value);
-    });
-
-    function filterTweets(query) {
-      query = query.toLowerCase().trim();
-      const cards = document.querySelectorAll('.tweet-card');
-      cards.forEach(card => {
-        const url = card.querySelector('iframe')?.getAttribute('data-src') || '';
-        card.style.display = url.toLowerCase().includes(query) ? 'block' : 'none';
-      });
-    }
-
-    // ===================== SHARE TWEET =====================
-    function shareTweet(url) {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Crypto News Pro',
-          text: 'Check out this crypto tweet!',
-          url: url
-        }).then(() => showToast('Tweet shared!'))
-          .catch(() => showToast('Sharing canceled'));
-      } else {
-        navigator.clipboard.writeText(url);
-        showToast('Tweet URL copied to clipboard!');
-      }
-    }
-
-    // ===================== TOAST =====================
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    // ===================== MODAL =====================
-    function closeModal() {
-      document.getElementById('bookmarkModal').style.display = 'none';
-      document.getElementById('addTweetModal').style.display = 'none';
-    }
-
-    // ===================== THEME TOGGLE =====================
-    function toggleTheme() {
-      document.body.classList.toggle('light-mode');
-      localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-      updateParticleColors();
-    }
-
-    // ===================== SPACE-THEMED PARTICLE ANIMATION =====================
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-    for (let i = 0; i < 150; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        dx: (Math.random() - 0.5) * 2,
-        dy: (Math.random() - 0.5) * 2,
-        size: Math.random() * 3 + 1,
-        twinkle: Math.random() * 0.5 + 0.5
-      });
-    }
-
-    function updateParticleColors() {
-      ctx.fillStyle = document.body.classList.contains('light-mode') ? '#000' : '#00ffcc';
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        ctx.globalAlpha = Math.sin(Date.now() * 0.001 + p.twinkle) * 0.5 + 0.5; // Twinkle effect
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-      });
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(animate);
-    }
-
-    // ===================== INITIALIZATION =====================
-    window.onload = () => {
-      if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-mode');
-      }
-      updateParticleColors();
-      animate();
-      loadTweets();
-    };
-
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-  </script>
 </body>
 </html>
