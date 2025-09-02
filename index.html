@@ -241,6 +241,59 @@
       margin: 15px 0;
       border-radius: 8px;
     }
+
+    /* New Styles for Improvements */
+    .error-message {
+      color: #ff4d4d;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .success-message {
+      color: #4dff4d;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .task-list {
+      max-height: 300px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #00ccff #001a33;
+    }
+
+    .task-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .task-list::-webkit-scrollbar-track {
+      background: #001a33;
+    }
+
+    .task-list::-webkit-scrollbar-thumb {
+      background: #00ccff;
+      border-radius: 4px;
+    }
+
+    .withdraw-amount {
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      height: 10px;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      background: #00ccff;
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -249,26 +302,27 @@
     <div class="balance">Balance: ₹<span id="balance">0.00</span></div>
 
     <div>
-      <span class="btn" onclick="dailyClaim()">Claim</span>
+      <span class="btn" onclick="dailyClaim()">Claim Daily Bonus</span>
       <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
-      <span class="btn" onclick="openPopup('buy')">Buy</span>
+      <span class="btn" onclick="openPopup('buy')">Buy Credits</span>
+      <span class="btn" onclick="resetAll()">Reset (For Testing)</span>
     </div>
 
     <hr>
 
     <div class="task-section" style="--i: 1">
       <h3>Medium Tasks</h3>
-      <div id="mediumTasks"></div>
+      <div id="mediumTasks" class="task-list"></div>
     </div>
 
     <div class="task-section" style="--i: 2">
       <h3>High Tasks</h3>
-      <div id="highTasks"></div>
+      <div id="highTasks" class="task-list"></div>
     </div>
 
     <div class="task-section" style="--i: 3">
       <h3>Special Collaboration</h3>
-      <div id="specialTasks"></div>
+      <div id="specialTasks" class="task-list"></div>
     </div>
   </div>
 
@@ -292,6 +346,7 @@
       <div class="form-group">
         <label for="buyAmount">Enter Amount (₹)</label>
         <input type="number" id="buyAmount" min="200" placeholder="Minimum ₹200">
+        <div class="error-message" id="buyError"></div>
       </div>
       <button onclick="confirmBuy()">Confirm Purchase</button>
       <button onclick="closePopup('buy')">Close</button>
@@ -310,8 +365,15 @@
           <label for="name">Name</label>
           <input type="text" id="name" placeholder="Enter Name" disabled>
         </div>
-        <button id="editBtn" onclick="enableEdit()">Edit</button>
-        <button id="saveBtn" onclick="saveWithdrawDetails()" style="display: none;">Save</button>
+        <div class="form-group withdraw-amount">
+          <label for="withdrawAmount">Withdraw Amount (₹)</label>
+          <input type="number" id="withdrawAmount" min="100" placeholder="Minimum ₹100">
+          <div class="error-message" id="withdrawError"></div>
+          <div class="success-message" id="withdrawSuccess"></div>
+        </div>
+        <button id="editBtn" onclick="enableEdit()">Edit Details</button>
+        <button id="saveBtn" onclick="saveWithdrawDetails()" style="display: none;">Save Details</button>
+        <button id="withdrawBtn" onclick="confirmWithdraw()">Withdraw Now</button>
         <button onclick="closePopup('withdraw')">Close</button>
       </div>
     </div>
@@ -335,9 +397,8 @@
       interactivity: { enable: false }
     });
 
-    // Reset and Initialize Balance
-    let balance = 0;
-    localStorage.setItem("balance", balance.toFixed(2));
+    // Load Balance from localStorage
+    let balance = parseFloat(localStorage.getItem("balance")) || 0;
     document.getElementById("balance").innerText = balance.toFixed(2);
 
     // Track completed tasks
@@ -350,7 +411,7 @@
       document.getElementById("name").value = withdrawDetails.name;
     }
 
-    // Task Lists
+    // Task Lists (Added more tasks for variety)
     const mediumTasks = [
       { text: "Follow Google on Twitter", link: "https://twitter.com/Google", reward: 0.5 },
       { text: "Subscribe to YouTube Channel", link: "https://youtube.com/@Google", reward: 0.5 },
@@ -361,7 +422,9 @@
       { text: "Read Tech News", link: "https://techcrunch.com", reward: 0.5 },
       { text: "Open Translate", link: "https://translate.google.com", reward: 0.5 },
       { text: "Visit Google Photos", link: "https://photos.google.com", reward: 0.5 },
-      { text: "Search Cricket Score", link: "https://www.google.com/search?q=cricket+score", reward: 0.5 }
+      { text: "Search Cricket Score", link: "https://www.google.com/search?q=cricket+score", reward: 0.5 },
+      { text: "Follow xAI on Twitter", link: "https://twitter.com/xai", reward: 0.5 }, // Added new
+      { text: "Visit OpenAI Website", link: "https://openai.com", reward: 0.5 } // Added new
     ];
 
     const highTasks = [
@@ -374,10 +437,12 @@
       { text: "Join Discord", link: "https://discord.com", reward: 7 },
       { text: "Upload GitHub Repo", link: "https://github.com", reward: 9 },
       { text: "Comment on Reddit", link: "https://reddit.com", reward: 6 },
-      { text: "Post on Quora", link: "https://quora.com", reward: 5 }
+      { text: "Post on Quora", link: "https://quora.com", reward: 5 },
+      { text: "Create LinkedIn Post", link: "https://linkedin.com", reward: 8 }, // Added new
+      { text: "Review App on Play Store", link: "https://play.google.com", reward: 7 } // Added new
     ];
 
-    const specialRewards = [30, 40, 50, 70, 80, 60, 35, 100, 88, 77];
+    const specialRewards = [30, 40, 50, 70, 80, 60, 35, 100, 88, 77, 90, 120];
     const specialTasks = [
       { text: "Google Ads Campaign", link: "https://ads.google.com" },
       { text: "Collaborate with Influencer", link: "https://twitter.com" },
@@ -388,48 +453,71 @@
       { text: "Promote on Discord", link: "https://discord.com" },
       { text: "Make Short Film", link: "https://vimeo.com" },
       { text: "Launch Podcast", link: "https://spotify.com" },
-      { text: "Create Online Course", link: "https://udemy.com" }
+      { text: "Create Online Course", link: "https://udemy.com" },
+      { text: "Build Simple App", link: "https://codepen.io", reward: 90 }, // Added new
+      { text: "Design Logo", link: "https://canva.com", reward: 120 } // Added new
     ];
 
-    // Render Tasks
+    // Render Tasks with Progress Bar
     function renderTasks(list, id, rewards = null) {
       let html = "";
+      let completedCount = 0;
       list.forEach((task, i) => {
         let reward = task.reward || rewards[i % rewards.length];
         let taskId = `${id}-${i}`;
         let isCompleted = completedTasks[taskId];
+        if (isCompleted) completedCount++;
         html += `
           <div class="task ${isCompleted ? 'completed' : ''}">
             <div class="task-info">${task.text}<br><small>Earn ₹${reward}</small></div>
             ${isCompleted ? 
               '<button disabled>Completed</button>' : 
-              `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link}')">Complete</button>`}
+              `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link || ''}')">Complete</button>`}
           </div>`;
       });
       document.getElementById(id).innerHTML = html;
+
+      // Add progress bar below the task list
+      const progressHtml = `
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${(completedCount / list.length) * 100}%"></div>
+        </div>
+        <small>${completedCount} / ${list.length} Tasks Completed</small>
+      `;
+      document.getElementById(id).insertAdjacentHTML('afterend', progressHtml);
     }
 
     renderTasks(mediumTasks, "mediumTasks");
     renderTasks(highTasks, "highTasks");
     renderTasks(specialTasks, "specialTasks", specialRewards);
 
-    // Complete Task
+    // Complete Task with Confirmation
     function completeTask(taskId, amount, btn, link) {
       if (completedTasks[taskId]) return;
+      if (!confirm("Are you sure you completed this task? This action will open the link.")) return;
       btn.disabled = true;
       btn.innerText = "Processing";
       btn.innerHTML += '<span class="spinner"></span>';
       
       setTimeout(() => {
-        window.open(link, "_blank");
+        if (link) window.open(link, "_blank");
         balance += amount;
-        localStorage.setItem("balance", balance.toFixed(2));
-        document.getElementById("balance").innerText = balance.toFixed(2);
+        updateBalance();
         completedTasks[taskId] = true;
         localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
         btn.innerText = "Completed";
         btn.parentElement.classList.add("completed");
+        // Re-render to update progress
+        renderTasks(mediumTasks, "mediumTasks");
+        renderTasks(highTasks, "highTasks");
+        renderTasks(specialTasks, "specialTasks", specialRewards);
       }, 2000);
+    }
+
+    // Update Balance Helper
+    function updateBalance() {
+      localStorage.setItem("balance", balance.toFixed(2));
+      document.getElementById("balance").innerText = balance.toFixed(2);
     }
 
     // Daily Claim
@@ -442,16 +530,16 @@
         return;
       }
       balance += 5;
-      localStorage.setItem("balance", balance.toFixed(2));
-      document.getElementById("balance").innerText = balance.toFixed(2);
+      updateBalance();
       localStorage.setItem("lastClaim", now);
       alert("Daily Bonus ₹5 Claimed!");
     }
 
     // Claim Timer
     function startClaimTimer(remaining) {
-      function updateTimer() {
+      let timerId = setInterval(() => {
         if (remaining <= 0) {
+          clearInterval(timerId);
           document.getElementById("claimPopup").style.display = "none";
           return;
         }
@@ -461,26 +549,57 @@
         document.getElementById("claimTimer").innerText =
           `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         remaining -= 1000;
-        setTimeout(updateTimer, 1000);
-      }
-      updateTimer();
+      }, 1000);
     }
 
-    // Buy Feature
+    // Buy Feature with Better Validation
     function confirmBuy() {
       let amount = parseFloat(document.getElementById("buyAmount").value);
+      let errorEl = document.getElementById("buyError");
+      errorEl.style.display = 'none';
       if (isNaN(amount) || amount < 200) {
-        alert("Please enter an amount of at least ₹200.");
+        errorEl.textContent = "Please enter an amount of at least ₹200.";
+        errorEl.style.display = 'block';
         return;
       }
       balance += amount;
-      localStorage.setItem("balance", balance.toFixed(2));
-      document.getElementById("balance").innerText = balance.toFixed(2);
-      alert(`Successfully added ₹${amount} to your balance!`);
+      updateBalance();
+      alert(`Successfully added ₹${amount} to your balance! (Simulated)`);
       closePopup('buy');
     }
 
-    // Withdraw Feature
+    // Withdraw Feature with Amount and Simulation
+    function confirmWithdraw() {
+      let amount = parseFloat(document.getElementById("withdrawAmount").value);
+      let errorEl = document.getElementById("withdrawError");
+      let successEl = document.getElementById("withdrawSuccess");
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+      if (!withdrawDetails.upiId || !withdrawDetails.name) {
+        errorEl.textContent = "Please save your UPI ID and Name first.";
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (isNaN(amount) || amount < 100) {
+        errorEl.textContent = "Please enter an amount of at least ₹100.";
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (amount > balance) {
+        errorEl.textContent = "Insufficient balance.";
+        errorEl.style.display = 'block';
+        return;
+      }
+      balance -= amount;
+      updateBalance();
+      successEl.textContent = `₹${amount} withdrawn to ${withdrawDetails.upiId} (Simulated).`;
+      successEl.style.display = 'block';
+      setTimeout(() => {
+        closePopup('withdraw');
+      }, 3000);
+    }
+
+    // Enable Edit
     function enableEdit() {
       document.getElementById("upiId").disabled = false;
       document.getElementById("name").disabled = false;
@@ -488,11 +607,12 @@
       document.getElementById("editBtn").style.display = "none";
     }
 
+    // Save Withdraw Details with Validation
     function saveWithdrawDetails() {
       let upiId = document.getElementById("upiId").value.trim();
       let name = document.getElementById("name").value.trim();
-      if (!upiId || !name) {
-        alert("Please enter both UPI ID and Name.");
+      if (!upiId.includes('@') || !name) {
+        alert("Please enter a valid UPI ID (e.g., user@upi) and Name.");
         return;
       }
       withdrawDetails = { upiId, name };
@@ -516,6 +636,10 @@
         document.getElementById("name").disabled = true;
         document.getElementById("saveBtn").style.display = "none";
         document.getElementById("editBtn").style.display = "inline-block";
+        document.getElementById("withdrawError").style.display = 'none';
+        document.getElementById("withdrawSuccess").style.display = 'none';
+      } else if (type === 'buy') {
+        document.getElementById("buyError").style.display = 'none';
       }
     }
 
@@ -528,6 +652,14 @@
     window.addEventListener("scroll", () => {
       document.querySelector(".back-to-top").style.display = window.scrollY > 300 ? "block" : "none";
     });
+
+    // Reset All for Testing
+    function resetAll() {
+      if (confirm("Reset all data? This will clear balance, tasks, and details.")) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
   </script>
 </body>
 </html>
