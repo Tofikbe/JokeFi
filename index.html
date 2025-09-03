@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>JokeFI Watch</title>
+  <title>JokeFI Watch - Doraemon</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
       font-family: 'Poppins', Arial, sans-serif;
-      background: linear-gradient(135deg, #1a1a1a, #000);
-      color: white;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: #fff;
       text-align: center;
       overflow-x: hidden;
+      min-height: 100vh;
     }
     header {
       background: rgba(0, 0, 0, 0.95);
@@ -20,73 +25,103 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      font-size: 24px;
-      font-weight: bold;
-      color: #00ffff;
-      animation: glow 2s infinite alternate;
+      font-size: 28px;
+      font-weight: 700;
+      color: #00ffcc;
+      text-transform: uppercase;
+      letter-spacing: 2px;
       overflow: hidden;
-      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(0, 255, 204, 0.3);
     }
     .marquee {
       display: inline-block;
-      animation: marquee 10s linear infinite;
+      animation: marquee 12s linear infinite;
+      white-space: nowrap;
+      padding-right: 100%;
     }
     @keyframes marquee {
       0% { transform: translateX(100%); }
       100% { transform: translateX(-100%); }
     }
     @keyframes glow {
-      from { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
-      to { text-shadow: 0 0 15px #00ffff, 0 0 20px #00ffff; }
+      from { text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc; }
+      to { text-shadow: 0 0 15px #00ffcc, 0 0 25px #00ffcc; }
     }
     .language-switch {
-      margin: 15px;
+      margin: 20px;
     }
     .language-switch select {
-      padding: 10px;
+      padding: 12px 20px;
       font-size: 16px;
-      border-radius: 5px;
-      background: #333;
-      color: white;
-      border: 1px solid #00ffff;
+      border-radius: 8px;
+      background: #222;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
     .language-switch select:hover {
-      background: #444;
+      background: #333;
+      transform: scale(1.05);
+    }
+    .episode-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .episode {
-      margin: 20px auto;
-      max-width: 800px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 15px;
       padding: 15px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 255, 204, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      perspective: 1000px;
     }
     .episode:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+      transform: translateY(-10px) rotateX(5deg);
+      box-shadow: 0 10px 30px rgba(0, 255, 204, 0.5);
     }
     .episode h3 {
-      font-size: 20px;
+      font-size: 22px;
       margin: 10px 0;
-      color: #00ffff;
+      color: #00ffcc;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     iframe {
       width: 100%;
-      height: 315px; /* Increased for better viewing */
-      border-radius: 12px;
+      height: 200px;
+      border-radius: 10px;
       border: none;
+      transition: transform 0.3s ease;
     }
-    @media (max-width: 600px) {
+    .episode:hover iframe {
+      transform: scale(1.02);
+    }
+    @media (max-width: 768px) {
+      header {
+        font-size: 20px;
+      }
+      .episode-container {
+        grid-template-columns: 1fr;
+      }
+      iframe {
+        height: 180px;
+      }
+    }
+    @media (max-width: 480px) {
       header {
         font-size: 18px;
       }
-      .episode {
-        max-width: 95%;
+      .language-switch select {
+        font-size: 14px;
+        padding: 10px;
       }
       iframe {
-        height: 200px;
+        height: 160px;
       }
     }
   </style>
@@ -105,7 +140,7 @@
     </select>
   </div>
 
-  <div id="episodes">
+  <div class="episode-container">
     <div class="episode">
       <h3>Doraemon Episode 1 (Hindi)</h3>
       <iframe src="https://www.youtube.com/embed/2hR1mY1HknA" allowfullscreen></iframe>
@@ -152,14 +187,14 @@
     function changeLanguage() {
       let lang = document.getElementById('lang').value;
       let headline = document.getElementById('headline');
-      if (lang === "hi") {
-        headline.innerText = "आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा";
-        document.querySelectorAll(".episode h3").forEach((el, index) => {
+      if (lang === 'hi') {
+        headline.innerText = 'आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';
+        document.querySelectorAll('.episode h3').forEach((el, index) => {
           el.innerText = `डोरेमोन एपिसोड ${index + 1} (हिंदी)`;
         });
       } else {
-        headline.innerText = "You can watch every cartoon for free on this website";
-        document.querySelectorAll(".episode h3").forEach((el, index) => {
+        headline.innerText = 'You can watch every cartoon for free on this website';
+        document.querySelectorAll('.episode h3').forEach((el, index) => {
           el.innerText = `Doraemon Episode ${index + 1} (Hindi)`;
         });
       }
