@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Task Wallet</title>
   <style>
     body {
@@ -15,12 +15,10 @@
       text-align: center;
       overflow-x: hidden;
       position: relative;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.light-mode {
-      background: linear-gradient(-45deg, #e6f3ff, #b3d9ff, #80bfff, #e6f3ff);
-      color: #333;
+      font-size: 14px;
+      touch-action: manipulation; /* Prevent double-tap zoom */
+      -webkit-user-select: none; /* Disable text selection */
+      user-select: none;
     }
 
     @keyframes gradient {
@@ -39,10 +37,25 @@
       z-index: -1;
     }
 
+    .ticker {
+      background: rgba(255, 0, 0, 0.7);
+      padding: 5px;
+      font-size: 12px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .ticker marquee {
+      color: white;
+    }
+
     .wallet {
-      padding: 40px 20px;
-      max-width: 900px;
+      padding: 10px;
+      max-width: 100%;
       margin: 0 auto;
+      padding-top: 30px;
     }
 
     .header {
@@ -51,40 +64,43 @@
       background: rgba(0, 0, 0, 0.5);
       padding: 10px;
       z-index: 100;
-      border-radius: 12px;
+      border-radius: 0 0 12px 12px;
     }
 
     .balance {
-      font-size: 36px;
+      font-size: 24px;
       font-weight: bold;
-      margin-bottom: 20px;
-      animation: glow 2s ease-in-out infinite alternate;
+      margin: 10px 0;
       background: rgba(0, 0, 0, 0.3);
-      padding: 15px;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      animation: glow 2s ease-in-out infinite alternate;
     }
 
     @keyframes glow {
-      from { text-shadow: 0 0 10px #00ccff, 0 0 20px #00ccff; }
-      to { text-shadow: 0 0 20px #0077ff, 0 0 30px #0077ff; }
+      from { text-shadow: 0 0 5px #00ccff, 0 0 10px #00ccff; }
+      to { text-shadow: 0 0 10px #0077ff, 0 0 15px #0077ff; }
     }
 
     .btn {
       display: inline-block;
-      margin: 10px;
-      padding: 12px 24px;
+      margin: 5px;
+      padding: 12px;
       background: linear-gradient(45deg, #0077ff, #00ccff);
-      border-radius: 12px;
+      border-radius: 8px;
       color: white;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-width: 80px;
+      text-align: center;
+      line-height: 20px;
     }
 
     .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0, 204, 255, 0.5);
+      transform: scale(1.05);
+      box-shadow: 0 3px 10px rgba(0, 204, 255, 0.5);
     }
 
     .btn:disabled {
@@ -94,15 +110,34 @@
       box-shadow: none;
     }
 
+    .btn-icon::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+      vertical-align: middle;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .btn-claim::before { background-image: url('https://i.postimg.cc/8C9sG2q8/claim.png'); }
+    .btn-withdraw::before { background-image: url('https://i.postimg.cc/7L9G2XzW/withdraw.png'); }
+    .btn-buy::before { background-image: url('https://i.postimg.cc/4xZ7YqX8/buy.png'); }
+    .btn-dashboard::before { background-image: url('https://i.postimg.cc/SK7C4YqV/dashboard.png'); }
+    .btn-spin::before { background-image: url('https://i.postimg.cc/0yD2qW9T/spin.png'); }
+    .btn-reset::before { background-image: url('https://i.postimg.cc/9F2qW9T/reset.png'); }
+    .btn-feedback::before { background-image: url('https://i.postimg.cc/9F2qW9T/feedback.png'); }
+
     hr {
       border: 1px solid rgba(0, 204, 255, 0.3);
-      margin: 20px 0;
+      margin: 10px 0;
     }
 
     .task-section {
-      margin: 30px 0;
+      margin: 20px 0;
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(10px);
       animation: slideIn 0.5s ease forwards;
       animation-delay: calc(0.2s * var(--i));
     }
@@ -111,17 +146,19 @@
       display: none;
     }
 
-    .task-section.collapsed h3::after {
-      content: '▶';
-    }
-
     .task-section h3 {
       cursor: pointer;
+      font-size: 18px;
+      margin: 10px 0;
     }
 
     .task-section h3::after {
       content: '▼';
-      margin-left: 10px;
+      margin-left: 5px;
+    }
+
+    .task-section.collapsed h3::after {
+      content: '▶';
     }
 
     @keyframes slideIn {
@@ -133,17 +170,16 @@
       justify-content: space-between;
       align-items: center;
       background: rgba(0, 119, 255, 0.2);
-      margin: 10px;
-      padding: 15px;
-      border-radius: 12px;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 8px;
       transition: all 0.3s ease;
-      position: relative;
     }
 
     .task:hover {
-      transform: translateY(-3px);
+      transform: scale(1.02);
       background: rgba(0, 204, 255, 0.3);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
     }
 
     .task.completed {
@@ -153,36 +189,20 @@
 
     .task-info {
       text-align: left;
-      font-size: 16px;
-      position: relative;
-    }
-
-    .task-info:hover .tooltip {
-      display: block;
-    }
-
-    .tooltip {
-      display: none;
-      position: absolute;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      top: -30px;
-      left: 0;
-      z-index: 10;
+      font-size: 14px;
+      flex: 1;
     }
 
     .task button {
       background: #0077ff;
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s ease;
+      font-size: 12px;
     }
 
     .task button:hover {
@@ -209,10 +229,10 @@
 
     .popup-content {
       background: rgba(0, 50, 80, 0.95);
-      padding: 30px;
-      border-radius: 15px;
+      padding: 20px;
+      border-radius: 10px;
       width: 90%;
-      max-width: 400px;
+      max-width: 320px;
       color: white;
       text-align: center;
       animation: popupFade 0.3s ease;
@@ -224,19 +244,19 @@
     }
 
     .timer {
-      font-size: 24px;
-      margin: 15px 0;
+      font-size: 18px;
+      margin: 10px 0;
       font-weight: bold;
       color: #00ccff;
     }
 
     .back-to-top {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 15px;
+      right: 15px;
       background: #0077ff;
       color: white;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 50%;
       cursor: pointer;
       display: none;
@@ -247,14 +267,14 @@
     }
 
     .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #00ccff;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #00ccff;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       animation: spin 1s linear infinite;
       display: inline-block;
-      margin-left: 10px;
+      margin-left: 5px;
     }
 
     @keyframes spin {
@@ -263,23 +283,24 @@
     }
 
     .form-group {
-      margin: 15px 0;
+      margin: 10px 0;
     }
 
     .form-group label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
+      font-size: 14px;
     }
 
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 8px;
+      border-radius: 6px;
       border: none;
       background: rgba(255, 255, 255, 0.1);
       color: white;
-      font-size: 16px;
+      font-size: 14px;
     }
 
     .form-group input:disabled, .form-group select:disabled {
@@ -288,34 +309,34 @@
     }
 
     .qr-code img {
-      max-width: 200px;
-      margin: 15px 0;
-      border-radius: 8px;
+      max-width: 150px;
+      margin: 10px 0;
+      border-radius: 6px;
     }
 
     .error-message {
       color: #ff4d4d;
-      font-size: 14px;
+      font-size: 12px;
       margin-top: 5px;
       display: none;
     }
 
     .success-message {
       color: #4dff4d;
-      font-size: 14px;
+      font-size: 12px;
       margin-top: 5px;
       display: none;
     }
 
     .task-list {
-      max-height: 300px;
+      max-height: 200px;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: #00ccff #001a33;
     }
 
     .task-list::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
     }
 
     .task-list::-webkit-scrollbar-track {
@@ -324,30 +345,12 @@
 
     .task-list::-webkit-scrollbar-thumb {
       background: #00ccff;
-      border-radius: 4px;
-    }
-
-    .withdraw-amount {
-      margin-top: 10px;
-    }
-
-    .progress-bar {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      height: 10px;
-      margin-top: 10px;
-    }
-
-    .progress-fill {
-      background: #00ccff;
-      height: 100%;
-      border-radius: 8px;
-      transition: width 0.3s ease;
+      border-radius: 3px;
     }
 
     .progress-circle {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       margin: 10px auto;
       position: relative;
     }
@@ -359,8 +362,8 @@
     .progress-circle circle {
       fill: none;
       stroke: #00ccff;
-      stroke-width: 5;
-      stroke-dasharray: 150;
+      stroke-width: 4;
+      stroke-dasharray: 113;
       stroke-dashoffset: 0;
       transition: stroke-dashoffset 0.3s ease;
     }
@@ -370,7 +373,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .notification-badge {
@@ -381,7 +384,7 @@
       color: white;
       border-radius: 50%;
       padding: 2px 6px;
-      font-size: 12px;
+      font-size: 10px;
     }
 
     .loading-screen {
@@ -401,42 +404,58 @@
     .profile-section {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       background: rgba(0, 0, 0, 0.3);
-      padding: 15px;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 8px;
     }
 
     .profile-section img {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      margin-right: 10px;
+      margin-right: 8px;
     }
 
     .filter-bar {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
     }
 
     .filter-bar input, .filter-bar select {
-      padding: 8px;
-      border-radius: 8px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      flex: 1;
+      min-width: 100px;
     }
 
-    .leaderboard, .dashboard, .achievements, .activity-log, .feedback-form {
+    .leaderboard, .dashboard, .achievements, .activity-log {
       background: rgba(0, 0, 0, 0.3);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 20px 0;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 12px;
     }
 
     .canvas-container {
-      margin: 20px 0;
+      margin: 10px 0;
+    }
+
+    .spin-wheel-container {
+      position: relative;
+    }
+
+    .spin-wheel-container::after {
+      content: '▼';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff4d4d;
+      font-size: 20px;
     }
   </style>
 </head>
@@ -444,32 +463,33 @@
   <div class="loading-screen" id="loadingScreen">
     <div class="spinner"></div>
   </div>
+  <div class="ticker">
+    <marquee>All actions are at your own risk. Proceed with caution.</marquee>
+  </div>
   <div class="particles" id="particles"></div>
   <div class="wallet">
     <div class="header">
       <div class="profile-section">
         <img src="https://i.postimg.cc/4NqX0y1R/default-avatar.png" alt="Avatar">
         <div>
-          <span id="profileName">Guest User</span><br>
+          <span id="profileName">Guest User 😎</span><br>
           <small>Level: <span id="userLevel">1</span> | Points: <span id="userPoints">0</span></small>
         </div>
       </div>
       <div class="balance">Balance: <span id="currency">₹</span><span id="balance">0.00</span></div>
       <div>
-        <span class="btn" onclick="dailyClaim()">Claim Daily Bonus</span>
-        <span class="btn" onclick="openPopup('withdraw')">Withdraw</span>
-        <span class="btn" onclick="openPopup('buy')">Buy Credits</span>
-        <span class="btn" onclick="openPopup('dashboard')">Dashboard</span>
-        <span class="btn" onclick="toggleTheme()">Toggle Theme</span>
-        <span class="btn" onclick="adjustFontSize(2)">A+</span>
-        <span class="btn" onclick="adjustFontSize(-2)">A-</span>
-        <span class="btn" onclick="openPopup('spin')">Spin Wheel</span>
-        <span class="btn" onclick="resetAll()">Reset</span>
+        <span class="btn btn-claim" onclick="dailyClaim()" aria-label="Claim Daily Bonus">Claim</span>
+        <span class="btn btn-withdraw" onclick="openPopup('withdraw')" aria-label="Withdraw Funds">Withdraw</span>
+        <span class="btn btn-buy" onclick="openPopup('buy')" aria-label="Buy Credits">Buy</span>
+        <span class="btn btn-dashboard" onclick="openPopup('dashboard')" aria-label="View Dashboard">Dashboard</span>
+        <span class="btn btn-spin" onclick="openPopup('spin')" aria-label="Spin Wheel">Spin</span>
+        <span class="btn btn-feedback" onclick="openPopup('feedback')" aria-label="Submit Feedback">Feedback</span>
+        <span class="btn btn-reset" onclick="resetAll()" aria-label="Reset Data">Reset</span>
       </div>
       <div class="filter-bar">
         <input type="text" id="taskSearch" placeholder="Search Tasks..." oninput="filterTasks()">
         <select id="taskFilter" onchange="filterTasks()">
-          <option value="all">All Tasks</option>
+          <option value="all">All</option>
           <option value="completed">Completed</option>
           <option value="pending">Pending</option>
         </select>
@@ -477,11 +497,6 @@
           <option value="default">Default</option>
           <option value="reward">Reward</option>
           <option value="name">Name</option>
-        </select>
-        <select id="currencySelect" onchange="changeCurrency()">
-          <option value="INR">₹ (INR)</option>
-          <option value="USD">$ (USD)</option>
-          <option value="EUR">€ (EUR)</option>
         </select>
       </div>
     </div>
@@ -525,14 +540,14 @@
     </div>
 
     <div class="canvas-container">
-      <canvas id="earningsGraph" width="400" height="200"></canvas>
+      <canvas id="earningsGraph" width="300" height="150"></canvas>
     </div>
   </div>
 
   <div class="popup" id="claimPopup">
     <div class="popup-content">
-      <h3>Daily Claim Already Used</h3>
-      <p>Next claim available in:</p>
+      <h3>Daily Claim Used</h3>
+      <p>Next claim in:</p>
       <div class="timer" id="claimTimer">24:00:00</div>
       <button onclick="closePopup('claim')">Close</button>
     </div>
@@ -541,21 +556,21 @@
   <div class="popup" id="buyPopup">
     <div class="popup-content">
       <h3>Buy Credits</h3>
-      <p>Scan the QR code to add funds to your wallet</p>
+      <p>Scan QR to add funds</p>
       <div class="qr-code">
         <img src="https://i.postimg.cc/WFcpfHkj/qr-code.png" alt="QR Code">
-        <p>Minimum Amount: <span id="buyMin">₹200</span></p>
+        <p>Minimum: <span id="buyMin">₹200</span></p>
       </div>
       <div class="form-group">
-        <label for="buyAmount">Enter Amount</label>
+        <label for="buyAmount">Amount</label>
         <input type="number" id="buyAmount" min="200" placeholder="Minimum ₹200">
         <div class="error-message" id="buyError"></div>
       </div>
       <div class="form-group">
-        <label for="referralCode">Referral Code (Optional)</label>
+        <label for="referralCode">Referral Code</label>
         <input type="text" id="referralCode" placeholder="Enter Referral Code">
       </div>
-      <button onclick="confirmBuy()">Confirm Purchase</button>
+      <button onclick="confirmBuy()">Confirm</button>
       <button onclick="closePopup('buy')">Close</button>
     </div>
   </div>
@@ -566,22 +581,24 @@
       <div id="withdrawForm">
         <div class="form-group">
           <label for="upiId">UPI ID</label>
-          <input type="text" id="upiId" placeholder="Enter UPI ID" disabled>
+          <input type="text" id="upiId" placeholder="Enter UPI ID" onblur="autoSaveWithdraw()">
+          <div class="error-message" id="upiError"></div>
         </div>
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" id="name" placeholder="Enter Name" disabled>
+          <input type="text" id="name" placeholder="Enter Name" onblur="autoSaveWithdraw()">
+          <div class="error-message" id="nameError"></div>
         </div>
         <div class="form-group withdraw-amount">
-          <label for="withdrawAmount">Withdraw Amount</label>
+          <label for="withdrawAmount">Amount</label>
           <input type="number" id="withdrawAmount" min="100" placeholder="Minimum ₹100">
           <div class="error-message" id="withdrawError"></div>
           <div class="success-message" id="withdrawSuccess"></div>
         </div>
-        <button id="editBtn" onclick="enableEdit()">Edit Details</button>
-        <button id="saveBtn" onclick="saveWithdrawDetails()" style="display: none;">Save Details</button>
-        <button id="withdrawBtn" onclick="confirmWithdraw()">Withdraw Now</button>
-        <button onclick="openPopup('withdrawHistory')">View Withdraw History</button>
+        <button id="editBtn" onclick="enableEdit()">Edit</button>
+        <button id="saveBtn" onclick="saveWithdrawDetails()" style="display: none;">Save</button>
+        <button id="withdrawBtn" onclick="confirmWithdraw()">Withdraw</button>
+        <button onclick="openPopup('withdrawHistory')">History</button>
         <button onclick="closePopup('withdraw')">Close</button>
       </div>
     </div>
@@ -591,9 +608,9 @@
     <div class="popup-content">
       <h3>Dashboard</h3>
       <div class="dashboard">
-        <p>Total Tasks Completed: <span id="totalTasks">0</span></p>
-        <p>Total Earnings: <span id="currencyDash">₹</span><span id="totalEarnings">0.00</span></p>
-        <p>Current Streak: <span id="streakCount">0</span> days</p>
+        <p>Tasks Completed: <span id="totalTasks">0</span></p>
+        <p>Earnings: <span id="currencyDash">₹</span><span id="totalEarnings">0.00</span></p>
+        <p>Streak: <span id="streakCount">0</span> days</p>
         <p>Level: <span id="dashLevel">1</span></p>
       </div>
       <button onclick="closePopup('dashboard')">Close</button>
@@ -603,7 +620,10 @@
   <div class="popup" id="spinPopup">
     <div class="popup-content">
       <h3>Spin the Wheel</h3>
-      <canvas id="spinWheel" width="200" height="200"></canvas>
+      <p>Spins Left Today: <span id="spinsLeft">5</span></p>
+      <div class="spin-wheel-container">
+        <canvas id="spinWheel" width="150" height="150"></canvas>
+      </div>
       <button onclick="spinWheel()">Spin Now</button>
       <button onclick="closePopup('spin')">Close</button>
     </div>
@@ -619,10 +639,10 @@
 
   <div class="popup" id="feedbackPopup">
     <div class="popup-content">
-      <h3>Submit Feedback</h3>
+      <h3>Feedback</h3>
       <div class="form-group">
         <label for="feedbackText">Your Feedback</label>
-        <textarea id="feedbackText" rows="4" style="width: 100%; border-radius: 8px;"></textarea>
+        <textarea id="feedbackText" rows="3" placeholder="Enter feedback"></textarea>
       </div>
       <button onclick="submitFeedback()">Submit</button>
       <button onclick="closePopup('feedback')">Close</button>
@@ -632,8 +652,21 @@
   <div class="popup" id="sessionTimeoutPopup">
     <div class="popup-content">
       <h3>Session Timeout</h3>
-      <p>Your session has been inactive for too long. Please refresh.</p>
+      <p>Inactive for too long. Refresh to continue.</p>
       <button onclick="location.reload()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="popup" id="proofPopup">
+    <div class="popup-content">
+      <h3>Upload Proof</h3>
+      <div class="form-group">
+        <label for="proofFile">Select Image from Gallery</label>
+        <input type="file" id="proofFile" accept="image/*">
+        <div class="error-message" id="proofError"></div>
+      </div>
+      <button onclick="submitProof()">Submit</button>
+      <button onclick="closePopup('proof')">Cancel</button>
     </div>
   </div>
 
@@ -643,16 +676,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script>
-    // Initialize Particles.js
+    // Initialize Particles.js (optimized for mobile)
     particlesJS("particles", {
       particles: {
-        number: { value: 50, density: { enable: true, value_area: 800 } },
+        number: { value: 30, density: { enable: true, value_area: 600 } },
         color: { value: "#00ccff" },
         shape: { type: "circle" },
-        opacity: { value: 0.3, random: true },
-        size: { value: 3, random: true },
+        opacity: { value: 0.2, random: true },
+        size: { value: 2, random: true },
         line_linked: { enable: false },
-        move: { enable: true, speed: 1, direction: "none", random: true }
+        move: { enable: true, speed: 0.5, direction: "none", random: true }
       },
       interactivity: { enable: false }
     });
@@ -661,7 +694,7 @@
     document.getElementById("loadingScreen").style.display = "flex";
     setTimeout(() => {
       document.getElementById("loadingScreen").style.display = "none";
-    }, 1000);
+    }, 800);
 
     // Initialize Data
     let balance = parseFloat(localStorage.getItem("balance")) || 0;
@@ -673,17 +706,18 @@
     let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
     let achievements = JSON.parse(localStorage.getItem("achievements")) || [];
     let streak = parseInt(localStorage.getItem("streak")) || 0;
-    let lastLogin = parseInt(localStorage.getItem("lastLogin")) || 0;
-    let profile = JSON.parse(localStorage.getItem("profile")) || { name: "Guest User" };
-    let currency = localStorage.getItem("currency") || "INR";
-    let conversionRates = { INR: 1, USD: 0.012, EUR: 0.011 };
+    let lastLogin = localStorage.getItem("lastLogin") || "";
+    let profile = JSON.parse(localStorage.getItem("profile")) || { name: "Guest User 😎" };
+    let currency = "INR"; // Fixed to INR for simplicity
     let taskCompletionsToday = parseInt(localStorage.getItem("taskCompletionsToday")) || 0;
     let lastTaskDate = localStorage.getItem("lastTaskDate") || "";
     let feedbackList = JSON.parse(localStorage.getItem("feedbackList")) || [];
+    let spinsToday = parseInt(localStorage.getItem("spinsToday")) || 0;
+    let lastSpinDate = localStorage.getItem("lastSpinDate") || "";
+    let currentTaskId = null;
 
     // Update UI
-    document.getElementById("balance").innerText = (balance * conversionRates[currency]).toFixed(2);
-    document.getElementById("currency").innerText = currency === "INR" ? "₹" : currency === "USD" ? "$" : "€";
+    document.getElementById("balance").innerText = balance.toFixed(2);
     document.getElementById("profileName").innerText = profile.name;
     document.getElementById("userLevel").innerText = level;
     document.getElementById("userPoints").innerText = points;
@@ -691,6 +725,7 @@
       document.getElementById("upiId").value = withdrawDetails.upiId;
       document.getElementById("name").value = withdrawDetails.name;
     }
+    updateSpinsLeft();
 
     // Task Lists
     const dailyTasks = [
@@ -709,52 +744,31 @@
       { text: "Read Tech News", link: "https://techcrunch.com", reward: 0.5 },
       { text: "Open Translate", link: "https://translate.google.com", reward: 0.5 },
       { text: "Visit Google Photos", link: "https://photos.google.com", reward: 0.5 },
-      { text: "Search Cricket Score", link: "https://www.google.com/search?q=cricket+score", reward: 0.5 },
-      { text: "Follow xAI on Twitter", link: "https://twitter.com/xai", reward: 0.5 },
-      { text: "Visit OpenAI Website", link: "https://openai.com", reward: 0.5 }
+      { text: "Search Cricket Score", link: "https://www.google.com/search?q=cricket+score", reward: 0.5 }
     ];
 
     const highTasks = [
-      { text: "Upload video to YouTube", link: "https://youtube.com", reward: 5, requiresProof: true },
+      { text: "Upload Video to YouTube", link: "https://youtube.com", reward: 5, requiresProof: true },
       { text: "Join Telegram", link: "https://telegram.org", reward: 7 },
-      { text: "Tweet trending hashtag", link: "https://twitter.com/explore", reward: 8 },
-      { text: "Post story on Instagram", link: "https://instagram.com", reward: 6 },
-      { text: "Share on Facebook", link: "https://facebook.com", reward: 9 },
-      { text: "Write blog on Medium", link: "https://medium.com", reward: 10 },
-      { text: "Join Discord", link: "https://discord.com", reward: 7 },
-      { text: "Upload GitHub Repo", link: "https://github.com", reward: 9, requiresProof: true },
-      { text: "Comment on Reddit", link: "https://reddit.com", reward: 6 },
-      { text: "Post on Quora", link: "https://quora.com", reward: 5 },
-      { text: "Create LinkedIn Post", link: "https://linkedin.com", reward: 8 },
-      { text: "Review App on Play Store", link: "https://play.google.com", reward: 7 }
+      { text: "Tweet Trending Hashtag", link: "https://twitter.com/explore", reward: 8 },
+      { text: "Post Story on Instagram", link: "https://instagram.com", reward: 6 },
+      { text: "Share on Facebook", link: "https://facebook.com", reward: 9 }
     ];
 
-    const specialRewards = [30, 40, 50, 70, 80, 60, 35, 100, 88, 77, 90, 120];
+    const specialRewards = [30, 40, 50, 70, 80];
     const specialTasks = [
       { text: "Google Ads Campaign", link: "https://ads.google.com", requiresProof: true },
       { text: "Collaborate with Influencer", link: "https://twitter.com", requiresProof: true },
       { text: "Launch Twitter Space", link: "https://twitter.com", requiresProof: true },
       { text: "Host YouTube Live", link: "https://youtube.com", requiresProof: true },
-      { text: "Write Whitepaper", link: "https://docs.google.com", requiresProof: true },
-      { text: "Create NFT Artwork", link: "https://opensea.io", requiresProof: true },
-      { text: "Promote on Discord", link: "https://discord.com" },
-      { text: "Make Short Film", link: "https://vimeo.com", requiresProof: true },
-      { text: "Launch Podcast", link: "https://spotify.com", requiresProof: true },
-      { text: "Create Online Course", link: "https://udemy.com", requiresProof: true },
-      { text: "Build Simple App", link: "https://codepen.io", reward: 90, requiresProof: true },
-      { text: "Design Logo", link: "https://canva.com", reward: 120, requiresProof: true }
-    ];
-
-    // Bonus Task (Random Daily)
-    const bonusTasks = [
-      { text: "Share Task Wallet on Twitter", link: "https://twitter.com", reward: 15, timeLimit: 3600 }
+      { text: "Write Whitepaper", link: "https://docs.google.com", requiresProof: true }
     ];
 
     // Achievements
     const achievementList = [
       { id: "tasks10", name: "Task Novice", description: "Complete 10 tasks", points: 50, condition: () => Object.keys(completedTasks).length >= 10 },
       { id: "earn100", name: "Money Maker", description: "Earn ₹100", points: 100, condition: () => balance >= 100 },
-      { id: "streak5", name: "Streak Star", description: "Maintain a 5-day streak", points: 150, condition: () => streak >= 5 }
+      { id: "streak5", name: "Streak Star", description: "5-day streak", points: 150, condition: () => streak >= 5 }
     ];
 
     // Render Tasks
@@ -765,38 +779,28 @@
         let reward = task.reward || rewards[i % rewards.length];
         let taskId = `${id}-${i}`;
         let isCompleted = completedTasks[taskId];
-        let isLocked = task.dependsOn && !completedTasks[task.dependsOn];
         if (isCompleted) completedCount++;
         html += `
-          <div class="task ${isCompleted ? 'completed' : isLocked ? 'locked' : ''}">
+          <div class="task ${isCompleted ? 'completed' : ''}">
             <div class="task-info">
               ${task.text}<br>
-              <small>Earn ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${reward * conversionRates[currency]}</small>
-              <div class="tooltip">${task.description || "Complete this task to earn rewards."}</div>
+              <small>Earn ₹${reward.toFixed(2)}</small>
+              <div class="tooltip">${task.description || "Complete to earn rewards."}</div>
               ${task.timeLimit ? `<small>Time Left: <span id="timer-${taskId}"></span></small>` : ''}
-              ${isLocked ? `<small>Unlock by completing: ${list.find(t => t.id === task.dependsOn)?.text}</small>` : ''}
             </div>
             ${isCompleted ? 
-              '<button disabled>Completed</button>' : 
-              isLocked ? 
-              '<button disabled>Locked</button>' :
+              '<button disabled>Done</button>' : 
               `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link || ''}', ${task.requiresProof || false})">
-                ${task.requiresProof ? 'Upload Proof' : 'Complete'}
+                ${task.requiresProof ? 'Proof' : 'Do'}
               </button>`}
           </div>`;
       });
       document.getElementById(id).innerHTML = html;
-
-      // Progress Circle
       const progress = (completedCount / list.length) * 100;
-      const circle = `<svg><circle cx="25" cy="25" r="20" stroke-dashoffset="${150 - (progress * 1.5)}"></circle></svg><text x="25" y="25">${Math.round(progress)}%</text>`;
-      const progressHtml = `<div class="progress-circle">${circle}</div><small>${completedCount} / ${list.length} Tasks Completed</small>`;
-      document.getElementById(id).insertAdjacentHTML('afterend', progressHtml);
-
-      // Update Notification Badge
+      const circle = `<svg><circle cx="20" cy="20" r="18" stroke-dashoffset="${113 - (progress * 1.13)}"></circle></svg><text x="20" y="20">${Math.round(progress)}%</text>`;
+      const progressHtml = `<div class="progress-circle">${circle}</div><small>${completedCount}/${list.length} Done</small>`;
+      document.getElementById(id).nextElementSibling.innerHTML = progressHtml;
       document.getElementById(`${id.replace('Tasks', '')}Badge`).innerText = list.length - completedCount;
-
-      // Start timers for time-limited tasks
       list.forEach((task, i) => {
         if (task.timeLimit && !completedTasks[`${id}-${i}`]) {
           startTaskTimer(`${id}-${i}`, task.timeLimit);
@@ -830,25 +834,21 @@
     function completeTask(taskId, amount, btn, link, requiresProof) {
       if (completedTasks[taskId]) return;
       if (taskCompletionsToday >= 10) {
-        alert("Daily task limit reached (10 tasks). Try again tomorrow.");
+        alert("Daily task limit (10) reached. Try tomorrow.");
         return;
       }
       if (requiresProof) {
-        let proof = prompt("Please provide a link to your proof (e.g., screenshot URL):");
-        if (!proof || !proof.startsWith("http")) {
-          alert("Invalid proof link.");
-          return;
-        }
-        logActivity(`Submitted proof for task ${taskId}: ${proof}`);
+        currentTaskId = taskId;
+        openPopup('proof');
+        return;
       }
-      if (!confirm("Are you sure you completed this task?")) return;
+      if (!confirm("Completed this task?")) return;
       btn.disabled = true;
       btn.innerText = "Processing";
       btn.innerHTML += '<span class="spinner"></span>';
-
       setTimeout(() => {
         if (link) window.open(link, "_blank");
-        balance += amount;
+        balance += amount * (streak >= 5 ? 1.5 : 1);
         points += Math.floor(amount * 10);
         level = Math.floor(points / 100) + 1;
         taskCompletionsToday++;
@@ -860,9 +860,10 @@
         localStorage.setItem("points", points);
         document.getElementById("userLevel").innerText = level;
         document.getElementById("userPoints").innerText = points;
-        btn.innerText = "Completed";
+        btn.innerText = "Done";
         btn.parentElement.classList.add("completed");
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
+        navigator.vibrate?.(200);
         logActivity(`Completed task ${taskId} for ₹${amount}`);
         checkAchievements();
         updateLeaderboard();
@@ -871,13 +872,30 @@
         renderTasks(mediumTasks, "mediumTasks");
         renderTasks(highTasks, "highTasks");
         renderTasks(specialTasks, "specialTasks", specialRewards);
-      }, 2000);
+      }, 1500);
+    }
+
+    // Submit Proof
+    function submitProof() {
+      const fileInput = document.getElementById("proofFile");
+      const errorEl = document.getElementById("proofError");
+      errorEl.style.display = 'none';
+      if (!fileInput.files[0] || !fileInput.files[0].type.startsWith("image/")) {
+        errorEl.textContent = "Please select an image file.";
+        errorEl.style.display = 'block';
+        return;
+      }
+      logActivity(`Uploaded proof for task ${currentTaskId}`);
+      alert("Proof uploaded successfully! (Simulated)");
+      closePopup('proof');
+      const btn = document.querySelector(`button[onclick*="completeTask('${currentTaskId}'"]`);
+      completeTask(currentTaskId, parseFloat(btn.getAttribute('onclick').match(/, (\d+\.?\d*),/)[1]), btn, '', false);
     }
 
     // Update Balance
     function updateBalance() {
       localStorage.setItem("balance", balance.toFixed(2));
-      document.getElementById("balance").innerText = (balance * conversionRates[currency]).toFixed(2);
+      document.getElementById("balance").innerText = balance.toFixed(2);
       updateEarningsGraph();
     }
 
@@ -890,7 +908,7 @@
         startClaimTimer(86400000 - (now - lastClaim));
         return;
       }
-      balance += 5 * (streak >= 5 ? 1.5 : 1); // Streak multiplier
+      balance += 5 * (streak >= 5 ? 1.5 : 1);
       points += 50;
       streak++;
       localStorage.setItem("streak", streak);
@@ -898,7 +916,8 @@
       localStorage.setItem("lastClaim", now);
       logActivity("Claimed daily bonus ₹5");
       checkAchievements();
-      alert(`Daily Bonus ₹${5 * (streak >= 5 ? 1.5 : 1)} Claimed! Streak: ${streak} days`);
+      alert(`Claimed ₹${5 * (streak >= 5 ? 1.5 : 1)}! Streak: ${streak} days`);
+      navigator.vibrate?.(200);
     }
 
     // Claim Timer
@@ -924,20 +943,24 @@
       let referralCode = document.getElementById("referralCode").value.trim();
       let errorEl = document.getElementById("buyError");
       errorEl.style.display = 'none';
-      if (isNaN(amount) || amount < 200 * conversionRates[currency]) {
-        errorEl.textContent = `Please enter an amount of at least ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${200 * conversionRates[currency]}.`;
+      if (isNaN(amount) || amount < 200) {
+        errorEl.textContent = "Minimum ₹200 required.";
         errorEl.style.display = 'block';
         return;
       }
-      if (referralCode && referralCode === "TASKWALLET2025") {
-        amount *= 1.1; // 10% bonus for valid referral
-        logActivity(`Used referral code for 10% bonus on ₹${amount}`);
+      if (referralCode === "TASKWALLET2025") {
+        amount *= 1.1;
+        spinsToday++;
+        localStorage.setItem("spinsToday", spinsToday);
+        updateSpinsLeft();
+        logActivity(`Used referral code for 10% bonus and extra spin`);
       }
-      balance += amount / conversionRates[currency];
+      balance += amount;
       points += Math.floor(amount * 5);
       updateBalance();
-      alert(`Successfully added ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${amount.toFixed(2)} to your balance!`);
+      alert(`Added ₹${amount.toFixed(2)}!`);
       closePopup('buy');
+      navigator.vibrate?.(200);
     }
 
     // Withdraw Feature
@@ -948,44 +971,53 @@
       errorEl.style.display = 'none';
       successEl.style.display = 'none';
       if (!withdrawDetails.upiId || !withdrawDetails.name) {
-        errorEl.textContent = "Please save your UPI ID and Name first.";
+        errorEl.textContent = "Save UPI ID and Name first.";
         errorEl.style.display = 'block';
         return;
       }
-      if (isNaN(amount) || amount < 100 * conversionRates[currency]) {
-        errorEl.textContent = `Please enter an amount of at least ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${100 * conversionRates[currency]}.`;
+      if (isNaN(amount) || amount < 100) {
+        errorEl.textContent = "Minimum ₹100 required.";
         errorEl.style.display = 'block';
         return;
       }
-      if (amount / conversionRates[currency] > balance) {
+      if (amount > balance) {
         errorEl.textContent = "Insufficient balance.";
         errorEl.style.display = 'block';
         return;
       }
       if (withdrawHistory.filter(h => new Date(h.date).toDateString() === new Date().toDateString()).length >= 2) {
-        errorEl.textContent = "Daily withdrawal limit reached (2 per day).";
+        errorEl.textContent = "Daily withdrawal limit (2) reached.";
         errorEl.style.display = 'block';
         return;
       }
-      balance -= amount / conversionRates[currency];
+      balance -= amount;
       withdrawHistory.push({ amount, date: new Date().toISOString(), upiId: withdrawDetails.upiId });
       localStorage.setItem("withdrawHistory", JSON.stringify(withdrawHistory));
       updateBalance();
-      logActivity(`Withdrew ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${amount.toFixed(2)} to ${withdrawDetails.upiId}`);
-      successEl.textContent = `${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${amount.toFixed(2)} withdrawn to ${withdrawDetails.upiId} (Simulated). Email sent to user@example.com.`;
+      logActivity(`Withdrew ₹${amount.toFixed(2)} to ${withdrawDetails.upiId}`);
+      successEl.textContent = `₹${amount.toFixed(2)} withdrawn (Simulated).`;
       successEl.style.display = 'block';
       updateWithdrawHistory();
-      setTimeout(() => {
-        closePopup('withdraw');
-      }, 3000);
+      setTimeout(() => closePopup('withdraw'), 2000);
+      navigator.vibrate?.(200);
     }
 
-    // Save Withdraw Details
-    function saveWithdrawDetails() {
+    // Auto-Save Withdraw Details
+    function autoSaveWithdraw() {
       let upiId = sanitizeInput(document.getElementById("upiId").value.trim());
       let name = sanitizeInput(document.getElementById("name").value.trim());
-      if (!upiId.includes('@') || !name) {
-        alert("Please enter a valid UPI ID (e.g., user@upi) and Name.");
+      let upiError = document.getElementById("upiError");
+      let nameError = document.getElementById("nameError");
+      upiError.style.display = 'none';
+      nameError.style.display = 'none';
+      if (!upiId.includes('@')) {
+        upiError.textContent = "Invalid UPI ID (e.g., user@upi).";
+        upiError.style.display = 'block';
+        return;
+      }
+      if (!name) {
+        nameError.textContent = "Name is required.";
+        nameError.style.display = 'block';
         return;
       }
       withdrawDetails = { upiId, name };
@@ -994,14 +1026,27 @@
       document.getElementById("name").disabled = true;
       document.getElementById("saveBtn").style.display = "none";
       document.getElementById("editBtn").style.display = "inline-block";
-      logActivity("Saved withdrawal details");
-      alert("Withdraw details saved successfully!");
+      logActivity("Auto-saved withdrawal details");
+      alert("Details saved!");
+    }
+
+    // Enable Edit
+    function enableEdit() {
+      document.getElementById("upiId").disabled = false;
+      document.getElementById("name").disabled = false;
+      document.getElementById("saveBtn").style.display = "inline-block";
+      document.getElementById("editBtn").style.display = "none";
+    }
+
+    // Save Withdraw Details
+    function saveWithdrawDetails() {
+      autoSaveWithdraw();
     }
 
     // Withdraw History
     function updateWithdrawHistory() {
-      let html = withdrawHistory.map(h => `<p>${new Date(h.date).toLocaleString()}: ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${h.amount.toFixed(2)} to ${h.upiId}</p>`).join('');
-      document.getElementById("withdrawHistory").innerHTML = html || "<p>No withdrawals yet.</p>";
+      let html = withdrawHistory.map(h => `<p>${new Date(h.date).toLocaleString()}: ₹${h.amount.toFixed(2)} to ${h.upiId}</p>`).join('');
+      document.getElementById("withdrawHistory").innerHTML = html || "<p>No withdrawals.</p>";
     }
     updateWithdrawHistory();
 
@@ -1013,8 +1058,8 @@
     }
 
     function updateActivityLog() {
-      let html = activityLog.slice(-10).map(log => `<p>${new Date(log.date).toLocaleString()}: ${log.message}</p>`).join('');
-      document.getElementById("activityLog").innerHTML = html || "<p>No activity yet.</p>";
+      let html = activityLog.slice(-5).map(log => `<p>${new Date(log.date).toLocaleString()}: ${log.message}</p>`).join('');
+      document.getElementById("activityLog").innerHTML = html || "<p>No activity.</p>";
     }
     updateActivityLog();
 
@@ -1038,21 +1083,20 @@
           points += ach.points;
           localStorage.setItem("achievements", JSON.stringify(achievements));
           localStorage.setItem("points", points);
-          alert(`Achievement Unlocked: ${ach.name} (+${ach.points} points)`);
+          alert(`Achievement: ${ach.name} (+${ach.points} points)`);
+          navigator.vibrate?.(200);
         }
       });
       updateAchievements();
     }
 
     function updateAchievements() {
-      let html = achievementList.map(ach => `
-        <p>${ach.name}: ${ach.description} ${achievements.includes(ach.id) ? '✅' : '🔒'}</p>
-      `).join('');
-      document.getElementById("achievements").innerHTML = html || "<p>No achievements yet.</p>";
+      let html = achievementList.map(ach => `<p>${ach.name}: ${ach.description} ${achievements.includes(ach.id) ? '✅' : '🔒'}</p>`).join('');
+      document.getElementById("achievements").innerHTML = html || "<p>No achievements.</p>";
     }
     updateAchievements();
 
-    // Leaderboard (Simulated)
+    // Leaderboard
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [
       { name: "User1", points: 500 },
       { name: profile.name, points: points },
@@ -1065,15 +1109,14 @@
       leaderboard.sort((a, b) => b.points - a.points);
       localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
       let html = leaderboard.slice(0, 5).map((user, i) => `<p>${i + 1}. ${user.name}: ${user.points} points</p>`).join('');
-      document.getElementById("leaderboard").innerHTML = html || "<p>No leaderboard data.</p>";
+      document.getElementById("leaderboard").innerHTML = html || "<p>No leaderboard.</p>";
     }
     updateLeaderboard();
 
     // Dashboard
     function updateDashboard() {
       document.getElementById("totalTasks").innerText = Object.keys(completedTasks).length;
-      document.getElementById("totalEarnings").innerText = (balance * conversionRates[currency]).toFixed(2);
-      document.getElementById("currencyDash").innerText = currency === "INR" ? "₹" : currency === "USD" ? "$" : "€";
+      document.getElementById("totalEarnings").innerText = balance.toFixed(2);
       document.getElementById("streakCount").innerText = streak;
       document.getElementById("dashLevel").innerText = level;
     }
@@ -1093,12 +1136,12 @@
           fill: false
         }]
       },
-      options: { scales: { y: { beginAtZero: true } } }
+      options: { scales: { y: { beginAtZero: true } }, responsive: true }
     });
 
     function updateEarningsGraph() {
       earningsData.push(balance);
-      if (earningsData.length > 30) earningsData.shift();
+      if (earningsData.length > 15) earningsData.shift();
       localStorage.setItem("earningsData", JSON.stringify(earningsData));
       chart.data.labels = earningsData.map((_, i) => `Day ${i + 1}`);
       chart.data.datasets[0].data = earningsData;
@@ -1113,31 +1156,38 @@
     let spinning = false;
 
     function drawWheel() {
-      spinWheelCanvas.clearRect(0, 0, 200, 200);
+      spinWheelCanvas.clearRect(0, 0, 150, 150);
       spinWheelCanvas.beginPath();
       for (let i = 0; i < 8; i++) {
         spinWheelCanvas.fillStyle = i % 2 ? "#0077ff" : "#00ccff";
         spinWheelCanvas.beginPath();
-        spinWheelCanvas.moveTo(100, 100);
-        spinWheelCanvas.arc(100, 100, 100, (i * Math.PI / 4) + wheelAngle, ((i + 1) * Math.PI / 4) + wheelAngle);
+        spinWheelCanvas.moveTo(75, 75);
+        spinWheelCanvas.arc(75, 75, 75, (i * Math.PI / 4) + wheelAngle, ((i + 1) * Math.PI / 4) + wheelAngle);
         spinWheelCanvas.fill();
         spinWheelCanvas.fillStyle = "white";
-        spinWheelCanvas.font = "16px Arial";
+        spinWheelCanvas.font = "12px Arial";
         spinWheelCanvas.save();
-        spinWheelCanvas.translate(100, 100);
+        spinWheelCanvas.translate(75, 75);
         spinWheelCanvas.rotate((i * Math.PI / 4) + (Math.PI / 8) + wheelAngle);
-        spinWheelCanvas.fillText(`₹${wheelRewards[i]}`, 50, 0);
+        spinWheelCanvas.fillText(`₹${wheelRewards[i]}`, 40, 0);
         spinWheelCanvas.restore();
       }
     }
     drawWheel();
 
+    function updateSpinsLeft() {
+      if (lastSpinDate !== new Date().toDateString()) {
+        spinsToday = 5;
+        localStorage.setItem("spinsToday", spinsToday);
+        localStorage.setItem("lastSpinDate", new Date().toDateString());
+      }
+      document.getElementById("spinsLeft").innerText = spinsToday;
+    }
+
     function spinWheel() {
       if (spinning) return;
-      let lastSpin = parseInt(localStorage.getItem("lastSpin")) || 0;
-      let now = Date.now();
-      if (lastSpin && now - lastSpin < 86400000) {
-        alert("You can spin again tomorrow!");
+      if (spinsToday <= 0) {
+        alert("No spins left today!");
         return;
       }
       spinning = true;
@@ -1151,36 +1201,21 @@
           spinning = false;
           let rewardIndex = Math.floor(((wheelAngle % (2 * Math.PI)) / (Math.PI / 4))) % 8;
           let reward = wheelRewards[rewardIndex];
+          spinsToday--;
+          localStorage.setItem("spinsToday", spinsToday);
+          updateSpinsLeft();
           if (reward > 0) {
             balance += reward;
             updateBalance();
             logActivity(`Won ₹${reward} from spin wheel`);
             alert(`You won ₹${reward}!`);
+            navigator.vibrate?.(200);
           } else {
-            alert("Better luck next time!");
+            alert("Try again!");
           }
           localStorage.setItem("lastSpin", Date.now());
         }
       }, 16);
-    }
-
-    // Theme Toggle
-    function toggleTheme() {
-      document.body.classList.toggle("light-mode");
-      localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
-    }
-    if (localStorage.getItem("theme") === "light") toggleTheme();
-
-    // Font Size Adjustment
-    let fontSize = parseInt(localStorage.getItem("fontSize")) || 16;
-    document.body.style.fontSize = `${fontSize}px`;
-
-    function adjustFontSize(change) {
-      fontSize += change;
-      if (fontSize < 12) fontSize = 12;
-      if (fontSize > 24) fontSize = 24;
-      document.body.style.fontSize = `${fontSize}px`;
-      localStorage.setItem("fontSize", fontSize);
     }
 
     // Task Filtering
@@ -1206,22 +1241,21 @@
               <div class="task ${isCompleted ? 'completed' : ''}">
                 <div class="task-info">
                   ${task.text}<br>
-                  <small>Earn ${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${reward * conversionRates[currency]}</small>
-                  <div class="tooltip">${task.description || "Complete this task to earn rewards."}</div>
+                  <small>Earn ₹${reward.toFixed(2)}</small>
+                  <div class="tooltip">${task.description || "Complete to earn rewards."}</div>
                 </div>
                 ${isCompleted ? 
-                  '<button disabled>Completed</button>' : 
+                  '<button disabled>Done</button>' : 
                   `<button onclick="completeTask('${taskId}', ${reward}, this, '${task.link || ''}', ${task.requiresProof || false})">
-                    ${task.requiresProof ? 'Upload Proof' : 'Complete'}
+                    ${task.requiresProof ? 'Proof' : 'Do'}
                   </button>`}
               </div>`;
           }
         });
         container.innerHTML = html;
         const progress = (completedCount / tasks.length) * 100;
-        const circle = `<svg><circle cx="25" cy="25" r="20" stroke-dashoffset="${150 - (progress * 1.5)}"></circle></svg><text x="25" y="25">${Math.round(progress)}%</text>`;
-        const progressHtml = `<div class="progress-circle">${circle}</div><small>${completedCount} / ${tasks.length} Tasks Completed</small>`;
-        container.nextElementSibling.innerHTML = progressHtml;
+        const circle = `<svg><circle cx="20" cy="20" r="18" stroke-dashoffset="${113 - (progress * 1.13)}"></circle></svg><text x="20" y="20">${Math.round(progress)}%</text>`;
+        container.nextElementSibling.innerHTML = `<div class="progress-circle">${circle}</div><small>${completedCount}/${tasks.length} Done</small>`;
         document.getElementById(`${id.replace('Tasks', '')}Badge`).innerText = tasks.length - completedCount;
       });
     }
@@ -1244,28 +1278,16 @@
       filterTasks();
     }
 
-    // Currency Change
-    function changeCurrency() {
-      currency = document.getElementById("currencySelect").value;
-      localStorage.setItem("currency", currency);
-      document.getElementById("currency").innerText = currency === "INR" ? "₹" : currency === "USD" ? "$" : "€";
-      document.getElementById("buyMin").innerText = `${currency === "INR" ? "₹" : currency === "USD" ? "$" : "€"}${200 * conversionRates[currency]}`;
-      updateBalance();
-      updateDashboard();
-      renderTasks(dailyTasks, "dailyTasks");
-      renderTasks(mediumTasks, "mediumTasks");
-      renderTasks(highTasks, "highTasks");
-      renderTasks(specialTasks, "specialTasks", specialRewards);
-    }
-
     // Collapsible Sections
     function toggleSection(element) {
       element.parentElement.classList.toggle("collapsed");
+      navigator.vibrate?.(50);
     }
 
     // Popup Control
     function openPopup(type) {
       document.getElementById(type + "Popup").style.display = "flex";
+      navigator.vibrate?.(50);
     }
 
     function closePopup(type) {
@@ -1279,6 +1301,9 @@
         document.getElementById("withdrawSuccess").style.display = 'none';
       } else if (type === 'buy') {
         document.getElementById("buyError").style.display = 'none';
+      } else if (type === 'proof') {
+        document.getElementById("proofError").style.display = 'none';
+        document.getElementById("proofFile").value = "";
       }
     }
 
@@ -1288,10 +1313,9 @@
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         document.getElementById("sessionTimeoutPopup").style.display = "flex";
-      }, 30 * 60 * 1000); // 30 minutes
+      }, 15 * 60 * 1000); // 15 minutes
     }
-    document.addEventListener("mousemove", resetTimeout);
-    document.addEventListener("keydown", resetTimeout);
+    document.addEventListener("touchstart", resetTimeout);
     resetTimeout();
 
     // Input Sanitization
@@ -1310,6 +1334,7 @@
         logActivity("Claimed daily login bonus ₹1");
         localStorage.setItem("lastLogin", now);
         alert("Daily Login Bonus: ₹1");
+        navigator.vibrate?.(200);
       }
     }
     checkDailyLogin();
@@ -1324,23 +1349,25 @@
       feedbackList.push({ feedback, date: new Date().toISOString() });
       localStorage.setItem("feedbackList", JSON.stringify(feedbackList));
       logActivity("Submitted feedback");
-      alert("Thank you for your feedback!");
+      alert("Feedback submitted!");
       closePopup('feedback');
+      navigator.vibrate?.(200);
     }
 
     // Scroll to Top
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: "smooth" });
+      navigator.vibrate?.(50);
     }
 
     // Show/Hide Back to Top
     window.addEventListener("scroll", () => {
-      document.querySelector(".back-to-top").style.display = window.scrollY > 300 ? "block" : "none";
+      document.querySelector(".back-to-top").style.display = window.scrollY > 200 ? "block" : "none";
     });
 
     // Reset All
     function resetAll() {
-      if (confirm("Reset all data? This will clear balance, tasks, and details.")) {
+      if (confirm("Reset all data?")) {
         localStorage.clear();
         location.reload();
       }
