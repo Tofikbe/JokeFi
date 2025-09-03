@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>JokeFI Watch - Doraemon</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -31,7 +33,7 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      opacity: 0.5;
+      opacity: 0.3;
     }
     .overlay {
       position: fixed;
@@ -63,6 +65,7 @@
       animation: marquee 12s linear infinite;
       display: inline-block;
       padding-right: 100%;
+      will-change: transform;
     }
     .marquee:hover {
       animation-play-state: paused;
@@ -95,6 +98,10 @@
       color: #00ffcc;
       padding: 10px;
       text-decoration: none;
+      transition: background 0.2s ease;
+    }
+    .menu a:hover {
+      background: rgba(0, 255, 204, 0.2);
     }
     .language-switch {
       margin: 15px;
@@ -109,7 +116,7 @@
       border: 2px solid #00ffcc;
       width: 100%;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: transform 0.2s ease;
     }
     .language-switch select:hover {
       transform: scale(1.03);
@@ -126,6 +133,11 @@
       background: #222;
       color: #fff;
       border: 2px solid #00ffcc;
+      transition: border-color 0.2s ease;
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: #00cc99;
     }
     .episode-container {
       padding: 15px;
@@ -135,26 +147,21 @@
       background: #1c1c1c;
       border-radius: 10px;
       margin-bottom: 15px;
-      padding: 10px;
+      padding: 15px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
-      animation: fadeIn 0.5s ease-in;
+      will-change: transform, box-shadow;
     }
     .episode:hover {
       transform: translateY(-5px);
       box-shadow: 0 5px 20px rgba(0, 255, 204, 0.4);
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
     .episode h3 {
       font-size: 18px;
       margin: 10px 0;
       color: #00ffcc;
       font-weight: 600;
-      animation: slideIn 0.5s ease;
     }
     .episode-number {
       position: absolute;
@@ -177,10 +184,11 @@
       object-fit: cover;
       border-radius: 8px;
       margin-bottom: 10px;
+      loading: lazy;
     }
     iframe {
       width: 100%;
-      height: 160px;
+      height: 200px;
       border-radius: 8px;
       border: none;
       background: #000;
@@ -194,7 +202,7 @@
       font-size: 40px;
       color: #00ffcc;
       opacity: 0.8;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.2s ease;
       pointer-events: none;
     }
     iframe:not(:empty) + .play-overlay {
@@ -220,10 +228,6 @@
       0% { transform: translate(-50%, -50%) rotate(0deg); }
       100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
-    @keyframes slideIn {
-      from { transform: translateX(-20px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
     .scroll-progress {
       position: fixed;
       top: 0;
@@ -232,7 +236,7 @@
       background: #00ffcc;
       width: 0;
       z-index: 1001;
-      transition: width 0.2s ease;
+      transition: width 0.1s ease;
     }
     .back-to-top {
       position: fixed;
@@ -249,7 +253,7 @@
       font-size: 20px;
       cursor: pointer;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.2s ease;
     }
     .back-to-top.visible {
       opacity: 1;
@@ -260,15 +264,24 @@
       font-size: 14px;
       color: #aaa;
       text-align: center;
-      animation: slideUp 0.5s ease;
     }
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    @media (min-width: 768px) {
+      .episode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+      }
+      .episode {
+        margin-bottom: 0;
+      }
+      iframe {
+        height: 180px;
+      }
     }
     @media (prefers-reduced-motion: reduce) {
       .marquee, .episode, .episode h3, footer, .back-to-top {
         animation: none;
+        transition: none;
       }
     }
   </style>
@@ -288,7 +301,7 @@
   </header>
 
   <div class="search-bar">
-    <input type="text" id="search" placeholder="Search episodes..." oninput="searchEpisodes()">
+    <input type="text" id="search" placeholder="Search episodes..." oninput="debouncedSearch()">
   </div>
 
   <div class="language-switch">
@@ -303,7 +316,7 @@
       <div class="episode-number">1</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/9S2HfqQUMpE/default.jpg" alt="Episode 1">
       <h3>Doraemon Episode 1 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/9S2HfqQUMpE" allowfullscreen aria-label="Doraemon Episode 1"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/9S2HfqQUMpE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 1"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -311,7 +324,7 @@
       <div class="episode-number">2</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/xR6jIhXs8y4/default.jpg" alt="Episode 2">
       <h3>Doraemon Episode 2 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/xR6jIhXs8y4" allowfullscreen aria-label="Doraemon Episode 2"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/xR6jIhXs8y4?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 2"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -319,7 +332,7 @@
       <div class="episode-number">3</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/MHELLoml-VA/default.jpg" alt="Episode 3">
       <h3>Doraemon Episode 3 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/MHELLoml-VA" allowfullscreen aria-label="Doraemon Episode 3"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/MHELLoml-VA?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 3"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -327,7 +340,7 @@
       <div class="episode-number">4</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/x9emqHDa3M8/default.jpg" alt="Episode 4">
       <h3>Doraemon Episode 4 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/x9emqHDa3M8" allowfullscreen aria-label="Doraemon Episode 4"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/x9emqHDa3M8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 4"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -335,7 +348,7 @@
       <div class="episode-number">5</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/_MtTbLBrxVo/default.jpg" alt="Episode 5">
       <h3>Doraemon Episode 5 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/_MtTbLBrxVo" allowfullscreen aria-label="Doraemon Episode 5"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/_MtTbLBrxVo?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 5"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -343,7 +356,7 @@
       <div class="episode-number">6</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/gv33XBptgOc/default.jpg" alt="Episode 6">
       <h3>Doraemon Episode 6 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/gv33XBptgOc" allowfullscreen aria-label="Doraemon Episode 6"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/gv33XBptgOc?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 6"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -351,7 +364,7 @@
       <div class="episode-number">7</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/LSdzDPdJD5Q/default.jpg" alt="Episode 7">
       <h3>Doraemon Episode 7 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/LSdzDPdJD5Q" allowfullscreen aria-label="Doraemon Episode 7"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/LSdzDPdJD5Q?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 7"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -359,7 +372,7 @@
       <div class="episode-number">8</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/TuuOXpN3Dxg/default.jpg" alt="Episode 8">
       <h3>Doraemon Episode 8 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/TuuOXpN3Dxg" allowfullscreen aria-label="Doraemon Episode 8"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/TuuOXpN3Dxg?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 8"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -367,7 +380,7 @@
       <div class="episode-number">9</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/c95GLLibbmE/default.jpg" alt="Episode 9">
       <h3>Doraemon Episode 9 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/c95GLLibbmE" allowfullscreen aria-label="Doraemon Episode 9"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/c95GLLibbmE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 9"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -375,7 +388,7 @@
       <div class="episode-number">10</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/ATdcsPge6Qg/default.jpg" alt="Episode 10">
       <h3>Doraemon Episode 10 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/ATdcsPge6Qg" allowfullscreen aria-label="Doraemon Episode 10"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/ATdcsPge6Qg?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 10"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -383,7 +396,7 @@
       <div class="episode-number">11</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/yJLtGLH-yeU/default.jpg" alt="Episode 11">
       <h3>Doraemon Episode 11 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/yJLtGLH-yeU" allowfullscreen aria-label="Doraemon Episode 11"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/yJLtGLH-yeU?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 11"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -391,7 +404,7 @@
       <div class="episode-number">12</div>
       <img class="thumbnail" src="https://img.youtube.com/vi/zMvgOhHpgcQ/default.jpg" alt="Episode 12">
       <h3>Doraemon Episode 12 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/zMvgOhHpgcQ" allowfullscreen aria-label="Doraemon Episode 12"></iframe>
+      <iframe data-src="https://www.youtube.com/embed/zMvgOhHpgcQ?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 12"></iframe>
       <div class="play-overlay">▶</div>
       <div class="loading"></div>
     </div>
@@ -404,9 +417,18 @@
   </footer>
 
   <script>
+    // Utility: Debounce function to limit frequent calls
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
     // Particle Animation
     const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false });
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     let particles = [];
@@ -414,9 +436,9 @@
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedX = Math.random() * 0.3 - 0.15;
+        this.speedY = Math.random() * 0.3 - 0.15;
         this.color = `hsl(${Math.random() * 60 + 180}, 70%, 50%)`;
       }
       update() {
@@ -434,7 +456,7 @@
     }
     function initParticles() {
       particles = [];
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 30; i++) { // Reduced particles for performance
         particles.push(new Particle());
       }
     }
@@ -456,17 +478,17 @@
 
     // Language Switcher
     function changeLanguage() {
-      let lang = document.getElementById('lang').value;
-      let headline = document.getElementById('headline');
+      const lang = document.getElementById('lang').value;
+      const headline = document.getElementById('headline');
       if (lang === 'hi') {
-        headline.innerText = 'आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';
+        headline.textContent = 'आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';
         document.querySelectorAll('.episode h3').forEach((el, index) => {
-          el.innerText = `डोरेमोन एपिसोड ${index + 1} (हिंदी)`;
+          el.textContent = `डोरेमोन एपिसोड ${index + 1} (हिंदी)`;
         });
       } else {
-        headline.innerText = 'You can watch every cartoon for free on this website';
+        headline.textContent = 'You can watch every cartoon for free on this website';
         document.querySelectorAll('.episode h3').forEach((el, index) => {
-          el.innerText = `Doraemon Episode ${index + 1} (Hindi)`;
+          el.textContent = `Doraemon Episode ${index + 1} (Hindi)`;
         });
       }
     }
@@ -475,10 +497,11 @@
     function searchEpisodes() {
       const query = document.getElementById('search').value.toLowerCase();
       document.querySelectorAll('.episode').forEach(episode => {
-        const title = episode.querySelector('h3').innerText.toLowerCase();
+        const title = episode.querySelector('h3').textContent.toLowerCase();
         episode.style.display = title.includes(query) ? 'block' : 'none';
       });
     }
+    const debouncedSearch = debounce(searchEpisodes, 300);
 
     // Hamburger Menu
     function toggleMenu() {
@@ -486,13 +509,14 @@
     }
 
     // Scroll Progress and Back to Top
-    window.addEventListener('scroll', () => {
+    const updateScrollProgress = debounce(() => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const scrollPercent = (scrollTop / docHeight) * 100;
       document.getElementById('scrollProgress').style.width = scrollPercent + '%';
       document.getElementById('backToTop').classList.toggle('visible', scrollTop > 300);
-    });
+    }, 50);
+    window.addEventListener('scroll', updateScrollProgress);
 
     // Lazy Loading Iframes
     const iframes = document.querySelectorAll('iframe');
@@ -500,31 +524,33 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const iframe = entry.target;
-          if (!iframe.src) {
+          if (iframe.dataset.src && !iframe.src) {
             iframe.src = iframe.dataset.src;
           }
           observer.unobserve(iframe);
         }
       });
-    });
-    iframes.forEach(iframe => {
-      iframe.dataset.src = iframe.src;
-      iframe.src = '';
-      observer.observe(iframe);
-    });
+    }, { rootMargin: '100px' });
+    iframes.forEach(iframe => observer.observe(iframe));
 
     // Swipe Gestures
     let touchStartX = 0;
-    let touchEndX = 0;
+    let touchStartY = 0;
     document.addEventListener('touchstart', e => {
       touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
     });
     document.addEventListener('touchend', e => {
-      touchEndX = e.changedTouches[0].screenX;
-      if (touchStartX - touchEndX > 50) {
-        window.scrollBy({ top: 160, behavior: 'smooth' });
-      } else if (touchEndX - touchStartX > 50) {
-        window.scrollBy({ top: -160, behavior: 'smooth' });
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const deltaX = touchStartX - touchEndX;
+      const deltaY = touchStartY - touchEndY;
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        if (deltaX > 0) {
+          window.scrollBy({ top: 200, behavior: 'smooth' });
+        } else {
+          window.scrollBy({ top: -200, behavior: 'smooth' });
+        }
       }
     });
   </script>
