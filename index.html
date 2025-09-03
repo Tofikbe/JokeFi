@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayEasy - Modern Payment App</title>
+    <title>JokeFI Pay - Enhanced Mobile Payment App</title>
     <style>
         * {
             margin: 0;
@@ -18,6 +18,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            font-size: 14px; /* Reduced for better mobile fit */
         }
 
         body.dark {
@@ -26,16 +27,16 @@
         }
 
         .container {
-            max-width: 480px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 15px;
+            padding: 10px; /* Reduced padding for mobile */
             flex: 1;
         }
 
         .navbar {
-            background-color: #007bff;
+            background-color: #ff5722; /* Changed to vibrant orange for enhancement */
             color: white;
-            padding: 15px;
+            padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -45,19 +46,19 @@
         }
 
         body.dark .navbar {
-            background-color: #003087;
+            background-color: #bf360c;
         }
 
         .navbar .logo {
-            font-size: 20px;
+            font-size: 18px; /* Adjusted for mobile */
             font-weight: bold;
         }
 
         .navbar .nav-links a {
             color: white;
             text-decoration: none;
-            margin: 0 10px;
-            font-size: 14px;
+            margin: 0 8px;
+            font-size: 12px; /* Smaller for mobile */
         }
 
         .navbar .nav-links a:hover {
@@ -66,9 +67,9 @@
 
         .search-bar {
             background-color: white;
-            padding: 10px;
+            padding: 8px;
             position: sticky;
-            top: 60px;
+            top: 48px; /* Adjusted for navbar height */
             z-index: 100;
         }
 
@@ -78,10 +79,10 @@
 
         .search-bar input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 16px;
+            border-radius: 20px;
+            font-size: 14px;
             outline: none;
         }
 
@@ -94,17 +95,17 @@
         .app-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+            gap: 10px; /* Reduced gap for better fit */
+            margin-top: 10px;
         }
 
         .app-card {
             background-color: white;
-            border-radius: 15px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 8px;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         body.dark .app-card {
@@ -112,26 +113,26 @@
         }
 
         .app-card:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .app-icon {
-            width: 50px;
-            height: 50px;
-            background-color: #007bff;
-            border-radius: 10px;
-            margin: 0 auto 10px;
+            width: 40px; /* Smaller for mobile */
+            height: 40px;
+            border-radius: 8px;
+            margin: 0 auto 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
 
         .app-card h3 {
-            font-size: 12px;
-            margin-bottom: 10px;
+            font-size: 10px; /* Smaller text for fit */
+            margin-bottom: 8px;
             color: #333;
         }
 
@@ -140,19 +141,19 @@
         }
 
         .app-card button {
-            background-color: #28a745;
+            background-color: #4caf50; /* Changed to green for enhancement */
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 10px;
             cursor: pointer;
             width: 100%;
             transition: background-color 0.2s;
         }
 
         .app-card button:hover {
-            background-color: #218838;
+            background-color: #388e3c;
         }
 
         .bottom-nav {
@@ -161,11 +162,10 @@
             position: fixed;
             bottom: 0;
             width: 100%;
-            max-width: 480px;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            padding: 8px 0;
+            box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
 
@@ -177,15 +177,16 @@
         .nav-item {
             text-align: center;
             cursor: pointer;
+            font-size: 12px;
         }
 
         .nav-item.active {
-            color: #007bff;
+            color: #ff5722; /* Matching new navbar color */
             font-weight: bold;
         }
 
         .nav-item span {
-            font-size: 14px;
+            display: block;
             color: #555;
         }
 
@@ -200,7 +201,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6); /* Enhanced overlay */
             justify-content: center;
             align-items: center;
             z-index: 2000;
@@ -208,11 +209,13 @@
 
         .modal-content {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
+            padding: 15px;
+            border-radius: 12px;
+            width: 95%; /* Fuller width for mobile */
+            max-width: 350px;
             position: relative;
+            overflow-y: auto;
+            max-height: 80vh;
         }
 
         body.dark .modal-content {
@@ -221,24 +224,29 @@
 
         .modal-content .close {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
+            top: 5px;
+            right: 5px;
+            font-size: 20px;
             cursor: pointer;
         }
 
         .modal-content form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
+        }
+
+        .modal-content label {
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .modal-content select,
         .modal-content input {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
         }
 
         body.dark .modal-content select,
@@ -249,28 +257,30 @@
         }
 
         .modal-content button {
-            background-color: #28a745;
+            background-color: #4caf50;
             color: white;
             border: none;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
         }
 
         .modal-content button:hover {
-            background-color: #218838;
+            background-color: #388e3c;
         }
 
         .transaction-history {
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         .transaction-history table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
+            font-size: 12px; /* Adjusted for mobile */
         }
 
         body.dark .transaction-history table {
@@ -279,10 +289,9 @@
 
         .transaction-history th,
         .transaction-history td {
-            padding: 12px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid #ddd;
-            font-size: 14px;
         }
 
         body.dark .transaction-history th,
@@ -291,28 +300,42 @@
         }
 
         .wallet {
-            margin: 20px 0;
+            margin: 15px 0;
             text-align: center;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        body.dark .wallet {
+            background-color: #2a2a2a;
+        }
+
+        .wallet h2 {
+            font-size: 16px;
         }
 
         .wallet button {
-            background-color: #007bff;
+            background-color: #ff5722;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 8px 16px;
+            border-radius: 4px;
             cursor: pointer;
+            margin-top: 5px;
         }
 
         .wallet button:hover {
-            background-color: #0056b3;
+            background-color: #e64a19;
         }
 
         .profile, .settings, .support, .terms {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 10px;
             background-color: white;
-            border-radius: 10px;
+            border-radius: 8px;
+            font-size: 12px;
         }
 
         body.dark .profile,
@@ -324,22 +347,23 @@
 
         .theme-toggle {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: #007bff;
+            top: 5px;
+            right: 5px;
+            background-color: #ff5722;
             color: white;
             border: none;
-            padding: 8px;
-            border-radius: 5px;
+            padding: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .notifications {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 10px;
             background-color: white;
-            border-radius: 10px;
+            border-radius: 8px;
+            font-size: 12px;
         }
 
         body.dark .notifications {
@@ -348,30 +372,31 @@
 
         .logout {
             display: block;
-            margin: 20px auto;
-            background-color: #dc3545;
+            margin: 15px auto;
+            background-color: #f44336;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 8px 16px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
         }
 
         @media (min-width: 769px) {
             .container {
-                max-width: 480px;
+                max-width: 480px; /* Simulate mobile on desktop */
             }
 
             .app-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr); /* Keep 3 for mobile feel */
             }
         }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle</button>
     <div class="navbar">
-        <div class="logo">PayEasy</div>
+        <div class="logo">JokeFI Pay</div>
         <div class="nav-links">
             <a href="#dashboard">Dashboard</a>
             <a href="#transactions">Transactions</a>
@@ -384,131 +409,18 @@
 
     <div class="container">
         <div class="search-bar">
-            <input type="text" id="search" placeholder="Search payment categories..." oninput="searchCategories()">
+            <input type="text" id="search" placeholder="Search categories..." oninput="searchCategories()">
         </div>
 
         <div class="wallet">
-            <h2>Wallet Balance: ₹<span id="wallet-balance">1000</span></h2>
-            <button onclick="openAddMoneyModal()">Add Money</button>
+            <h2>Balance: ₹<span id="wallet-balance">1000.00</span></h2>
+            <button onclick="openAddMoneyModal()">Add Funds</button>
         </div>
 
-        <div class="app-grid" id="dashboard">
-            <!-- Payment Categories -->
-            <div class="app-card">
-                <div class="app-icon">CC</div>
-                <h3>Credit Card Bill</h3>
-                <button onclick="openPaymentModal('Credit Card Bill')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">MR</div>
-                <h3>Mobile Recharge</h3>
-                <button onclick="openPaymentModal('Mobile Recharge')">Recharge</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">DTH</div>
-                <h3>DTH Recharge</h3>
-                <button onclick="openPaymentModal('DTH Recharge')">Recharge</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">EB</div>
-                <h3>Electricity Bill</h3>
-                <button onclick="openPaymentModal('Electricity Bill')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">GB</div>
-                <h3>Gas Bill</h3>
-                <button onclick="openPaymentModal('Gas Bill')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">WB</div>
-                <h3>Water Bill</h3>
-                <button onclick="openPaymentModal('Water Bill')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">BB</div>
-                <h3>Broadband Bill</h3>
-                <button onclick="openPaymentModal('Broadband Bill')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">SF</div>
-                <h3>School Fee</h3>
-                <button onclick="openPaymentModal('School Fee')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">CF</div>
-                <h3>College Fee</h3>
-                <button onclick="openPaymentModal('College Fee')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">EF</div>
-                <h3>Education Fee</h3>
-                <button onclick="openPaymentModal('Education Fee')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">IP</div>
-                <h3>Insurance Payment</h3>
-                <button onclick="openPaymentModal('Insurance Payment')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">EP</div>
-                <h3>EMI Payment</h3>
-                <button onclick="openPaymentModal('EMI Payment')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">LR</div>
-                <h3>Loan Repayment</h3>
-                <button onclick="openPaymentModal('Loan Repayment')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">DO</div>
-                <h3>Donation</h3>
-                <button onclick="openPaymentModal('Donation')">Donate</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">SP</div>
-                <h3>Shopping Payment</h3>
-                <button onclick="openPaymentModal('Shopping Payment')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">TB</div>
-                <h3>Travel Booking</h3>
-                <button onclick="openPaymentModal('Travel Booking')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">MT</div>
-                <h3>Movie Ticket</h3>
-                <button onclick="openPaymentModal('Movie Ticket')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">FR</div>
-                <h3>Fastag Recharge</h3>
-                <button onclick="openPaymentModal('Fastag Recharge')">Recharge</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">MR</div>
-                <h3>Metro Recharge</h3>
-                <button onclick="openPaymentModal('Metro Recharge')">Recharge</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">HR</div>
-                <h3>Housing Rent</h3>
-                <button onclick="openPaymentModal('Housing Rent')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">PT</div>
-                <h3>Property Tax</h3>
-                <button onclick="openPaymentModal('Property Tax')">Pay Now</button>
-            </div>
-            <div class="app-card">
-                <div class="app-icon">VT</div>
-                <h3>Vehicle Tax</h3>
-                <button onclick="openPaymentModal('Vehicle Tax')">Pay Now</button>
-            </div>
-            <!-- Additional categories added via JavaScript -->
-        </div>
+        <div class="app-grid" id="dashboard"></div> <!-- Dynamically populated -->
 
         <div class="transaction-history" id="transactions">
-            <h2>Transaction History</h2>
+            <h2>Transactions</h2>
             <table id="transaction-table">
                 <thead>
                     <tr>
@@ -528,29 +440,30 @@
             <p>Name: John Doe</p>
             <p>Email: john.doe@example.com</p>
             <p>Phone: +91 9876543210</p>
+            <button onclick="alert('Profile updated!')">Edit Profile</button> <!-- Enhanced with button -->
         </div>
 
         <div class="settings" id="settings">
             <h2>Settings</h2>
-            <p>Manage your account settings here.</p>
-            <button onclick="alert('Settings updated!')">Update Settings</button>
+            <p>Manage settings.</p>
+            <button onclick="alert('Settings saved!')">Save Changes</button>
         </div>
 
         <div class="notifications">
             <h2>Notifications</h2>
-            <p id="notification-list">No new notifications.</p>
+            <p id="notification-list">No notifications.</p>
         </div>
 
         <div class="support" id="support">
-            <h2>Support/Help</h2>
-            <p>Contact us at support@payeasy.com</p>
-            <button onclick="alert('Support request sent!')">Contact Support</button>
+            <h2>Support</h2>
+            <p>Contact: support@jokefipay.com</p>
+            <button onclick="alert('Ticket submitted!')">Submit Ticket</button>
         </div>
 
         <div class="terms" id="terms">
-            <h2>Terms and Conditions</h2>
-            <p>Read our terms and conditions here.</p>
-            <button onclick="alert('Terms accepted!')">Accept Terms</button>
+            <h2>Terms</h2>
+            <p>Read terms here.</p>
+            <button onclick="alert('Terms accepted!')">Accept</button>
         </div>
 
         <button class="logout" onclick="logout()">Logout</button>
@@ -575,12 +488,24 @@
         </div>
     </div>
 
-    <!-- Payment Modal -->
+    <!-- Enhanced Payment Modal with Category-Specific Fields -->
     <div class="modal" id="payment-modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('payment-modal')">&times;</span>
             <h2 id="modal-title">Make Payment</h2>
             <form id="payment-form" onsubmit="processPayment(event)">
+                <label for="provider">Provider/Service</label>
+                <select id="provider" required>
+                    <option value="">Select Provider</option>
+                    <option value="Provider1">Provider1</option>
+                    <option value="Provider2">Provider2</option>
+                    <option value="Provider3">Provider3</option>
+                    <!-- Add more as per category in JS -->
+                </select>
+                <label for="reference">Reference/Consumer No.</label>
+                <input type="text" id="reference" placeholder="e.g., Mobile No., Consumer ID" required>
+                <label for="additional">Additional Details</label>
+                <input type="text" id="additional" placeholder="e.g., Plan, Due Date" required>
                 <label for="recipient">Recipient</label>
                 <select id="recipient" required>
                     <option value="">Select Recipient</option>
@@ -592,20 +517,27 @@
                 </select>
                 <label for="amount">Amount (₹)</label>
                 <input type="number" id="amount" min="1" required>
-                <button type="submit">Pay Now</button>
+                <button type="submit">Confirm Payment</button>
             </form>
         </div>
     </div>
 
-    <!-- Add Money Modal -->
+    <!-- Add Money Modal Enhanced -->
     <div class="modal" id="add-money-modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('add-money-modal')">&times;</span>
-            <h2>Add Money to Wallet</h2>
+            <h2>Add Funds</h2>
             <form id="add-money-form" onsubmit="addMoney(event)">
+                <label for="add-source">Source</label>
+                <select id="add-source" required>
+                    <option value="">Select Source</option>
+                    <option value="Bank">Bank Transfer</option>
+                    <option value="Card">Credit/Debit Card</option>
+                    <option value="UPI">UPI</option>
+                </select>
                 <label for="add-amount">Amount (₹)</label>
                 <input type="number" id="add-amount" min="1" required>
-                <button type="submit">Add Money</button>
+                <button type="submit">Add Now</button>
             </form>
         </div>
     </div>
@@ -614,6 +546,7 @@
         let walletBalance = 1000;
         let transactions = [];
         let currentCategory = '';
+        const colors = ['#ff5722', '#4caf50', '#2196f3', '#ffc107', '#9c27b0']; // Enhanced with random colors for icons
 
         function toggleTheme() {
             document.body.classList.toggle('dark');
@@ -622,6 +555,16 @@
         function openPaymentModal(category) {
             currentCategory = category;
             document.getElementById('modal-title').textContent = `Pay for ${category}`;
+            // Dynamically adjust provider options based on category (example)
+            const providerSelect = document.getElementById('provider');
+            providerSelect.innerHTML = '<option value="">Select Provider</option>';
+            if (category.includes('Recharge')) {
+                providerSelect.innerHTML += '<option value="Airtel">Airtel</option><option value="Jio">Jio</option><option value="Vodafone">Vodafone</option>';
+            } else if (category.includes('Bill')) {
+                providerSelect.innerHTML += '<option value="State Board">State Board</option><option value="Private">Private</option>';
+            } else {
+                providerSelect.innerHTML += '<option value="General1">General1</option><option value="General2">General2</option>';
+            }
             document.getElementById('payment-modal').style.display = 'flex';
         }
 
@@ -635,16 +578,19 @@
 
         function processPayment(event) {
             event.preventDefault();
+            const provider = document.getElementById('provider').value;
+            const reference = document.getElementById('reference').value;
+            const additional = document.getElementById('additional').value;
             const recipient = document.getElementById('recipient').value;
             const amount = parseFloat(document.getElementById('amount').value);
 
-            if (!recipient || isNaN(amount) || amount <= 0) {
+            if (!provider || !reference || !additional || !recipient || isNaN(amount) || amount <= 0) {
                 alert('Please fill all fields correctly.');
                 return;
             }
 
             if (amount > walletBalance) {
-                alert('Insufficient wallet balance.');
+                alert('Insufficient balance.');
                 return;
             }
 
@@ -660,25 +606,26 @@
             };
             transactions.push(transaction);
             updateTransactionHistory();
-            updateNotifications(`Payment of ₹${amount} for ${currentCategory} to ${recipient} successful.`);
-            alert(`Payment of ₹${amount} for ${currentCategory} to ${recipient} successful!`);
+            updateNotifications(`Paid ₹${amount} for ${currentCategory} to ${recipient}. Ref: ${reference}`);
+            alert(`Payment successful! Details: Provider-${provider}, Ref-${reference}, Add-${additional}`);
             closeModal('payment-modal');
             document.getElementById('payment-form').reset();
         }
 
         function addMoney(event) {
             event.preventDefault();
+            const source = document.getElementById('add-source').value;
             const amount = parseFloat(document.getElementById('add-amount').value);
 
-            if (isNaN(amount) || amount <= 0) {
-                alert('Please enter a valid amount.');
+            if (!source || isNaN(amount) || amount <= 0) {
+                alert('Please fill all fields correctly.');
                 return;
             }
 
             walletBalance += amount;
             document.getElementById('wallet-balance').textContent = walletBalance.toFixed(2);
-            updateNotifications(`Added ₹${amount} to wallet.`);
-            alert(`Added ₹${amount} to wallet successfully!`);
+            updateNotifications(`Added ₹${amount} from ${source}.`);
+            alert(`Funds added successfully from ${source}!`);
             closeModal('add-money-modal');
             document.getElementById('add-money-form').reset();
         }
@@ -700,8 +647,7 @@
         }
 
         function updateNotifications(message) {
-            const notificationList = document.getElementById('notification-list');
-            notificationList.textContent = message;
+            document.getElementById('notification-list').textContent = message;
         }
 
         function searchCategories() {
@@ -717,51 +663,135 @@
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');
             if (tab === 'home') {
-                document.getElementById('dashboard').scrollIntoView();
+                document.getElementById('dashboard').scrollIntoView({behavior: 'smooth'});
             } else if (tab === 'wallet') {
-                document.querySelector('.wallet').scrollIntoView();
+                document.querySelector('.wallet').scrollIntoView({behavior: 'smooth'});
             } else if (tab === 'offers') {
-                alert('No offers available at the moment.');
+                alert('Exclusive offers coming soon!');
             } else if (tab === 'profile') {
-                document.getElementById('profile').scrollIntoView();
+                document.getElementById('profile').scrollIntoView({behavior: 'smooth'});
             }
         }
 
         function logout() {
-            alert('Logged out successfully!');
+            alert('Logged out!');
             window.location.reload();
         }
 
-        // Dynamically add more payment categories
-        const additionalCategories = [
-            'Health Insurance', 'Car Loan EMI', 'Home Loan EMI', 'Cable TV Bill', 'Internet Bill',
-            'Municipal Tax', 'Charity Contribution', 'Gym Membership', 'Life Insurance', 'Medical Bill',
-            'Hospital Bill', 'Credit Card EMI', 'Personal Loan EMI', 'Education Loan EMI', 'Utility Bill',
-            'Mobile Bill', 'Landline Bill', 'Gas Cylinder Booking', 'Piped Gas Bill', 'Water Tanker Payment',
-            'Parking Fee', 'Toll Payment', 'Bus Ticket Payment', 'Train Ticket Payment', 'Flight Ticket Payment',
-            'Hotel Booking Payment', 'Event Ticket Payment', 'Concert Ticket Payment', 'Sports Event Payment',
-            'Online Subscription', 'Streaming Service Payment', 'Magazine Subscription', 'Newspaper Subscription',
-            'Club Membership', 'Professional Fee', 'Consultancy Fee', 'Legal Fee', 'Tax Consultant Fee',
-            'Audit Fee', 'Home Maintenance', 'Gardening Service', 'Cleaning Service', 'Pest Control Payment',
-            'Security Service Payment', 'Laundry Service', 'Dry Cleaning Payment', 'Courier Payment',
-            'Freight Payment', 'Shipping Payment', 'Storage Fee', 'Warehouse Rent', 'Office Rent',
-            'Shop Rent', 'Apartment Maintenance', 'Society Maintenance', 'Lift Maintenance', 'Generator Bill',
-            'Solar Panel Maintenance', 'AC Servicing', 'Plumbing Service', 'Electrical Service',
-            'Carpentry Service', 'Painting Service', 'Renovation Payment', 'Construction Payment',
-            'Interior Designer Fee', 'Architect Fee', 'Brokerage Fee', 'Real Estate Agent Fee',
-            'Property Registration Fee', 'Stamp Duty Payment', 'Road Tax', 'Vehicle Insurance',
-            'Bike Insurance', 'Scooter EMI', 'Car Maintenance', 'Bike Maintenance', 'Fuel Payment'
+        // Enhanced category list with random icon colors
+        const categories = [
+            {name: 'Credit Card Bill', icon: 'CC', button: 'Pay Now'},
+            {name: 'Mobile Recharge', icon: 'MR', button: 'Recharge'},
+            {name: 'DTH Recharge', icon: 'DTH', button: 'Recharge'},
+            {name: 'Electricity Bill', icon: 'EB', button: 'Pay Now'},
+            {name: 'Gas Bill', icon: 'GB', button: 'Pay Now'},
+            {name: 'Water Bill', icon: 'WB', button: 'Pay Now'},
+            {name: 'Broadband Bill', icon: 'BB', button: 'Pay Now'},
+            {name: 'School Fee', icon: 'SF', button: 'Pay Now'},
+            {name: 'College Fee', icon: 'CF', button: 'Pay Now'},
+            {name: 'Education Fee', icon: 'EF', button: 'Pay Now'},
+            {name: 'Insurance Payment', icon: 'IP', button: 'Pay Now'},
+            {name: 'EMI Payment', icon: 'EP', button: 'Pay Now'},
+            {name: 'Loan Repayment', icon: 'LR', button: 'Pay Now'},
+            {name: 'Donation', icon: 'DO', button: 'Donate'},
+            {name: 'Shopping Payment', icon: 'SP', button: 'Pay Now'},
+            {name: 'Travel Booking', icon: 'TB', button: 'Pay Now'},
+            {name: 'Movie Ticket', icon: 'MT', button: 'Pay Now'},
+            {name: 'Fastag Recharge', icon: 'FR', button: 'Recharge'},
+            {name: 'Metro Recharge', icon: 'MR', button: 'Recharge'},
+            {name: 'Housing Rent', icon: 'HR', button: 'Pay Now'},
+            {name: 'Property Tax', icon: 'PT', button: 'Pay Now'},
+            {name: 'Vehicle Tax', icon: 'VT', button: 'Pay Now'},
+            // Additional 75+
+            {name: 'Health Insurance', icon: 'HI', button: 'Pay Now'},
+            {name: 'Car Loan EMI', icon: 'CL', button: 'Pay Now'},
+            {name: 'Home Loan EMI', icon: 'HL', button: 'Pay Now'},
+            {name: 'Cable TV Bill', icon: 'CT', button: 'Pay Now'},
+            {name: 'Internet Bill', icon: 'IB', button: 'Pay Now'},
+            {name: 'Municipal Tax', icon: 'MT', button: 'Pay Now'},
+            {name: 'Charity Contribution', icon: 'CC', button: 'Donate'},
+            {name: 'Gym Membership', icon: 'GM', button: 'Pay Now'},
+            {name: 'Life Insurance', icon: 'LI', button: 'Pay Now'},
+            {name: 'Medical Bill', icon: 'MB', button: 'Pay Now'},
+            {name: 'Hospital Bill', icon: 'HB', button: 'Pay Now'},
+            {name: 'Credit Card EMI', icon: 'CE', button: 'Pay Now'},
+            {name: 'Personal Loan EMI', icon: 'PL', button: 'Pay Now'},
+            {name: 'Education Loan EMI', icon: 'EL', button: 'Pay Now'},
+            {name: 'Utility Bill', icon: 'UB', button: 'Pay Now'},
+            {name: 'Mobile Bill', icon: 'MB', button: 'Pay Now'},
+            {name: 'Landline Bill', icon: 'LB', button: 'Pay Now'},
+            {name: 'Gas Cylinder Booking', icon: 'GC', button: 'Book'},
+            {name: 'Piped Gas Bill', icon: 'PG', button: 'Pay Now'},
+            {name: 'Water Tanker Payment', icon: 'WT', button: 'Pay Now'},
+            {name: 'Parking Fee', icon: 'PF', button: 'Pay Now'},
+            {name: 'Toll Payment', icon: 'TP', button: 'Pay Now'},
+            {name: 'Bus Ticket Payment', icon: 'BT', button: 'Pay Now'},
+            {name: 'Train Ticket Payment', icon: 'TT', button: 'Pay Now'},
+            {name: 'Flight Ticket Payment', icon: 'FT', button: 'Pay Now'},
+            {name: 'Hotel Booking Payment', icon: 'HB', button: 'Pay Now'},
+            {name: 'Event Ticket Payment', icon: 'ET', button: 'Pay Now'},
+            {name: 'Concert Ticket Payment', icon: 'CT', button: 'Pay Now'},
+            {name: 'Sports Event Payment', icon: 'SE', button: 'Pay Now'},
+            {name: 'Online Subscription', icon: 'OS', button: 'Subscribe'},
+            {name: 'Streaming Service Payment', icon: 'SS', button: 'Pay Now'},
+            {name: 'Magazine Subscription', icon: 'MS', button: 'Subscribe'},
+            {name: 'Newspaper Subscription', icon: 'NS', button: 'Subscribe'},
+            {name: 'Club Membership', icon: 'CM', button: 'Pay Now'},
+            {name: 'Professional Fee', icon: 'PF', button: 'Pay Now'},
+            {name: 'Consultancy Fee', icon: 'CF', button: 'Pay Now'},
+            {name: 'Legal Fee', icon: 'LF', button: 'Pay Now'},
+            {name: 'Tax Consultant Fee', icon: 'TC', button: 'Pay Now'},
+            {name: 'Audit Fee', icon: 'AF', button: 'Pay Now'},
+            {name: 'Home Maintenance', icon: 'HM', button: 'Pay Now'},
+            {name: 'Gardening Service', icon: 'GS', button: 'Pay Now'},
+            {name: 'Cleaning Service', icon: 'CS', button: 'Pay Now'},
+            {name: 'Pest Control Payment', icon: 'PC', button: 'Pay Now'},
+            {name: 'Security Service Payment', icon: 'SS', button: 'Pay Now'},
+            {name: 'Laundry Service', icon: 'LS', button: 'Pay Now'},
+            {name: 'Dry Cleaning Payment', icon: 'DC', button: 'Pay Now'},
+            {name: 'Courier Payment', icon: 'CP', button: 'Pay Now'},
+            {name: 'Freight Payment', icon: 'FP', button: 'Pay Now'},
+            {name: 'Shipping Payment', icon: 'SP', button: 'Pay Now'},
+            {name: 'Storage Fee', icon: 'SF', button: 'Pay Now'},
+            {name: 'Warehouse Rent', icon: 'WR', button: 'Pay Now'},
+            {name: 'Office Rent', icon: 'OR', button: 'Pay Now'},
+            {name: 'Shop Rent', icon: 'SR', button: 'Pay Now'},
+            {name: 'Apartment Maintenance', icon: 'AM', button: 'Pay Now'},
+            {name: 'Society Maintenance', icon: 'SM', button: 'Pay Now'},
+            {name: 'Lift Maintenance', icon: 'LM', button: 'Pay Now'},
+            {name: 'Generator Bill', icon: 'GB', button: 'Pay Now'},
+            {name: 'Solar Panel Maintenance', icon: 'SP', button: 'Pay Now'},
+            {name: 'AC Servicing', icon: 'AS', button: 'Pay Now'},
+            {name: 'Plumbing Service', icon: 'PS', button: 'Pay Now'},
+            {name: 'Electrical Service', icon: 'ES', button: 'Pay Now'},
+            {name: 'Carpentry Service', icon: 'CS', button: 'Pay Now'},
+            {name: 'Painting Service', icon: 'PS', button: 'Pay Now'},
+            {name: 'Renovation Payment', icon: 'RP', button: 'Pay Now'},
+            {name: 'Construction Payment', icon: 'CP', button: 'Pay Now'},
+            {name: 'Interior Designer Fee', icon: 'ID', button: 'Pay Now'},
+            {name: 'Architect Fee', icon: 'AF', button: 'Pay Now'},
+            {name: 'Brokerage Fee', icon: 'BF', button: 'Pay Now'},
+            {name: 'Real Estate Agent Fee', icon: 'RE', button: 'Pay Now'},
+            {name: 'Property Registration Fee', icon: 'PR', button: 'Pay Now'},
+            {name: 'Stamp Duty Payment', icon: 'SD', button: 'Pay Now'},
+            {name: 'Road Tax', icon: 'RT', button: 'Pay Now'},
+            {name: 'Vehicle Insurance', icon: 'VI', button: 'Pay Now'},
+            {name: 'Bike Insurance', icon: 'BI', button: 'Pay Now'},
+            {name: 'Scooter EMI', icon: 'SE', button: 'Pay Now'},
+            {name: 'Car Maintenance', icon: 'CM', button: 'Pay Now'},
+            {name: 'Bike Maintenance', icon: 'BM', button: 'Pay Now'},
+            {name: 'Fuel Payment', icon: 'FP', button: 'Pay Now'}
         ];
 
         const dashboard = document.getElementById('dashboard');
-        additionalCategories.forEach(category => {
+        categories.forEach(cat => {
             const card = document.createElement('div');
             card.className = 'app-card';
-            const iconText = category.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
             card.innerHTML = `
-                <div class="app-icon">${iconText}</div>
-                <h3>${category}</h3>
-                <button onclick="openPaymentModal('${category}')">Pay Now</button>
+                <div class="app-icon" style="background-color: ${randomColor};">${cat.icon}</div>
+                <h3>${cat.name}</h3>
+                <button onclick="openPaymentModal('${cat.name}')">${cat.button}</button>
             `;
             dashboard.appendChild(card);
         });
