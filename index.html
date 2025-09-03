@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>JokeFI Watch - Doraemon</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -12,31 +12,35 @@
       box-sizing: border-box;
     }
     body {
-      font-family: 'Poppins', Arial, sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #141414;
       color: #fff;
       text-align: center;
       overflow-x: hidden;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     header {
-      background: rgba(0, 0, 0, 0.95);
-      padding: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 15px 20px;
       position: sticky;
       top: 0;
       z-index: 1000;
-      font-size: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 255, 204, 0.2);
+    }
+    .marquee {
+      font-size: 24px;
       font-weight: 700;
       color: #00ffcc;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 255, 204, 0.3);
-    }
-    .marquee {
-      display: inline-block;
-      animation: marquee 12s linear infinite;
+      letter-spacing: 1.5px;
       white-space: nowrap;
+      animation: marquee 15s linear infinite;
+      display: inline-block;
       padding-right: 100%;
     }
     @keyframes marquee {
@@ -48,12 +52,14 @@
       to { text-shadow: 0 0 15px #00ffcc, 0 0 25px #00ffcc; }
     }
     .language-switch {
-      margin: 20px;
+      margin: 20px auto;
+      max-width: 1200px;
+      text-align: left;
     }
     .language-switch select {
-      padding: 12px 20px;
+      padding: 10px 15px;
       font-size: 16px;
-      border-radius: 8px;
+      border-radius: 5px;
       background: #222;
       color: #00ffcc;
       border: 2px solid #00ffcc;
@@ -66,62 +72,93 @@
     }
     .episode-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 20px;
       padding: 20px;
       max-width: 1200px;
       margin: 0 auto;
+      flex: 1;
     }
     .episode {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
+      background: #1c1c1c;
+      border-radius: 10px;
       padding: 15px;
-      box-shadow: 0 5px 15px rgba(0, 255, 204, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      perspective: 1000px;
+      position: relative;
+      overflow: hidden;
     }
     .episode:hover {
-      transform: translateY(-10px) rotateX(5deg);
-      box-shadow: 0 10px 30px rgba(0, 255, 204, 0.5);
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 255, 204, 0.3);
     }
     .episode h3 {
-      font-size: 22px;
+      font-size: 20px;
       margin: 10px 0;
       color: #00ffcc;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
     iframe {
       width: 100%;
-      height: 200px;
-      border-radius: 10px;
+      height: 180px;
+      border-radius: 8px;
       border: none;
+      background: #000;
       transition: transform 0.3s ease;
     }
     .episode:hover iframe {
       transform: scale(1.02);
     }
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      border: 4px solid #00ffcc;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    iframe:empty + .loading {
+      display: block;
+    }
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    footer {
+      background: #1c1c1c;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #aaa;
+      margin-top: auto;
+    }
     @media (max-width: 768px) {
-      header {
+      .marquee {
         font-size: 20px;
       }
       .episode-container {
         grid-template-columns: 1fr;
       }
       iframe {
-        height: 180px;
+        height: 160px;
       }
     }
     @media (max-width: 480px) {
-      header {
-        font-size: 18px;
+      .marquee {
+        font-size: 16px;
+      }
+      iframe {
+        height: 140px;
       }
       .language-switch select {
         font-size: 14px;
-        padding: 10px;
-      }
-      iframe {
-        height: 160px;
+        padding: 8px;
       }
     }
   </style>
@@ -143,45 +180,69 @@
   <div class="episode-container">
     <div class="episode">
       <h3>Doraemon Episode 1 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/2hR1mY1HknA" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/9S2HfqQUMpE" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 2 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/UbEovBM1gWc" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/xR6jIhXs8y4" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 3 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/MwU8QpO-gvQ" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/MHELLoml-VA" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 4 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/q4k2Y6SY3BU" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/x9emqHDa3M8" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 5 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/FxXhGJquG2E" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/_MtTbLBrxVo" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 6 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/lkCjXyH1EJU" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/gv33XBptgOc" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 7 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/kRFWFgxk1nA" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/LSdzDPdJD5Q" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 8 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/jvX6VnST3FM" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/TuuOXpN3Dxg" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 9 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/pJjyiqVwRtU" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/c95GLLibbmE" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
     <div class="episode">
       <h3>Doraemon Episode 10 (Hindi)</h3>
-      <iframe src="https://www.youtube.com/embed/5QWcYxGRV7M" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/ATdcsPge6Qg" allowfullscreen></iframe>
+      <div class="loading"></div>
+    </div>
+    <div class="episode">
+      <h3>Doraemon Episode 11 (Hindi)</h3>
+      <iframe src="https://www.youtube.com/embed/yJLtGLH-yeU" allowfullscreen></iframe>
+      <div class="loading"></div>
+    </div>
+    <div class="episode">
+      <h3>Doraemon Episode 12 (Hindi)</h3>
+      <iframe src="https://www.youtube.com/embed/zMvgOhHpgcQ" allowfullscreen></iframe>
+      <div class="loading"></div>
     </div>
   </div>
+
+  <footer>
+    &copy; 2025 JokeFI Watch | All Rights Reserved
+  </footer>
 
   <script>
     function changeLanguage() {
