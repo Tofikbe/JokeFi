@@ -8,62 +8,318 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ====== OLD CSS SAME ====== */
-    * {margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth;}
-    body {font-family:'Montserrat',Arial,sans-serif;background:#121212;color:#fff;text-align:center;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;position:relative;touch-action:manipulation;}
-    canvas {position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.3;}
-    .overlay {position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(0,0,0,0.7),rgba(0,255,204,0.1));z-index:-1;}
-    header {background:rgba(0,0,0,0.9);padding:10px;position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,255,204,0.2);}
-    .marquee {font-size:18px;font-weight:600;color:#00ffcc;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;animation:marquee 12s linear infinite;display:inline-block;padding-right:100%;will-change:transform;}
-    .marquee:hover {animation-play-state:paused;}
-    @keyframes marquee {0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
-    .hamburger {font-size:24px;color:#00ffcc;cursor:pointer;padding:10px;}
-    .menu {display:none;background:#1c1c1c;position:absolute;top:50px;right:10px;border-radius:5px;padding:10px;box-shadow:0 5px 15px rgba(0,255,204,0.3);}
-    .menu.active {display:block;}
-    .menu a {display:block;color:#00ffcc;padding:10px;text-decoration:none;transition:background 0.2s ease;}
-    .menu a:hover {background:rgba(0,255,204,0.2);}
-    .language-switch {margin:15px;text-align:left;}
-    .language-switch select {padding:10px;font-size:16px;border-radius:5px;background:#222;color:#00ffcc;border:2px solid #00ffcc;width:100%;cursor:pointer;transition:transform 0.2s ease;}
-    .language-switch select:hover {transform:scale(1.03);}
-    .search-bar {margin:15px;padding:10px;}
-    .search-bar input {width:100%;padding:10px;font-size:16px;border-radius:5px;background:#222;color:#fff;border:2px solid #00ffcc;transition:border-color 0.2s ease;}
-    .search-bar input:focus {outline:none;border-color:#00cc99;}
-    .episode-container {padding:15px;flex:1;}
-    .episode {background:#1c1c1c;border-radius:10px;margin-bottom:15px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,0.5);transition:transform 0.2s ease,box-shadow 0.2s ease;position:relative;opacity:0;transform:translateY(20px);}
-    .episode.visible {opacity:1;transform:translateY(0);transition:opacity 0.6s ease,transform 0.6s ease;}
-    .episode:hover {transform:translateY(-5px);box-shadow:0 5px 20px rgba(0,255,204,0.4);}
-    .episode h3 {font-size:18px;margin:10px 0;color:#00ffcc;font-weight:600;}
-    .episode-number {position:absolute;top:10px;left:10px;background:#00ffcc;color:#121212;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;}
-    .thumbnail {width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px;}
-    iframe {width:100%;height:200px;border-radius:8px;border:none;background:#000;position:relative;}
-    .play-overlay {position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;color:#00ffcc;opacity:0.8;transition:opacity 0.2s ease;pointer-events:none;}
-    iframe:not(:empty)+.play-overlay {opacity:0;}
-    .loading {position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border:3px solid #00ffcc;border-top:3px solid transparent;border-radius:50%;animation:spin 1s linear infinite;display:none;}
-    iframe:empty+.play-overlay+.loading {display:block;}
-    @keyframes spin {0%{transform:translate(-50%,-50%) rotate(0deg);}100%{transform:translate(-50%,-50%) rotate(360deg);}}
-    .scroll-progress {position:fixed;top:0;left:0;height:4px;background:#00ffcc;width:0;z-index:1001;transition:width 0.1s ease;}
-    .back-to-top {position:fixed;bottom:20px;right:20px;background:#00ffcc;color:#121212;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;opacity:0;transition:opacity 0.2s ease;}
-    .back-to-top.visible {opacity:1;}
-    footer {background:#1c1c1c;padding:15px;font-size:14px;color:#aaa;text-align:center;}
-    @media(min-width:768px){.episode-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px;}.episode{margin-bottom:0;}iframe{height:180px;}}
-    @media(prefers-reduced-motion:reduce){.marquee,.episode,.episode h3,footer,.back-to-top{animation:none;transition:none;}}
-
-    /* ====== NEW FEATURES ====== */
-    .mode-toggle{position:fixed;bottom:80px;right:20px;background:#00ffcc;color:#121212;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:bold;z-index:1100;}
-    body.light{background:#f7f7f7;color:#121212;}
-    body.light header,body.light footer{background:#eee;color:#121212;}
-    body.light .episode{background:#fff;color:#121212;}
-    .fullscreen-btn,.skip-btn{position:absolute;bottom:10px;right:10px;background:#00ffcc;color:#121212;font-size:12px;padding:5px 8px;border-radius:5px;cursor:pointer;}
-    .skip-btn{right:80px;}
-    .highlight{box-shadow:0 0 15px #00ffcc !important;}
-    /* Loading screen */
-    #loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#121212;display:flex;align-items:center;justify-content:center;z-index:2000;color:#00ffcc;font-size:24px;font-weight:bold;flex-direction:column;}
-    #loader.hidden{display:none;}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      text-align: center;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      touch-action: manipulation;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 255, 204, 0.1));
+      z-index: -1;
+    }
+    header {
+      background: rgba(0, 0, 0, 0.9);
+      padding: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 255, 204, 0.2);
+    }
+    .marquee {
+      font-size: 18px;
+      font-weight: 600;
+      color: #00ffcc;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      animation: marquee 12s linear infinite;
+      display: inline-block;
+      padding-right: 100%;
+      will-change: transform;
+    }
+    .marquee:hover {
+      animation-play-state: paused;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .hamburger {
+      font-size: 24px;
+      color: #00ffcc;
+      cursor: pointer;
+      padding: 10px;
+    }
+    .menu {
+      display: none;
+      background: #1c1c1c;
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      border-radius: 5px;
+      padding: 10px;
+      box-shadow: 0 5px 15px rgba(0, 255, 204, 0.3);
+    }
+    .menu.active {
+      display: block;
+    }
+    .menu a {
+      display: block;
+      color: #00ffcc;
+      padding: 10px;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+    .menu a:hover {
+      background: rgba(0, 255, 204, 0.2);
+    }
+    .language-switch {
+      margin: 15px;
+      text-align: left;
+    }
+    .language-switch select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      background: #222;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .language-switch select:hover {
+      transform: scale(1.03);
+    }
+    .search-bar {
+      margin: 15px;
+      padding: 10px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      background: #222;
+      color: #fff;
+      border: 2px solid #00ffcc;
+      transition: border-color 0.2s ease;
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: #00cc99;
+    }
+    .download-section {
+      margin: 15px;
+      padding: 10px;
+    }
+    .download-section input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      background: #222;
+      color: #fff;
+      border: 2px solid #00ffcc;
+      margin-bottom: 10px;
+    }
+    .download-section button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      background: #00ffcc;
+      color: #121212;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .download-section button:hover {
+      transform: scale(1.05);
+    }
+    .episode-container {
+      padding: 15px;
+      flex: 1;
+    }
+    .episode {
+      background: #1c1c1c;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      will-change: transform, box-shadow;
+    }
+    .episode:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.4);
+    }
+    .episode h3 {
+      font-size: 18px;
+      margin: 10px 0;
+      color: #00ffcc;
+      font-weight: 600;
+    }
+    .episode-number {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #00ffcc;
+      color: #121212;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .download-btn {
+      margin-top: 10px;
+      padding: 8px 15px;
+      font-size: 14px;
+      border-radius: 5px;
+      background: #00ffcc;
+      color: #121212;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .download-btn:hover {
+      transform: scale(1.05);
+    }
+    iframe {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
+      border: none;
+      background: #000;
+      position: relative;
+    }
+    .play-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      color: #00ffcc;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+    iframe:not(:empty) + .play-overlay {
+      opacity: 0;
+    }
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      border: 3px solid #00ffcc;
+      border-top: 3px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    iframe:empty + .play-overlay + .loading {
+      display: block;
+    }
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: #00ffcc;
+      width: 0;
+      z-index: 1001;
+      transition: width 0.1s ease;
+    }
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00ffcc;
+      color: #121212;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .back-to-top.visible {
+      opacity: 1;
+    }
+    footer {
+      background: #1c1c1c;
+      padding: 15px;
+      font-size: 14px;
+      color: #aaa;
+      text-align: center;
+    }
+    @media (min-width: 768px) {
+      .episode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+      }
+      .episode {
+        margin-bottom: 0;
+      }
+      iframe {
+        height: 180px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee, .episode, .episode h3, footer, .back-to-top {
+        animation: none;
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <div id="loader">🔵 Loading JokeFI Watch...</div>
-
   <canvas id="particles"></canvas>
   <div class="overlay"></div>
   <div class="scroll-progress" id="scrollProgress"></div>
@@ -88,90 +344,263 @@
     </select>
   </div>
 
-  <!-- Episodes Container (SAME AS OLD, sirf 12 youtube videos) -->
-  <div class="episode-container" id="episodes">
-    <!-- EPISODES (same code jo aapne diya tha, 12 episodes ke) -->
-    <!-- Example: -->
-    <div class="episode">
-      <div class="episode-number">1</div>
-      <img class="thumbnail" loading="lazy" src="https://img.youtube.com/vi/9S2HfqQUMpE/default.jpg" alt="Episode 1">
-      <h3>Doraemon Episode 1 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/9S2HfqQUMpE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 1"></iframe>
-      <div class="fullscreen-btn" onclick="goFullscreen(this)">⛶</div>
-      <div class="skip-btn" onclick="skipIntro(this)">⏭ Skip</div>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <!-- baki 2 to 12 episodes aapke diye huye code ke jaise hi rahenge (unchanged) -->
+  <div class="download-section">
+    <input type="text" id="customVideoUrl" placeholder="Paste YouTube/Instagram/Facebook video URL...">
+    <button onclick="downloadCustomVideo()">Download Video</button>
   </div>
 
-  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
-  <div class="mode-toggle" onclick="toggleMode()">☀/🌙</div>
+  <div class="episode-container" id="episodes">
+    <div class="episode">
+      <div class="episode-number">1</div>
+      <h3>Doraemon Episode 1 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/9S2HfqQUMpE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 1"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=9S2HfqQUMpE')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">2</div>
+      <h3>Doraemon Episode 2 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/xR6jIhXs8y4?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 2"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=xR6jIhXs8y4')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">3</div>
+      <h3>Doraemon Episode 3 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/MHELLoml-VA?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 3"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=MHELLoml-VA')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">4</div>
+      <h3>Doraemon Episode 4 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/x9emqHDa3M8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 4"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=x9emqHDa3M8')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">5</div>
+      <h3>Doraemon Episode 5 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/_MtTbLBrxVo?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 5"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=_MtTbLBrxVo')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">6</div>
+      <h3>Doraemon Episode 6 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/gv33XBptgOc?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 6"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=gv33XBptgOc')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">7</div>
+      <h3>Doraemon Episode 7 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/LSdzDPdJD5Q?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 7"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=LSdzDPdJD5Q')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">8</div>
+      <h3>Doraemon Episode 8 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/TuuOXpN3Dxg?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 8"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=TuuOXpN3Dxg')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">9</div>
+      <h3>Doraemon Episode 9 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/c95GLLibbmE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 9"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=c95GLLibbmE')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">10</div>
+      <h3>Doraemon Episode 10 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/ATdcsPge6Qg?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 10"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=ATdcsPge6Qg')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">11</div>
+      <h3>Doraemon Episode 11 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/yJLtGLH-yeU?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 11"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=yJLtGLH-yeU')">Download</button>
+    </div>
+    <div class="episode">
+      <div class="episode-number">12</div>
+      <h3>Doraemon Episode 12 (Hindi)</h3>
+      <iframe data-src="https://www.youtube.com/embed/zMvgOhHpgcQ?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 12"></iframe>
+      <div class="play-overlay">▶</div>
+      <div class="loading"></div>
+      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=zMvgOhHpgcQ')">Download</button>
+    </div>
+  </div>
 
-  <footer>&copy; 2025 JokeFI Watch | All Rights Reserved</footer>
+  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
+
+  <footer>
+    &copy; 2025 JokeFI Watch | All Rights Reserved
+  </footer>
 
   <script>
-    // ====== OLD JS SAME (particles, search, language, hamburger, scroll progress, lazy load) ======
-    function debounce(func,wait){let timeout;return function(...args){clearTimeout(timeout);timeout=setTimeout(()=>func.apply(this,args),wait);};}
-
-    // Loader hide
-    window.addEventListener('load',()=>{document.getElementById('loader').classList.add('hidden');});
-
-    // Mode toggle
-    function toggleMode(){document.body.classList.toggle('light');}
-
-    // Fullscreen button
-    function goFullscreen(btn){
-      const iframe=btn.parentElement.querySelector('iframe');
-      if(iframe.requestFullscreen){iframe.requestFullscreen();}
-    }
-    // Skip intro
-    function skipIntro(btn){
-      const iframe=btn.parentElement.querySelector('iframe');
-      iframe.contentWindow.postMessage('{"event":"command","func":"seekTo","args":[10,true]}','*');
+    // Utility: Debounce function to limit frequent calls
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
     }
 
-    // Highlight playing episode
-    document.querySelectorAll('iframe').forEach((iframe)=>{
-      iframe.addEventListener('load',()=>{
-        iframe.parentElement.classList.add('highlight');
-        setTimeout(()=>iframe.parentElement.classList.remove('highlight'),4000);
+    // Particle Animation
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedX = Math.random() * 0.3 - 0.15;
+        this.speedY = Math.random() * 0.3 - 0.15;
+        this.color = `hsl(${Math.random() * 60 + 180}, 70%, 50%)`;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < 30; i++) {
+        particles.push(new Particle());
+      }
+    }
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
       });
+      requestAnimationFrame(animateParticles);
+    }
+    initParticles();
+    animateParticles();
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
     });
 
-    // Keyboard navigation
-    document.addEventListener('keydown',(e)=>{
-      const episodes=[...document.querySelectorAll('.episode')];
-      const current=episodes.findIndex(ep=>ep.classList.contains('highlight'));
-      if(e.key==="ArrowRight" && current<episodes.length-1){episodes[current+1].scrollIntoView({behavior:"smooth"});}
-      if(e.key==="ArrowLeft" && current>0){episodes[current-1].scrollIntoView({behavior:"smooth"});}
-    });
+    // Language Switcher
+    function changeLanguage() {
+      const lang = document.getElementById('lang').value;
+      const headline = document.getElementById('headline');
+      if (lang === 'hi') {
+        headline.textContent = 'आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';
+        document.querySelectorAll('.episode h3').forEach((el, index) => {
+          el.textContent = `डोरेमोन एपिसोड ${index + 1} (हिंदी)`;
+        });
+      } else {
+        headline.textContent = 'You can watch every cartoon for free on this website';
+        document.querySelectorAll('.episode h3').forEach((el, index) => {
+          el.textContent = `Doraemon Episode ${index + 1} (Hindi)`;
+        });
+      }
+    }
 
-    // Animate on scroll (fade-in)
-    const observer2=new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');}});
-    },{threshold:0.1});
-    document.querySelectorAll('.episode').forEach(ep=>observer2.observe(ep));
+    // Search Functionality
+    function searchEpisodes() {
+      const query = document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('.episode').forEach(episode => {
+        const title = episode.querySelector('h3').textContent.toLowerCase();
+        episode.style.display = title.includes(query) ? 'block' : 'none';
+      });
+    }
+    const debouncedSearch = debounce(searchEpisodes, 300);
 
-    // Auto play next episode (simulation: when iframe loaded, preload next)
-    const iframes=document.querySelectorAll('iframe');
-    const observer=new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          const iframe=entry.target;
-          if(iframe.dataset.src && !iframe.src){iframe.src=iframe.dataset.src;}
+    // Hamburger Menu
+    function toggleMenu() {
+      document.getElementById('menu').classList.toggle('active');
+    }
+
+    // Scroll Progress and Back to Top
+    const updateScrollProgress = debounce(() => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+      document.getElementById('backToTop').classList.toggle('visible', scrollTop > 300);
+    }, 50);
+    window.addEventListener('scroll', updateScrollProgress);
+
+    // Lazy Loading Iframes
+    const iframes = document.querySelectorAll('iframe');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const iframe = entry.target;
+          if (iframe.dataset.src && !iframe.src) {
+            iframe.src = iframe.dataset.src;
+          }
           observer.unobserve(iframe);
         }
       });
-    },{rootMargin:'100px'});
-    iframes.forEach(iframe=>observer.observe(iframe));
+    }, { rootMargin: '100px' });
+    iframes.forEach(iframe => observer.observe(iframe));
 
-    function changeLanguage(){const lang=document.getElementById('lang').value;const headline=document.getElementById('headline');if(lang==='hi'){headline.textContent='आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';document.querySelectorAll('.episode h3').forEach((el,index)=>{el.textContent=`डोरेमोन एपिसोड ${index+1} (हिंदी)`;});}else{headline.textContent='You can watch every cartoon for free on this website';document.querySelectorAll('.episode h3').forEach((el,index)=>{el.textContent=`Doraemon Episode ${index+1} (Hindi)`;});}}
-    function searchEpisodes(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('.episode').forEach(episode=>{const title=episode.querySelector('h3').textContent.toLowerCase();episode.style.display=title.includes(query)?'block':'none';});}
-    const debouncedSearch=debounce(searchEpisodes,300);
-    function toggleMenu(){document.getElementById('menu').classList.toggle('active');}
-    const updateScrollProgress=debounce(()=>{const scrollTop=window.scrollY;const docHeight=document.documentElement.scrollHeight-window.innerHeight;const scrollPercent=(scrollTop/docHeight)*100;document.getElementById('scrollProgress').style.width=scrollPercent+'%';document.getElementById('backToTop').classList.toggle('visible',scrollTop>300);},50);
-    window.addEventListener('scroll',updateScrollProgress);
-  </script>
-</body>
-</html>
+    // Download Functions
+    function downloadEpisode(url) {
+      // Placeholder for episode download logic
+      // This would typically involve a backend API call to a service like ytdl-core or similar
+      alert(`Initiating download for: ${url}\nNote: Actual download requires a backend service.`);
+      // Example: window.open(`https://your-backend-api/download?url=${encodeURIComponent(url)}`);
+    }
+
+    function downloadCustomVideo() {
+      const url = document.getElementById('customVideoUrl').value.trim();
+      if (!url) {
+        alert('Please enter a valid YouTube, Instagram, or Facebook video URL.');
+        return;
+      }
+      if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('instagram.com') || url.includes('facebook.com')) {
+        // Placeholder for custom video download logic
+        alert(`Initiating download for: ${url}\nNote: Actual download requires a backend service for YouTube/Instagram/Facebook.`);
+        // Example: window.open(`https://your-backend-api/download?url=${encodeURIComponent(url)}`);
+      } else {
+        alert('Invalid URL. Please provide a YouTube, Instagram, or Facebook video URL.');
+      }
+    }
+
+    // Swipe Gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    });
+    document.addEventListener('touchend', e => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedT
