@@ -1,624 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>JokeFI Watch - Doraemon</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
-    body {
-      font-family: 'Montserrat', Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      text-align: center;
-      overflow-x: hidden;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      touch-action: manipulation;
-    }
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      opacity: 0.3;
-    }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 255, 204, 0.1));
-      z-index: -1;
-    }
-    header {
-      background: rgba(0, 0, 0, 0.9);
-      padding: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0, 255, 204, 0.2);
-    }
-    .marquee {
-      font-size: 18px;
-      font-weight: 600;
-      color: #00ffcc;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      white-space: nowrap;
-      animation: marquee 12s linear infinite;
-      display: inline-block;
-      padding-right: 100%;
-      will-change: transform;
-    }
-    .marquee:hover {
-      animation-play-state: paused;
-    }
-    @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    .hamburger {
-      font-size: 24px;
-      color: #00ffcc;
-      cursor: pointer;
-      padding: 10px;
-    }
-    .menu {
-      display: none;
-      background: #1c1c1c;
-      position: absolute;
-      top: 50px;
-      right: 10px;
-      border-radius: 5px;
-      padding: 10px;
-      box-shadow: 0 5px 15px rgba(0, 255, 204, 0.3);
-    }
-    .menu.active {
-      display: block;
-    }
-    .menu a {
-      display: block;
-      color: #00ffcc;
-      padding: 10px;
-      text-decoration: none;
-      transition: background 0.2s ease;
-    }
-    .menu a:hover {
-      background: rgba(0, 255, 204, 0.2);
-    }
-    .language-switch {
-      margin: 15px;
-      text-align: left;
-    }
-    .language-switch select {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      background: #222;
-      color: #00ffcc;
-      border: 2px solid #00ffcc;
-      width: 100%;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .language-switch select:hover {
-      transform: scale(1.03);
-    }
-    .search-bar {
-      margin: 15px;
-      padding: 10px;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      background: #222;
-      color: #fff;
-      border: 2px solid #00ffcc;
-      transition: border-color 0.2s ease;
-    }
-    .search-bar input:focus {
-      outline: none;
-      border-color: #00cc99;
-    }
-    .download-section {
-      margin: 15px;
-      padding: 10px;
-    }
-    .download-section input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      background: #222;
-      color: #fff;
-      border: 2px solid #00ffcc;
-      margin-bottom: 10px;
-    }
-    .download-section button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      background: #00ffcc;
-      color: #121212;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .download-section button:hover {
-      transform: scale(1.05);
-    }
-    .episode-container {
-      padding: 15px;
-      flex: 1;
-    }
-    .episode {
-      background: #1c1c1c;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      padding: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      will-change: transform, box-shadow;
-    }
-    .episode:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.4);
-    }
-    .episode h3 {
-      font-size: 18px;
-      margin: 10px 0;
-      color: #00ffcc;
-      font-weight: 600;
-    }
-    .episode-number {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: #00ffcc;
-      color: #121212;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    .download-btn {
-      margin-top: 10px;
-      padding: 8px 15px;
-      font-size: 14px;
-      border-radius: 5px;
-      background: #00ffcc;
-      color: #121212;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .download-btn:hover {
-      transform: scale(1.05);
-    }
-    iframe {
-      width: 100%;
-      height: 200px;
-      border-radius: 8px;
-      border: none;
-      background: #000;
-      position: relative;
-    }
-    .play-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 40px;
-      color: #00ffcc;
-      opacity: 0.8;
-      transition: opacity 0.2s ease;
-      pointer-events: none;
-    }
-    iframe:not(:empty) + .play-overlay {
-      opacity: 0;
-    }
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 30px;
-      height: 30px;
-      border: 3px solid #00ffcc;
-      border-top: 3px solid transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      display: none;
-    }
-    iframe:empty + .play-overlay + .loading {
-      display: block;
-    }
-    @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    .scroll-progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 4px;
-      background: #00ffcc;
-      width: 0;
-      z-index: 1001;
-      transition: width 0.1s ease;
-    }
-    .back-to-top {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #00ffcc;
-      color: #121212;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .back-to-top.visible {
-      opacity: 1;
-    }
-    footer {
-      background: #1c1c1c;
-      padding: 15px;
-      font-size: 14px;
-      color: #aaa;
-      text-align: center;
-    }
-    @media (min-width: 768px) {
-      .episode-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 15px;
-      }
-      .episode {
-        margin-bottom: 0;
-      }
-      iframe {
-        height: 180px;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .marquee, .episode, .episode h3, footer, .back-to-top {
-        animation: none;
-        transition: none;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile UI</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(45deg, #1a1a1a, #fffdd0, #1a1a1a, #fffdd0);
+            background-size: 400%;
+            animation: bgAnimation 10s ease infinite;
+            font-family: Arial, sans-serif;
+            transition: background 0.5s ease;
+        }
+        .white-theme {
+            background: linear-gradient(45deg, #fffdd0, #ffffff, #fffdd0, #ffffff);
+            background-size: 400%;
+            animation: bgAnimation 10s ease infinite;
+        }
+        @keyframes bgAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .phone {
+            width: 320px;
+            height: 600px;
+            background: #000;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
+        }
+        .home-screen, .app-screen {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .app-screen { display: none; }
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            background: #333;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .app-icon:hover { transform: scale(1.1); }
+        .app-name {
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        .app-content {
+            color: #fff;
+            padding: 20px;
+            display: none;
+        }
+        .theme-toggle {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .theme-animation {
+            animation: themeChange 0.5s ease;
+        }
+        @keyframes themeChange {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
-  <div class="overlay"></div>
-  <div class="scroll-progress" id="scrollProgress"></div>
-  <header>
-    <span class="marquee" id="headline">You can watch every cartoon for free on this website</span>
-    <div class="hamburger" onclick="toggleMenu()">☰</div>
-    <div class="menu" id="menu">
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
+    <div class="phone">
+        <div class="home-screen" id="home">
+            <div class="app-icon" onclick="openApp('tomato')"><span>🍅</span><div class="app-name">Tomato</div></div>
+            <div class="app-icon" onclick="openApp('chart')"><span>📈</span><div class="app-name">Chart</div></div>
+            <div class="app-icon" onclick="openApp('contact')"><span>☎️</span><div class="app-name">Contact</div></div>
+            <div class="app-icon" onclick="openApp('ai-bot')"><span>🤖</span><div class="app-name">AI Bot</div></div>
+            <div class="app-icon" onclick="openApp('setting')"><span>⚙️</span><div class="app-name">Setting</div></div>
+        </div>
+        <div class="app-screen" id="tomato">
+            <div class="app-content">
+                <h2>Tomato Game</h2>
+                <p>Click to pop tomatoes!</p>
+                <button onclick="playTomato()">Pop!</button>
+                <p id="tomato-score">Score: 0</p>
+                <button onclick="backToHome()">Back</button>
+            </div>
+        </div>
+        <div class="app-screen" id="chart">
+            <div class="app-content">
+                <h2>Crypto Charts</h2>
+                <iframe src="https://www.coindesk.com/price/bitcoin" width="100%" height="200"></iframe>
+                <iframe src="https://www.coindesk.com/price/ethereum" width="100%" height="200"></iframe>
+                <button onclick="backToHome()">Back</button>
+            </div>
+        </div>
+        <div class="app-screen" id="contact">
+            <div class="app-content">
+                <h2>Contacts</h2>
+                <ul>
+                    <li>Robin: 123-456-7890</li>
+                    <li>Elon: 234-567-8901</li>
+                    <li>Boss: 345-678-9012</li>
+                    <li>Wife: 456-789-0123</li>
+                    <li>Friend: 567-890-1234</li>
+                </ul>
+                <button onclick="backToHome()">Back</button>
+            </div>
+        </div>
+        <div class="app-screen" id="ai-bot">
+            <div class="app-content">
+                <h2>AI Bots</h2>
+                <select id="bot-select" onchange="showBotChat()">
+                    <option value="bot1">Bot 1</option>
+                    <option value="bot2">Bot 2</option>
+                    <option value="bot3">Bot 3</option>
+                    <option value="bot4">Bot 4</option>
+                    <option value="bot5">Bot 5</option>
+                </select>
+                <div id="bot-chat">
+                    <p>Bot 1: Ask me anything!</p>
+                    <p>Q1: What's the weather like? A: Sunny!</p>
+                    <p>Q2: Best food? A: Pizza!</p>
+                    <p>Q3: Favorite color? A: Blue!</p>
+                </div>
+                <button onclick="backToHome()">Back</button>
+            </div>
+        </div>
+        <div class="app-screen" id="setting">
+            <div class="app-content">
+                <h2>Settings</h2>
+                <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+                <button onclick="backToHome()">Back</button>
+            </div>
+        </div>
     </div>
-  </header>
-
-  <div class="search-bar">
-    <input type="text" id="search" placeholder="Search episodes..." oninput="debouncedSearch()">
-  </div>
-
-  <div class="language-switch">
-    <select id="lang" onchange="changeLanguage()">
-      <option value="en">🇬🇧 English</option>
-      <option value="hi">🇮🇳 हिंदी</option>
-    </select>
-  </div>
-
-  <div class="download-section">
-    <input type="text" id="customVideoUrl" placeholder="Paste YouTube/Instagram/Facebook video URL...">
-    <button onclick="downloadCustomVideo()">Download Video</button>
-  </div>
-
-  <div class="episode-container" id="episodes">
-    <div class="episode">
-      <div class="episode-number">1</div>
-      <h3>Doraemon Episode 1 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/1zW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 1"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=1zW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">2</div>
-      <h3>Doraemon Episode 2 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/2y1zW1o1bho?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 2"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=2y1zW1o1bho')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">3</div>
-      <h3>Doraemon Episode 3 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/3aW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 3"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=3aW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">4</div>
-      <h3>Doraemon Episode 4 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/4bW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 4"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=4bW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">5</div>
-      <h3>Doraemon Episode 5 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/5cW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 5"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=5cW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">6</div>
-      <h3>Doraemon Episode 6 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/6dW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 6"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=6dW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">7</div>
-      <h3>Doraemon Episode 7 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/7eW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 7"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=7eW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">8</div>
-      <h3>Doraemon Episode 8 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/8fW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 8"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=8fW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">9</div>
-      <h3>Doraemon Episode 9 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/9gW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 9"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=9gW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">10</div>
-      <h3>Doraemon Episode 10 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/0hW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 10"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=0hW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">11</div>
-      <h3>Doraemon Episode 11 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/1iW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 11"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=1iW1o1bhoA8')">Download</button>
-    </div>
-    <div class="episode">
-      <div class="episode-number">12</div>
-      <h3>Doraemon Episode 12 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/2jW1o1bhoA8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 12"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-      <button class="download-btn" onclick="downloadEpisode('https://www.youtube.com/watch?v=2jW1o1bhoA8')">Download</button>
-    </div>
-  </div>
-
-  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
-
-  <footer>
-    &copy; 2025 JokeFI Watch | All Rights Reserved
-  </footer>
-
-  <script>
-    // Utility: Debounce function to limit frequent calls
-    function debounce(func, wait) {
-      let timeout;
-      return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-      };
-    }
-
-    // Particle Animation
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d', { alpha: false });
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    let particles = [];
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedX = Math.random() * 0.3 - 0.15;
-        this.speedY = Math.random() * 0.3 - 0.15;
-        this.color = `hsl(${Math.random() * 60 + 180}, 70%, 50%)`;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-      }
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < 30; i++) {
-        particles.push(new Particle());
-      }
-    }
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      requestAnimationFrame(animateParticles);
-    }
-    initParticles();
-    animateParticles();
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
-    });
-
-    // Language Switcher
-    function changeLanguage() {
-      const lang = document.getElementById('lang').value;
-      const headline = document.getElementById('headline');
-      if (lang === 'hi') {
-        headline.textContent = 'आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';
-        document.querySelectorAll('.episode h3').forEach((el, index) => {
-          el.textContent = `डोरेमोन एपिसोड ${index + 1} (हिंदी)`;
-        });
-      } else {
-        headline.textContent = 'You can watch every cartoon for free on this website';
-        document.querySelectorAll('.episode h3').forEach((el, index) => {
-          el.textContent = `Doraemon Episode ${index + 1} (Hindi)`;
-        });
-      }
-    }
-
-    // Search Functionality
-    function searchEpisodes() {
-      const query = document.getElementById('search').value.toLowerCase();
-      document.querySelectorAll('.episode').forEach(episode => {
-        const title = episode.querySelector('h3').textContent.toLowerCase();
-        episode.style.display = title.includes(query) ? 'block' : 'none';
-      });
-    }
-    const debouncedSearch = debounce(searchEpisodes, 300);
-
-    // Hamburger Menu
-    function toggleMenu() {
-      document.getElementById('menu').classList.toggle('active');
-    }
-
-    // Scroll Progress and Back to Top
-    const updateScrollProgress = debounce(() => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
-      document.getElementById('backToTop').classList.toggle('visible', scrollTop > 300);
-    }, 50);
-    window.addEventListener('scroll', updateScrollProgress);
-
-    // Lazy Loading Iframes with Error Handling
-    const iframes = document.querySelectorAll('iframe');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const iframe = entry.target;
-          if (iframe.dataset.src && !iframe.src) {
-            iframe.src = iframe.dataset.src;
-            iframe.onload = () => {
-              iframe.nextElementSibling.style.opacity = 0; // Hide play overlay
-              iframe.nextElementSibling.nextElementSibling.style.display = 'none'; // Hide loading
-            };
-            iframe.onerror = () => {
-              alert('Error loading video: ' + iframe.dataset.src);
-            };
-          }
-          observer.unobserve(iframe);
+    <script>
+        let tomatoScore = 0;
+        function openApp(appId) {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById(appId).style.display = 'block';
         }
-      });
-    }, { rootMargin: '100px' });
-    iframes.forEach(iframe => observer.observe(iframe));
-
-    // Download Functions
-    function downloadEpisode(url) {
-      alert(`Download request for: ${url}\nPlease set up a backend service (e.g., using ytdl-core) to enable video downloads.`);
-      // Example backend call: fetch(`/download?url=${encodeURIComponent(url)}`)
-    }
-
-    function downloadCustomVideo() {
-      const url = document.getElementById('customVideoUrl').value.trim();
-      const urlPattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|instagram\.com|facebook\.com)\/.+$/;
-      if (!url) {
-        alert('Please enter a valid video URL.');
-        return;
-      }
-      if (urlPattern.test(url)) {
-        alert(`Download request for: ${url}\nPlease set up a backend service to enable YouTube/Instagram/Facebook video downloads.`);
-        // Example backend call: fetch(`/download?url=${encodeURIComponent(url)}`)
-      } else {
-        alert('Invalid URL. Please provide a valid YouTube, Instagram, or Facebook video URL.');
-      }
-    }
-
-    // Swipe Gestures
-    let touchStartX = 0;
-    let touchStartY = 0;
-    document.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    });
-    document.addEventListener('touchend', e => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const touchEndY = e.changedTouches[0].screenY;
-      const deltaX = touchStartX - touchEndX;
-      const deltaY = touchStartY - touchEndY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0) {
-          window.scrollBy({ top: 200, behavior: 'smooth' });
-        } else {
-          window.scrollBy({ top: -200, behavior: 'smooth' });
+        function backToHome() {
+            document.querySelectorAll('.app-screen').forEach(screen => screen.style.display = 'none');
+            document.getElementById('home').style.display = 'flex';
         }
-      }
-    });
-  </script>
+        function playTomato() {
+            tomatoScore += 1;
+            document.getElementById('tomato-score').innerText = `Score: ${tomatoScore}`;
+        }
+        function toggleTheme() {
+            document.body.classList.toggle('white-theme');
+            document.body.classList.add('theme-animation');
+            setTimeout(() => document.body.classList.remove('theme-animation'), 500);
+        }
+        function showBotChat() {
+            const bot = document.getElementById('bot-select').value;
+            const chats = {
+                bot1: `<p>Bot 1: Ask me anything!</p><p>Q1: What's the weather like? A: Sunny!</p><p>Q2: Best food? A: Pizza!</p><p>Q3: Favorite color? A: Blue!</p>`,
+                bot2: `<p>Bot 2: Hello!</p><p>Q1: What's new? A: Tech news!</p><p>Q2: Hobby? A: Coding!</p><p>Q3: Dream? A: AI world!</p>`,
+                bot3: `<p>Bot 3: Yo!</p><p>Q1: Music? A: Rock!</p><p>Q2: Movie? A: Sci-fi!</p><p>Q3: Game? A: Chess!</p>`,
+                bot4: `<p>Bot 4: Hey there!</p><p>Q1: Travel? A: Paris!</p><p>Q2: Food? A: Sushi!</p><p>Q3: Sport? A: Soccer!</p>`,
+                bot5: `<p>Bot 5: Hi!</p><p>Q1: Book? A: Fantasy!</p><p>Q2: Pet? A: Dog!</p><p>Q3: Place? A: Beach!</p>`
+            };
+            document.getElementById('bot-chat').innerHTML = chats[bot];
+        }
+    </script>
 </body>
 </html>
