@@ -1,191 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile UI</title>
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(45deg, #1a1a1a, #fffdd0, #1a1a1a, #fffdd0);
-            background-size: 400%;
-            animation: bgAnimation 10s ease infinite;
-            font-family: Arial, sans-serif;
-            transition: background 0.5s ease;
-        }
-        .white-theme {
-            background: linear-gradient(45deg, #fffdd0, #ffffff, #fffdd0, #ffffff);
-            background-size: 400%;
-            animation: bgAnimation 10s ease infinite;
-        }
-        @keyframes bgAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .phone {
-            width: 320px;
-            height: 600px;
-            background: #000;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            overflow: hidden;
-            position: relative;
-        }
-        .home-screen, .app-screen {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-            height: 100%;
-            overflow-y: auto;
-        }
-        .app-screen { display: none; }
-        .app-icon {
-            width: 60px;
-            height: 60px;
-            background: #333;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            color: #fff;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .app-icon:hover { transform: scale(1.1); }
-        .app-name {
-            color: #fff;
-            font-size: 12px;
-            text-align: center;
-            margin-top: 5px;
-        }
-        .app-content {
-            color: #fff;
-            padding: 20px;
-            display: none;
-        }
-        .theme-toggle {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .theme-animation {
-            animation: themeChange 0.5s ease;
-        }
-        @keyframes themeChange {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile UI</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(45deg, #1a1a1a, #fffdd0, #1a1a1a, #fffdd0);
+      background-size: 400%;
+      animation: bgAnimation 10s ease infinite;
+      font-family: Arial, sans-serif;
+      transition: background 0.5s ease;
+    }
+    .white-theme {
+      background: linear-gradient(45deg, #fffdd0, #ffffff, #fffdd0, #ffffff);
+      background-size: 400%;
+      animation: bgAnimation 10s ease infinite;
+    }
+    @keyframes bgAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .phone {
+      width: 340px;
+      height: 620px;
+      background: #000;
+      border-radius: 30px;
+      padding: 20px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.7);
+      overflow: hidden;
+      position: relative;
+      border: 6px solid #333;
+    }
+    .home-screen, .app-screen {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      height: 100%;
+      overflow-y: auto;
+    }
+    .app-screen { display: none; }
+    .app-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(145deg,#444,#222);
+      border-radius: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
+      color: #fff;
+      cursor: pointer;
+      flex-direction: column;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .app-icon:hover {
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px rgba(255,255,255,0.3);
+    }
+    .app-name {
+      color: #fff;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .app-content {
+      color: #fff;
+      padding: 20px;
+      display: none;
+      font-size: 14px;
+    }
+    .theme-toggle {
+      margin-top: 15px;
+      background: #fff;
+      color: #000;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .back-btn {
+      margin-top: 20px;
+      background: #fff;
+      color: #000;
+      padding: 8px 15px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .theme-animation {
+      animation: themeChange 0.6s ease;
+    }
+    @keyframes themeChange {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+  </style>
 </head>
 <body>
-    <div class="phone">
-        <div class="home-screen" id="home">
-            <div class="app-icon" onclick="openApp('tomato')"><span>🍅</span><div class="app-name">Tomato</div></div>
-            <div class="app-icon" onclick="openApp('chart')"><span>📈</span><div class="app-name">Chart</div></div>
-            <div class="app-icon" onclick="openApp('contact')"><span>☎️</span><div class="app-name">Contact</div></div>
-            <div class="app-icon" onclick="openApp('ai-bot')"><span>🤖</span><div class="app-name">AI Bot</div></div>
-            <div class="app-icon" onclick="openApp('setting')"><span>⚙️</span><div class="app-name">Setting</div></div>
-        </div>
-        <div class="app-screen" id="tomato">
-            <div class="app-content">
-                <h2>Tomato Game</h2>
-                <p>Click to pop tomatoes!</p>
-                <button onclick="playTomato()">Pop!</button>
-                <p id="tomato-score">Score: 0</p>
-                <button onclick="backToHome()">Back</button>
-            </div>
-        </div>
-        <div class="app-screen" id="chart">
-            <div class="app-content">
-                <h2>Crypto Charts</h2>
-                <iframe src="https://www.coindesk.com/price/bitcoin" width="100%" height="200"></iframe>
-                <iframe src="https://www.coindesk.com/price/ethereum" width="100%" height="200"></iframe>
-                <button onclick="backToHome()">Back</button>
-            </div>
-        </div>
-        <div class="app-screen" id="contact">
-            <div class="app-content">
-                <h2>Contacts</h2>
-                <ul>
-                    <li>Robin: 123-456-7890</li>
-                    <li>Elon: 234-567-8901</li>
-                    <li>Boss: 345-678-9012</li>
-                    <li>Wife: 456-789-0123</li>
-                    <li>Friend: 567-890-1234</li>
-                </ul>
-                <button onclick="backToHome()">Back</button>
-            </div>
-        </div>
-        <div class="app-screen" id="ai-bot">
-            <div class="app-content">
-                <h2>AI Bots</h2>
-                <select id="bot-select" onchange="showBotChat()">
-                    <option value="bot1">Bot 1</option>
-                    <option value="bot2">Bot 2</option>
-                    <option value="bot3">Bot 3</option>
-                    <option value="bot4">Bot 4</option>
-                    <option value="bot5">Bot 5</option>
-                </select>
-                <div id="bot-chat">
-                    <p>Bot 1: Ask me anything!</p>
-                    <p>Q1: What's the weather like? A: Sunny!</p>
-                    <p>Q2: Best food? A: Pizza!</p>
-                    <p>Q3: Favorite color? A: Blue!</p>
-                </div>
-                <button onclick="backToHome()">Back</button>
-            </div>
-        </div>
-        <div class="app-screen" id="setting">
-            <div class="app-content">
-                <h2>Settings</h2>
-                <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
-                <button onclick="backToHome()">Back</button>
-            </div>
-        </div>
+  <div class="phone">
+    <!-- Home Screen -->
+    <div class="home-screen" id="home">
+      <div class="app-icon" onclick="openApp('tomato')"><span>🍅</span><div class="app-name">Tomato</div></div>
+      <div class="app-icon" onclick="openApp('chart')"><span>📈</span><div class="app-name">Chart</div></div>
+      <div class="app-icon" onclick="openApp('contact')"><span>☎️</span><div class="app-name">Contact</div></div>
+      <div class="app-icon" onclick="openApp('ai-bot')"><span>🤖</span><div class="app-name">AI Bot</div></div>
+      <div class="app-icon" onclick="openApp('setting')"><span>⚙️</span><div class="app-name">Setting</div></div>
     </div>
-    <script>
-        let tomatoScore = 0;
-        function openApp(appId) {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById(appId).style.display = 'block';
-        }
-        function backToHome() {
-            document.querySelectorAll('.app-screen').forEach(screen => screen.style.display = 'none');
-            document.getElementById('home').style.display = 'flex';
-        }
-        function playTomato() {
-            tomatoScore += 1;
-            document.getElementById('tomato-score').innerText = `Score: ${tomatoScore}`;
-        }
-        function toggleTheme() {
-            document.body.classList.toggle('white-theme');
-            document.body.classList.add('theme-animation');
-            setTimeout(() => document.body.classList.remove('theme-animation'), 500);
-        }
-        function showBotChat() {
-            const bot = document.getElementById('bot-select').value;
-            const chats = {
-                bot1: `<p>Bot 1: Ask me anything!</p><p>Q1: What's the weather like? A: Sunny!</p><p>Q2: Best food? A: Pizza!</p><p>Q3: Favorite color? A: Blue!</p>`,
-                bot2: `<p>Bot 2: Hello!</p><p>Q1: What's new? A: Tech news!</p><p>Q2: Hobby? A: Coding!</p><p>Q3: Dream? A: AI world!</p>`,
-                bot3: `<p>Bot 3: Yo!</p><p>Q1: Music? A: Rock!</p><p>Q2: Movie? A: Sci-fi!</p><p>Q3: Game? A: Chess!</p>`,
-                bot4: `<p>Bot 4: Hey there!</p><p>Q1: Travel? A: Paris!</p><p>Q2: Food? A: Sushi!</p><p>Q3: Sport? A: Soccer!</p>`,
-                bot5: `<p>Bot 5: Hi!</p><p>Q1: Book? A: Fantasy!</p><p>Q2: Pet? A: Dog!</p><p>Q3: Place? A: Beach!</p>`
-            };
-            document.getElementById('bot-chat').innerHTML = chats[bot];
-        }
-    </script>
+
+    <!-- Tomato App -->
+    <div class="app-screen" id="tomato">
+      <div class="app-content">
+        <h2>Tomato Game</h2>
+        <p>Click the button to pop tomatoes!</p>
+        <button class="theme-toggle" onclick="playTomato()">Pop 🍅</button>
+        <p id="tomato-score">Score: 0</p>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- Chart App -->
+    <div class="app-screen" id="chart">
+      <div class="app-content">
+        <h2>Crypto Charts</h2>
+        <iframe src="https://www.coindesk.com/price/bitcoin" width="100%" height="200"></iframe>
+        <iframe src="https://www.coindesk.com/price/ethereum" width="100%" height="200"></iframe>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- Contacts App -->
+    <div class="app-screen" id="contact">
+      <div class="app-content">
+        <h2>Contacts</h2>
+        <ul>
+          <li>Robin: 123-456-7890</li>
+          <li>Elon: 234-567-8901</li>
+          <li>Boss: 345-678-9012</li>
+          <li>Wife: 456-789-0123</li>
+          <li>Friend: 567-890-1234</li>
+        </ul>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- AI Bot App -->
+    <div class="app-screen" id="ai-bot">
+      <div class="app-content">
+        <h2>AI Bots</h2>
+        <select id="bot-select" onchange="showBotChat()">
+          <option value="bot1">Bot 1</option>
+          <option value="bot2">Bot 2</option>
+          <option value="bot3">Bot 3</option>
+          <option value="bot4">Bot 4</option>
+          <option value="bot5">Bot 5</option>
+        </select>
+        <div id="bot-chat" style="margin-top:10px;">
+          <p>Bot 1: Ask me anything!</p>
+          <p>Q1: What's the weather like? A: Sunny!</p>
+          <p>Q2: Best food? A: Pizza!</p>
+          <p>Q3: Favorite color? A: Blue!</p>
+        </div>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- Settings App -->
+    <div class="app-screen" id="setting">
+      <div class="app-content">
+        <h2>Settings</h2>
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let tomatoScore = 0;
+    function openApp(appId) {
+      document.getElementById('home').style.display = 'none';
+      document.getElementById(appId).style.display = 'block';
+      document.querySelector(`#${appId} .app-content`).style.display = 'block';
+    }
+    function backToHome() {
+      document.querySelectorAll('.app-screen').forEach(screen => {
+        screen.style.display = 'none';
+        screen.querySelector('.app-content').style.display = 'none';
+      });
+      document.getElementById('home').style.display = 'flex';
+    }
+    function playTomato() {
+      tomatoScore += 1;
+      document.getElementById('tomato-score').innerText = `Score: ${tomatoScore}`;
+    }
+    function toggleTheme() {
+      document.body.classList.toggle('white-theme');
+      document.body.classList.add('theme-animation');
+      setTimeout(() => document.body.classList.remove('theme-animation'), 600);
+    }
+    function showBotChat() {
+      const bot = document.getElementById('bot-select').value;
+      const chats = {
+        bot1: `<p>Bot 1: Ask me anything!</p><p>Q1: What's the weather like? A: Sunny!</p><p>Q2: Best food? A: Pizza!</p><p>Q3: Favorite color? A: Blue!</p>`,
+        bot2: `<p>Bot 2: Hello!</p><p>Q1: What's new? A: Tech news!</p><p>Q2: Hobby? A: Coding!</p><p>Q3: Dream? A: AI world!</p>`,
+        bot3: `<p>Bot 3: Yo!</p><p>Q1: Music? A: Rock!</p><p>Q2: Movie? A: Sci-fi!</p><p>Q3: Game? A: Chess!</p>`,
+        bot4: `<p>Bot 4: Hey there!</p><p>Q1: Travel? A: Paris!</p><p>Q2: Food? A: Sushi!</p><p>Q3: Sport? A: Soccer!</p>`,
+        bot5: `<p>Bot 5: Hi!</p><p>Q1: Book? A: Fantasy!</p><p>Q2: Pet? A: Dog!</p><p>Q3: Place? A: Beach!</p>`
+      };
+      document.getElementById('bot-chat').innerHTML = chats[bot];
+    }
+  </script>
 </body>
 </html>
