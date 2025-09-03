@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobile UI</title>
+  <title>Professional Mobile UI</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -14,8 +14,9 @@
       background: linear-gradient(45deg, #1a1a1a, #fffdd0, #1a1a1a, #fffdd0);
       background-size: 400%;
       animation: bgAnimation 10s ease infinite;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       transition: background 0.5s ease;
+      overflow: hidden;
     }
     .white-theme {
       background: linear-gradient(45deg, #fffdd0, #ffffff, #fffdd0, #ffffff);
@@ -28,76 +29,137 @@
       100% { background-position: 0% 50%; }
     }
     .phone {
-      width: 340px;
-      height: 620px;
+      width: 360px;
+      height: 740px;
       background: #000;
-      border-radius: 30px;
-      padding: 20px;
-      box-shadow: 0 0 40px rgba(0,0,0,0.7);
-      overflow: hidden;
+      border-radius: 40px;
+      padding: 10px;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.1);
       position: relative;
-      border: 6px solid #333;
+      border: 4px solid #222;
+      overflow: hidden;
+    }
+    .status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: #000;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 15px;
+      font-size: 12px;
+      z-index: 10;
+    }
+    .notch {
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 25px;
+      background: #000;
+      border-radius: 20px;
+    }
+    .lock-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') no-repeat center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      z-index: 20;
+    }
+    .lock-screen h1 {
+      margin-top: 100px;
+      font-size: 24px;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .lock-screen button {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-bottom: 50px;
     }
     .home-screen, .app-screen {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 20px;
-      height: 100%;
+      justify-content: space-around;
+      gap: 15px;
+      padding: 40px 20px;
+      height: calc(100% - 30px);
+      margin-top: 30px;
+      background: linear-gradient(135deg, #333, #000);
+      background-size: 200%;
+      animation: appBgAnimation 15s ease infinite;
       overflow-y: auto;
+      border-radius: 20px;
+    }
+    @keyframes appBgAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
     .app-screen { display: none; }
     .app-icon {
       width: 70px;
       height: 70px;
-      background: linear-gradient(145deg,#444,#222);
-      border-radius: 20px;
+      background: linear-gradient(145deg, #444, #222);
+      border-radius: 18px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 32px;
+      font-size: 34px;
       color: #fff;
       cursor: pointer;
       flex-direction: column;
       transition: transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
     }
     .app-icon:hover {
-      transform: scale(1.15);
-      box-shadow: 0 6px 20px rgba(255,255,255,0.3);
+      transform: scale(1.2);
+      box-shadow: 0 6px 20px rgba(255,255,255,0.4);
     }
     .app-name {
       color: #fff;
-      font-size: 12px;
+      font-size: 11px;
       text-align: center;
       margin-top: 5px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
     .app-content {
       color: #fff;
       padding: 20px;
-      display: none;
       font-size: 14px;
+      animation: slideIn 0.3s ease;
     }
-    .theme-toggle {
-      margin-top: 15px;
-      background: #fff;
-      color: #000;
-      padding: 10px 15px;
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .theme-toggle, .back-btn, .action-btn {
+      margin: 10px 0;
+      background: linear-gradient(45deg, #555, #333);
+      color: #fff;
+      padding: 10px 20px;
       border-radius: 10px;
       border: none;
       cursor: pointer;
       font-weight: bold;
+      transition: transform 0.2s;
     }
-    .back-btn {
-      margin-top: 20px;
-      background: #fff;
-      color: #000;
-      padding: 8px 15px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
+    .theme-toggle:hover, .back-btn:hover, .action-btn:hover {
+      transform: scale(1.05);
     }
     .theme-animation {
       animation: themeChange 0.6s ease;
@@ -106,26 +168,74 @@
       0% { transform: rotateY(0deg); }
       100% { transform: rotateY(360deg); }
     }
+    .notification {
+      position: absolute;
+      top: 40px;
+      width: 90%;
+      left: 5%;
+      background: rgba(255,255,255,0.9);
+      color: #000;
+      padding: 10px;
+      border-radius: 10px;
+      display: none;
+      z-index: 15;
+      animation: slideDown 0.5s ease;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .dock {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+    }
   </style>
 </head>
 <body>
   <div class="phone">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span id="time">5:28 PM</span>
+      <span>🔋 85% | 📶 4G</span>
+    </div>
+    <div class="notch"></div>
+
+    <!-- Lock Screen -->
+    <div class="lock-screen" id="lock-screen">
+      <h1 id="lock-time">5:28 PM</h1>
+      <button onclick="unlockPhone()">Unlock</button>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">New message from Elon!</div>
+
     <!-- Home Screen -->
-    <div class="home-screen" id="home">
+    <div class="home-screen" id="home" style="display: none;">
       <div class="app-icon" onclick="openApp('tomato')"><span>🍅</span><div class="app-name">Tomato</div></div>
       <div class="app-icon" onclick="openApp('chart')"><span>📈</span><div class="app-name">Chart</div></div>
       <div class="app-icon" onclick="openApp('contact')"><span>☎️</span><div class="app-name">Contact</div></div>
       <div class="app-icon" onclick="openApp('ai-bot')"><span>🤖</span><div class="app-name">AI Bot</div></div>
       <div class="app-icon" onclick="openApp('setting')"><span>⚙️</span><div class="app-name">Setting</div></div>
+      <div class="app-icon" onclick="openApp('camera')"><span>📷</span><div class="app-name">Camera</div></div>
+      <div class="app-icon" onclick="openApp('music')"><span>🎵</span><div class="app-name">Music</div></div>
+      <div class="app-icon" onclick="openApp('notes')"><span>📝</span><div class="app-name">Notes</div></div>
     </div>
 
     <!-- Tomato App -->
     <div class="app-screen" id="tomato">
       <div class="app-content">
         <h2>Tomato Game</h2>
-        <p>Click the button to pop tomatoes!</p>
-        <button class="theme-toggle" onclick="playTomato()">Pop 🍅</button>
+        <p>Pop tomatoes to score!</p>
+        <button class="action-btn" onclick="playTomato()">Pop 🍅</button>
         <p id="tomato-score">Score: 0</p>
+        <button class="action-btn" onclick="resetTomato()">Reset</button>
         <button class="back-btn" onclick="backToHome()">Back</button>
       </div>
     </div>
@@ -134,8 +244,11 @@
     <div class="app-screen" id="chart">
       <div class="app-content">
         <h2>Crypto Charts</h2>
-        <iframe src="https://www.coindesk.com/price/bitcoin" width="100%" height="200"></iframe>
-        <iframe src="https://www.coindesk.com/price/ethereum" width="100%" height="200"></iframe>
+        <select onchange="updateChart()">
+          <option value="bitcoin">Bitcoin</option>
+          <option value="ethereum">Ethereum</option>
+        </select>
+        <iframe id="chart-frame" src="https://www.coindesk.com/price/bitcoin" width="100%" height="400"></iframe>
         <button class="back-btn" onclick="backToHome()">Back</button>
       </div>
     </div>
@@ -144,7 +257,8 @@
     <div class="app-screen" id="contact">
       <div class="app-content">
         <h2>Contacts</h2>
-        <ul>
+        <input type="text" id="search-contact" placeholder="Search contacts..." oninput="searchContacts()">
+        <ul id="contact-list">
           <li>Robin: 123-456-7890</li>
           <li>Elon: 234-567-8901</li>
           <li>Boss: 345-678-9012</li>
@@ -160,18 +274,19 @@
       <div class="app-content">
         <h2>AI Bots</h2>
         <select id="bot-select" onchange="showBotChat()">
-          <option value="bot1">Bot 1</option>
-          <option value="bot2">Bot 2</option>
-          <option value="bot3">Bot 3</option>
-          <option value="bot4">Bot 4</option>
-          <option value="bot5">Bot 5</option>
+          <option value="bot1">Grok</option>
+          <option value="bot2">Siri</option>
+          <option value="bot3">Alexa</option>
+          <option value="bot4">Cortana</option>
+          <option value="bot5">Bixby</option>
         </select>
         <div id="bot-chat" style="margin-top:10px;">
-          <p>Bot 1: Ask me anything!</p>
+          <p>Grok: Ask me anything!</p>
           <p>Q1: What's the weather like? A: Sunny!</p>
           <p>Q2: Best food? A: Pizza!</p>
           <p>Q3: Favorite color? A: Blue!</p>
         </div>
+        <input type="text" id="bot-input" placeholder="Ask a question..." onkeydown="handleBotInput(event)">
         <button class="back-btn" onclick="backToHome()">Back</button>
       </div>
     </div>
@@ -181,17 +296,94 @@
       <div class="app-content">
         <h2>Settings</h2>
         <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+        <p>Brightness: <input type="range" id="brightness" min="0.2" max="1" step="0.1" value="1" oninput="adjustBrightness()"></p>
+        <button class="action-btn" onclick="lockPhone()">Lock Phone</button>
         <button class="back-btn" onclick="backToHome()">Back</button>
       </div>
+    </div>
+
+    <!-- Camera App -->
+    <div class="app-screen" id="camera">
+      <div class="app-content">
+        <h2>Camera</h2>
+        <video id="camera-feed" autoplay style="width:100%; border-radius:10px;"></video>
+        <button class="action-btn" onclick="capturePhoto()">Capture</button>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- Music App -->
+    <div class="app-screen" id="music">
+      <div class="app-content">
+        <h2>Music</h2>
+        <p>Now Playing: Sample Track</p>
+        <audio id="music-player" controls>
+          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+        </audio>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- Notes App -->
+    <div class="app-screen" id="notes">
+      <div class="app-content">
+        <h2>Notes</h2>
+        <textarea id="note-text" placeholder="Write a note..." rows="5" style="width:100%; border-radius:10px;"></textarea>
+        <button class="action-btn" onclick="saveNote()">Save Note</button>
+        <div id="notes-list"></div>
+        <button class="back-btn" onclick="backToHome()">Back</button>
+      </div>
+    </div>
+
+    <!-- Dock -->
+    <div class="dock">
+      <div class="app-icon" onclick="openApp('contact')"><span>☎️</span></div>
+      <div class="app-icon" onclick="openApp('ai-bot')"><span>🤖</span></div>
+      <div class="app-icon" onclick="openApp('setting')"><span>⚙️</span></div>
     </div>
   </div>
 
   <script>
     let tomatoScore = 0;
+    let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+    // Time Update
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      document.getElementById('time').innerText = timeStr;
+      document.getElementById('lock-time').innerText = timeStr;
+    }
+    setInterval(updateTime, 1000);
+
+    // Lock/Unlock
+    function unlockPhone() {
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('home').style.display = 'flex';
+      showNotification('Phone Unlocked!');
+    }
+    function lockPhone() {
+      document.querySelectorAll('.app-screen').forEach(screen => screen.style.display = 'none');
+      document.getElementById('home').style.display = 'none';
+      document.getElementById('lock-screen').style.display = 'flex';
+    }
+
+    // Notifications
+    function showNotification(message) {
+      const notif = document.getElementById('notification');
+      notif.innerText = message;
+      notif.style.display = 'block';
+      setTimeout(() => notif.style.display = 'none', 3000);
+    }
+
+    // App Navigation
     function openApp(appId) {
       document.getElementById('home').style.display = 'none';
       document.getElementById(appId).style.display = 'block';
       document.querySelector(`#${appId} .app-content`).style.display = 'block';
+      if (appId === 'camera') startCamera();
+      if (appId === 'music') document.getElementById('music-player').play();
+      showNotification(`${appId.charAt(0).toUpperCase() + appId.slice(1)} opened`);
     }
     function backToHome() {
       document.querySelectorAll('.app-screen').forEach(screen => {
@@ -199,27 +391,96 @@
         screen.querySelector('.app-content').style.display = 'none';
       });
       document.getElementById('home').style.display = 'flex';
+      if (navigator.mediaDevices) navigator.getUserMedia({ video: true }).then(stream => stream.getTracks().forEach(track => track.stop()));
+      showNotification('Returned to Home');
     }
+
+    // Tomato Game
     function playTomato() {
       tomatoScore += 1;
       document.getElementById('tomato-score').innerText = `Score: ${tomatoScore}`;
+      showNotification('Tomato popped!');
     }
+    function resetTomato() {
+      tomatoScore = 0;
+      document.getElementById('tomato-score').innerText = `Score: 0`;
+      showNotification('Score reset!');
+    }
+
+    // Chart App
+    function updateChart() {
+      const coin = document.querySelector('#chart select').value;
+      document.getElementById('chart-frame').src = `https://www.coindesk.com/price/${coin}`;
+    }
+
+    // Contacts Search
+    function searchContacts() {
+      const query = document.getElementById('search-contact').value.toLowerCase();
+      const contacts = ['Robin: 123-456-7890', 'Elon: 234-567-8901', 'Boss: 345-678-9012', 'Wife: 456-789-0123', 'Friend: 567-890-1234'];
+      document.getElementById('contact-list').innerHTML = contacts
+        .filter(c => c.toLowerCase().includes(query))
+        .map(c => `<li>${c}</li>`).join('');
+    }
+
+    // AI Bot
+    function showBotChat() {
+      const bot = document.getElementById('bot-select').value;
+      const chats = {
+        bot1: `<p>Grok: Ask me anything!</p><p>Q1: Weather? A: Sunny!</p><p>Q2: Food? A: Pizza!</p><p>Q3: Color? A: Blue!</p>`,
+        bot2: `<p>Siri: Hello!</p><p>Q1: News? A: Tech news!</p><p>Q2: Hobby? A: Coding!</p><p>Q3: Dream? A: AI world!</p>`,
+        bot3: `<p>Alexa: Yo!</p><p>Q1: Music? A: Rock!</p><p>Q2: Movie? A: Sci-fi!</p><p>Q3: Game? A: Chess!</p>`,
+        bot4: `<p>Cortana: Hey there!</p><p>Q1: Travel? A: Paris!</p><p>Q2: Food? A: Sushi!</p><p>Q3: Sport? A: Soccer!</p>`,
+        bot5: `<p>Bixby: Hi!</p><p>Q1: Book? A: Fantasy!</p><p>Q2: Pet? A: Dog!</p><p>Q3: Place? A: Beach!</p>`
+      };
+      document.getElementById('bot-chat').innerHTML = chats[bot];
+    }
+    function handleBotInput(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('bot-input').value;
+        if (input) showNotification(`Asked: ${input}`);
+        document.getElementById('bot-input').value = '';
+      }
+    }
+
+    // Theme and Brightness
     function toggleTheme() {
       document.body.classList.toggle('white-theme');
       document.body.classList.add('theme-animation');
       setTimeout(() => document.body.classList.remove('theme-animation'), 600);
+      showNotification('Theme changed!');
     }
-    function showBotChat() {
-      const bot = document.getElementById('bot-select').value;
-      const chats = {
-        bot1: `<p>Bot 1: Ask me anything!</p><p>Q1: What's the weather like? A: Sunny!</p><p>Q2: Best food? A: Pizza!</p><p>Q3: Favorite color? A: Blue!</p>`,
-        bot2: `<p>Bot 2: Hello!</p><p>Q1: What's new? A: Tech news!</p><p>Q2: Hobby? A: Coding!</p><p>Q3: Dream? A: AI world!</p>`,
-        bot3: `<p>Bot 3: Yo!</p><p>Q1: Music? A: Rock!</p><p>Q2: Movie? A: Sci-fi!</p><p>Q3: Game? A: Chess!</p>`,
-        bot4: `<p>Bot 4: Hey there!</p><p>Q1: Travel? A: Paris!</p><p>Q2: Food? A: Sushi!</p><p>Q3: Sport? A: Soccer!</p>`,
-        bot5: `<p>Bot 5: Hi!</p><p>Q1: Book? A: Fantasy!</p><p>Q2: Pet? A: Dog!</p><p>Q3: Place? A: Beach!</p>`
-      };
-      document.getElementById('bot-chat').innerHTML = chats[bot];
+    function adjustBrightness() {
+      const brightness = document.getElementById('brightness').value;
+      document.querySelector('.phone').style.opacity = brightness;
     }
+
+    // Camera
+    function startCamera() {
+      const video = document.getElementById('camera-feed');
+      if (navigator.mediaDevices) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => video.srcObject = stream)
+          .catch(() => showNotification('Camera access denied'));
+      }
+    }
+    function capturePhoto() {
+      showNotification('Photo captured!');
+    }
+
+    // Notes
+    function saveNote() {
+      const note = document.getElementById('note-text').value;
+      if (note) {
+        notes.push(note);
+        localStorage.setItem('notes', JSON.stringify(notes));
+        document.getElementById('notes-list').innerHTML = notes.map(n => `<p>${n}</p>`).join('');
+        document.getElementById('note-text').value = '';
+        showNotification('Note saved!');
+      }
+    }
+
+    // Initialize
+    updateTime();
   </script>
 </body>
 </html>
