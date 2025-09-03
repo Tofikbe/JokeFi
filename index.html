@@ -2,294 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>JokeFI Watch - Doraemon</title>
+  <title>JokeFI Watch - Doraemon Episodes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Watch Doraemon episodes in Hindi for free on JokeFI Watch. Enjoy smooth streaming and a user-friendly experience.">
+  <meta property="og:title" content="JokeFI Watch - Doraemon">
+  <meta property="og:description" content="Stream Doraemon episodes in Hindi with subtitles and a seamless experience.">
+  <meta property="og:image" content="https://img.youtube.com/vi/9S2HfqQUMpE/default.jpg">
+  <meta property="og:url" content="https://jokefi-watch.example.com">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
-    body {
-      font-family: 'Montserrat', Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      text-align: center;
-      overflow-x: hidden;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      touch-action: manipulation;
-    }
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      opacity: 0.3;
-    }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 255, 204, 0.1));
-      z-index: -1;
-    }
-    header {
-      background: rgba(0, 0, 0, 0.9);
-      padding: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0, 255, 204, 0.2);
-    }
-    .marquee {
-      font-size: 18px;
-      font-weight: 600;
-      color: #00ffcc;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      white-space: nowrap;
-      animation: marquee 12s linear infinite;
-      display: inline-block;
-      padding-right: 100%;
-      will-change: transform;
-    }
-    .marquee:hover {
-      animation-play-state: paused;
-    }
-    @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    .hamburger {
-      font-size: 24px;
-      color: #00ffcc;
-      cursor: pointer;
-      padding: 10px;
-    }
-    .menu {
-      display: none;
-      background: #1c1c1c;
-      position: absolute;
-      top: 50px;
-      right: 10px;
-      border-radius: 5px;
-      padding: 10px;
-      box-shadow: 0 5px 15px rgba(0, 255, 204, 0.3);
-    }
-    .menu.active {
-      display: block;
-    }
-    .menu a {
-      display: block;
-      color: #00ffcc;
-      padding: 10px;
-      text-decoration: none;
-      transition: background 0.2s ease;
-    }
-    .menu a:hover {
-      background: rgba(0, 255, 204, 0.2);
-    }
-    .language-switch {
-      margin: 15px;
-      text-align: left;
-    }
-    .language-switch select {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      background: #222;
-      color: #00ffcc;
-      border: 2px solid #00ffcc;
-      width: 100%;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .language-switch select:hover {
-      transform: scale(1.03);
-    }
-    .search-bar {
-      margin: 15px;
-      padding: 10px;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      background: #222;
-      color: #fff;
-      border: 2px solid #00ffcc;
-      transition: border-color 0.2s ease;
-    }
-    .search-bar input:focus {
-      outline: none;
-      border-color: #00cc99;
-    }
-    .episode-container {
-      padding: 15px;
-      flex: 1;
-    }
-    .episode {
-      background: #1c1c1c;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      padding: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      will-change: transform, box-shadow;
-    }
-    .episode:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.4);
-    }
-    .episode h3 {
-      font-size: 18px;
-      margin: 10px 0;
-      color: #00ffcc;
-      font-weight: 600;
-    }
-    .episode-number {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: #00ffcc;
-      color: #121212;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    .thumbnail {
-      width: 100%;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      loading: lazy;
-    }
-    iframe {
-      width: 100%;
-      height: 200px;
-      border-radius: 8px;
-      border: none;
-      background: #000;
-      position: relative;
-    }
-    .play-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 40px;
-      color: #00ffcc;
-      opacity: 0.8;
-      transition: opacity 0.2s ease;
-      pointer-events: none;
-    }
-    iframe:not(:empty) + .play-overlay {
-      opacity: 0;
-    }
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 30px;
-      height: 30px;
-      border: 3px solid #00ffcc;
-      border-top: 3px solid transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      display: none;
-    }
-    iframe:empty + .play-overlay + .loading {
-      display: block;
-    }
-    @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    .scroll-progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 4px;
-      background: #00ffcc;
-      width: 0;
-      z-index: 1001;
-      transition: width 0.1s ease;
-    }
-    .back-to-top {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #00ffcc;
-      color: #121212;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .back-to-top.visible {
-      opacity: 1;
-    }
-    footer {
-      background: #1c1c1c;
-      padding: 15px;
-      font-size: 14px;
-      color: #aaa;
-      text-align: center;
-    }
-    @media (min-width: 768px) {
-      .episode-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 15px;
-      }
-      .episode {
-        margin-bottom: 0;
-      }
-      iframe {
-        height: 180px;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .marquee, .episode, .episode h3, footer, .back-to-top {
-        animation: none;
-        transition: none;
-      }
-    }
+    *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth;}
+    body{font-family:'Montserrat',Arial,sans-serif;background:#121212;color:#fff;text-align:center;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;touch-action:manipulation;}
+    body.light{background:#f5f5f5;color:#121212;}
+    canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:.3;}
+    .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(0,0,0,.7),rgba(0,255,204,.1));z-index:-1;}
+    .loading-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#121212;display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:2000;}
+    .loading-screen img{width:100px;animation:bounce 1s infinite;}
+    .loading-screen p{color:#00ffcc;font-size:18px;}
+    @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+    .loading-screen.hidden{display:none;}
+    header{background:rgba(0,0,0,.9);padding:10px;position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,255,204,.2);}
+    body.light header{background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.1);}
+    .marquee{font-size:18px;font-weight:600;color:#00ffcc;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;animation:marquee 12s linear infinite;display:inline-block;padding-right:100%;will-change:transform;}
+    .marquee:hover{animation-play-state:paused;}
+    @keyframes marquee{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+    .hamburger{font-size:24px;color:#00ffcc;cursor:pointer;padding:10px;}
+    body.light .hamburger,.light .menu a{color:#007bff;}
+    .menu{display:none;background:#1c1c1c;position:absolute;top:50px;right:10px;border-radius:5px;padding:10px;box-shadow:0 5px 15px rgba(0,255,204,.3);}
+    body.light .menu{background:#fff;box-shadow:0 5px 15px rgba(0,0,0,.1);}
+    .menu.active{display:block;}
+    .menu a{display:block;color:#00ffcc;padding:10px;text-decoration:none;transition:background .2s ease;}
+    .menu a:hover{background:rgba(0,255,204,.2);}
+    .theme-toggle{position:absolute;top:10px;left:10px;padding:10px;background:#00ffcc;color:#121212;border-radius:5px;cursor:pointer;font-size:14px;}
+    body.light .theme-toggle{background:#007bff;color:#fff;}
+    .language-switch{margin:15px;text-align:left;}
+    .language-switch select{padding:10px;font-size:16px;border-radius:5px;background:#222;color:#00ffcc;border:2px solid #00ffcc;width:100%;cursor:pointer;transition:transform .2s ease;}
+    body.light .language-switch select{background:#fff;color:#007bff;border:2px solid #007bff;}
+    .language-switch select:hover{transform:scale(1.03);}
+    .search-bar{margin:15px;padding:10px;}
+    .search-bar input{width:100%;padding:10px;font-size:16px;border-radius:5px;background:#222;color:#fff;border:2px solid #00ffcc;}
+    body.light .search-bar input{background:#fff;color:#121212;border:2px solid #007bff;}
+    .search-bar input:focus{outline:none;border-color:#00cc99;}
+    .sort-options{margin:15px;text-align:left;}
+    .sort-options select{padding:10px;font-size:16px;border-radius:5px;background:#222;color:#00ffcc;border:2px solid #00ffcc;width:100%;cursor:pointer;}
+    body.light .sort-options select{background:#fff;color:#007bff;border:2px solid #007bff;}
+    .episode-container{padding:15px;flex:1;}
+    .episode{background:#1c1c1c;border-radius:10px;margin-bottom:15px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,.5);transition:transform .2s ease,box-shadow .2s ease;will-change:transform,box-shadow;opacity:0;transform:translateY(20px);}
+    body.light .episode{background:#fff;box-shadow:0 5px 15px rgba(0,0,0,.1);}
+    .episode.visible{opacity:1;transform:translateY(0);}
+    .episode:hover{transform:translateY(-5px);box-shadow:0 5px 20px rgba(0,255,204,.4);}
+    .episode.playing{border:2px solid #00ffcc;}
+    body.light .episode.playing{border:2px solid #007bff;}
+    .episode-number{position:absolute;top:10px;left:10px;background:#00ffcc;color:#121212;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
+    body.light .episode-number{background:#007bff;color:#fff;}
+    .thumbnail{width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px;loading:lazy;}
+    iframe{width:100%;height:200px;border-radius:8px;border:none;background:#000;}
+    .play-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;color:#00ffcc;opacity:.8;transition:opacity .2s ease;pointer-events:none;}
+    body.light .play-overlay{color:#007bff;}
+    iframe:not(:empty)+.play-overlay{opacity:0;}
+    .loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border:3px solid #00ffcc;border-top:3px solid transparent;border-radius:50%;animation:spin 1s linear infinite;display:none;}
+    body.light .loading{border:3px solid #007bff;border-top:3px solid transparent;}
+    iframe:empty+.play-overlay+.loading{display:block;}
+    @keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg);}100%{transform:translate(-50%,-50%) rotate(360deg);}}
+    .episode-actions{margin-top:10px;display:flex;justify-content:space-between;}
+    .episode-actions button{padding:8px 12px;border-radius:5px;border:none;background:#00ffcc;color:#121212;font-size:14px;cursor:pointer;transition:background .2s ease;}
+    body.light .episode-actions button{background:#007bff;color:#fff;}
+    .episode-actions button:hover{background:#00cc99;}
+    .episode-info{font-size:14px;color:#aaa;margin-top:5px;}
+    .rating{font-size:14px;margin-top:5px;}
+    .rating span{cursor:pointer;color:#aaa;}
+    .rating span.filled{color:#00ffcc;}
+    body.light .rating span.filled{color:#007bff;}
+    .related-episodes{margin-top:10px;}
+    .related-episodes h4{font-size:16px;color:#00ffcc;}
+    .related-episodes ul{list-style:none;padding:0;}
+    .related-episodes li{font-size:14px;color:#fff;cursor:pointer;margin:5px 0;}
+    body.light .related-episodes li{color:#121212;}
+    .related-episodes li:hover{text-decoration:underline;}
+    .comments-section{margin:15px;padding:15px;background:#1c1c1c;border-radius:10px;}
+    body.light .comments-section{background:#fff;}
+    .comments-section textarea{width:100%;padding:10px;border-radius:5px;background:#222;color:#fff;border:2px solid #00ffcc;}
+    body.light .comments-section textarea{background:#fff;color:#121212;border:2px solid #007bff;}
+    .comments-section button{padding:10px;border-radius:5px;background:#00ffcc;color:#121212;border:none;cursor:pointer;}
+    body.light .comments-section button{background:#007bff;color:#fff;}
+    .scroll-progress{position:fixed;top:0;left:0;height:4px;background:#00ffcc;width:0;z-index:1001;transition:width .1s ease;}
+    body.light .scroll-progress{background:#007bff;}
+    .back-to-top{position:fixed;bottom:20px;right:20px;background:#00ffcc;color:#121212;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;opacity:0;transition:opacity .2s ease;}
+    body.light .back-to-top{background:#007bff;color:#fff;}
+    .back-to-top.visible{opacity:1;}
+    .load-more{margin:20px auto;padding:10px 20px;border-radius:5px;background:#00ffcc;color:#121212;border:none;font-size:16px;cursor:pointer;display:none;}
+    body.light .load-more{background:#007bff;color:#fff;}
+    footer{background:#1c1c1c;padding:15px;font-size:14px;color:#aaa;text-align:center;}
+    body.light footer{background:#e5e5e5;color:#333;}
+    @media (min-width:768px){.episode-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px;}.episode{margin-bottom:0;}iframe{height:180px;}}
+    @media (prefers-reduced-motion:reduce){.marquee,.episode,.episode h3,.back-to-top,.loading-screen img{animation:none;transition:none;}}
   </style>
 </head>
 <body>
+  <div class="loading-screen" id="loadingScreen">
+    <img src="https://i.imgur.com/doraemon-loading.gif" alt="Doraemon Loading">
+    <p>Loading...</p>
+  </div>
   <canvas id="particles"></canvas>
   <div class="overlay"></div>
   <div class="scroll-progress" id="scrollProgress"></div>
+  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
   <header>
     <span class="marquee" id="headline">You can watch every cartoon for free on this website</span>
     <div class="hamburger" onclick="toggleMenu()">☰</div>
@@ -299,260 +119,123 @@
       <a href="#">Contact</a>
     </div>
   </header>
-
   <div class="search-bar">
     <input type="text" id="search" placeholder="Search episodes..." oninput="debouncedSearch()">
   </div>
-
   <div class="language-switch">
     <select id="lang" onchange="changeLanguage()">
       <option value="en">🇬🇧 English</option>
       <option value="hi">🇮🇳 हिंदी</option>
     </select>
   </div>
-
-  <div class="episode-container" id="episodes">
-    <div class="episode">
-      <div class="episode-number">1</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/9S2HfqQUMpE/default.jpg" alt="Episode 1">
-      <h3>Doraemon Episode 1 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/9S2HfqQUMpE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 1"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">2</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/xR6jIhXs8y4/default.jpg" alt="Episode 2">
-      <h3>Doraemon Episode 2 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/xR6jIhXs8y4?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 2"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">3</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/MHELLoml-VA/default.jpg" alt="Episode 3">
-      <h3>Doraemon Episode 3 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/MHELLoml-VA?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 3"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">4</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/x9emqHDa3M8/default.jpg" alt="Episode 4">
-      <h3>Doraemon Episode 4 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/x9emqHDa3M8?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 4"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">5</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/_MtTbLBrxVo/default.jpg" alt="Episode 5">
-      <h3>Doraemon Episode 5 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/_MtTbLBrxVo?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 5"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">6</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/gv33XBptgOc/default.jpg" alt="Episode 6">
-      <h3>Doraemon Episode 6 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/gv33XBptgOc?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 6"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">7</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/LSdzDPdJD5Q/default.jpg" alt="Episode 7">
-      <h3>Doraemon Episode 7 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/LSdzDPdJD5Q?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 7"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">8</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/TuuOXpN3Dxg/default.jpg" alt="Episode 8">
-      <h3>Doraemon Episode 8 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/TuuOXpN3Dxg?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 8"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">9</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/c95GLLibbmE/default.jpg" alt="Episode 9">
-      <h3>Doraemon Episode 9 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/c95GLLibbmE?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 9"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">10</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/ATdcsPge6Qg/default.jpg" alt="Episode 10">
-      <h3>Doraemon Episode 10 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/ATdcsPge6Qg?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 10"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">11</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/yJLtGLH-yeU/default.jpg" alt="Episode 11">
-      <h3>Doraemon Episode 11 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/yJLtGLH-yeU?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 11"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
-    <div class="episode">
-      <div class="episode-number">12</div>
-      <img class="thumbnail" src="https://img.youtube.com/vi/zMvgOhHpgcQ/default.jpg" alt="Episode 12">
-      <h3>Doraemon Episode 12 (Hindi)</h3>
-      <iframe data-src="https://www.youtube.com/embed/zMvgOhHpgcQ?enablejsapi=1" allowfullscreen aria-label="Doraemon Episode 12"></iframe>
-      <div class="play-overlay">▶</div>
-      <div class="loading"></div>
-    </div>
+  <div class="sort-options">
+    <select id="sort" onchange="sortEpisodes()">
+      <option value="number-asc">Episode Number (Asc)</option>
+      <option value="number-desc">Episode Number (Desc)</option>
+      <option value="title">Title</option>
+    </select>
   </div>
-
-  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
-
+  <div class="episode-container" id="episodes">
+    <!-- Episode data will be dynamically managed -->
+  </div>
+  <button class="load-more" id="loadMore" onclick="loadMoreEpisodes()">Load More</button>
+  <div class="comments-section">
+    <h3>Comments</h3>
+    <textarea placeholder="Add a comment..."></textarea>
+    <button onclick="alert('Comment feature requires backend integration.')">Submit</button>
+  </div>
+  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
   <footer>
     &copy; 2025 JokeFI Watch | All Rights Reserved
   </footer>
-
   <script>
-    // Utility: Debounce function to limit frequent calls
-    function debounce(func, wait) {
-      let timeout;
-      return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-      };
-    }
-
+    // Episode Data
+    const episodesData=[{id:"9S2HfqQUMpE",title:"Doraemon Episode 1 (Hindi)",thumbnail:"https://img.youtube.com/vi/9S2HfqQUMpE/default.jpg",number:1,related:[2,3]},{id:"xR6jIhXs8y4",title:"Doraemon Episode 2 (Hindi)",thumbnail:"https://img.youtube.com/vi/xR6jIhXs8y4/default.jpg",number:2,related:[1,3]},{id:"MHELLoml-VA",title:"Doraemon Episode 3 (Hindi)",thumbnail:"https://img.youtube.com/vi/MHELLoml-VA/default.jpg",number:3,related:[1,2]},{id:"x9emqHDa3M8",title:"Doraemon Episode 4 (Hindi)",thumbnail:"https://img.youtube.com/vi/x9emqHDa3M8/default.jpg",number:4,related:[3,5]},{id:"_MtTbLBrxVo",title:"Doraemon Episode 5 (Hindi)",thumbnail:"https://img.youtube.com/vi/_MtTbLBrxVo/default.jpg",number:5,related:[4,6]},{id:"gv33XBptgOc",title:"Doraemon Episode 6 (Hindi)",thumbnail:"https://img.youtube.com/vi/gv33XBptgOc/default.jpg",number:6,related:[5,7]},{id:"LSdzDPdJD5Q",title:"Doraemon Episode 7 (Hindi)",thumbnail:"https://img.youtube.com/vi/LSdzDPdJD5Q/default.jpg",number:7,related:[6,8]},{id:"TuuOXpN3Dxg",title:"Doraemon Episode 8 (Hindi)",thumbnail:"https://img.youtube.com/vi/TuuOXpN3Dxg/default.jpg",number:8,related:[7,9]},{id:"c95GLLibbmE",title:"Doraemon Episode 9 (Hindi)",thumbnail:"https://img.youtube.com/vi/c95GLLibbmE/default.jpg",number:9,related:[8,10]},{id:"ATdcsPge6Qg",title:"Doraemon Episode 10 (Hindi)",thumbnail:"https://img.youtube.com/vi/ATdcsPge6Qg/default.jpg",number:10,related:[9,11]},{id:"yJLtGLH-yeU",title:"Doraemon Episode 11 (Hindi)",thumbnail:"https://img.youtube.com/vi/yJLtGLH-yeU/default.jpg",number:11,related:[10,12]},{id:"zMvgOhHpgcQ",title:"Doraemon Episode 12 (Hindi)",thumbnail:"https://img.youtube.com/vi/zMvgOhHpgcQ/default.jpg",number:12,related:[11,1]}];
+    
+    // Utility: Debounce
+    function debounce(func,wait){let timeout;return function(...args){clearTimeout(timeout);timeout=setTimeout(()=>func.apply(this,args),wait);}}
+    
     // Particle Animation
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d', { alpha: false });
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    let particles = [];
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedX = Math.random() * 0.3 - 0.15;
-        this.speedY = Math.random() * 0.3 - 0.15;
-        this.color = `hsl(${Math.random() * 60 + 180}, 70%, 50%)`;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-      }
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < 30; i++) { // Reduced particles for performance
-        particles.push(new Particle());
-      }
-    }
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      requestAnimationFrame(animateParticles);
-    }
-    initParticles();
-    animateParticles();
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
-    });
-
+    const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d',{alpha:false});canvas.width=window.innerWidth;canvas.height=window.innerHeight;let particles=[];
+    class Particle{constructor(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.size=Math.random()*1.5+.5;this.speedX=Math.random()*.3-.15;this.speedY=Math.random()*.3-.15;this.color=`hsl(${Math.random()*60+180},70%,50%)`;}update(){this.x+=this.speedX;this.y+=this.speedY;if(this.x<0||this.x>canvas.width)this.speedX*=-1;if(this.y<0||this.y>canvas.height)this.speedY*=-1;}draw(){ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();}}
+    function initParticles(){particles=[];for(let i=0;i<20;i++)particles.push(new Particle());}
+    function animateParticles(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(animateParticles);}
+    initParticles();animateParticles();
+    window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;initParticles();});
+    
+    // Loading Screen
+    window.addEventListener('load',()=>{setTimeout(()=>{document.getElementById('loadingScreen').classList.add('hidden');},1500);});
+    
+    // Theme Toggle
+    function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');}
+    if(localStorage.getItem('theme')==='light')document.body.classList.add('light');
+    
     // Language Switcher
-    function changeLanguage() {
-      const lang = document.getElementById('lang').value;
-      const headline = document.getElementById('headline');
-      if (lang === 'hi') {
-        headline.textContent = 'आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';
-        document.querySelectorAll('.episode h3').forEach((el, index) => {
-          el.textContent = `डोरेमोन एपिसोड ${index + 1} (हिंदी)`;
-        });
-      } else {
-        headline.textContent = 'You can watch every cartoon for free on this website';
-        document.querySelectorAll('.episode h3').forEach((el, index) => {
-          el.textContent = `Doraemon Episode ${index + 1} (Hindi)`;
-        });
-      }
-    }
-
-    // Search Functionality
-    function searchEpisodes() {
-      const query = document.getElementById('search').value.toLowerCase();
-      document.querySelectorAll('.episode').forEach(episode => {
-        const title = episode.querySelector('h3').textContent.toLowerCase();
-        episode.style.display = title.includes(query) ? 'block' : 'none';
-      });
-    }
-    const debouncedSearch = debounce(searchEpisodes, 300);
-
+    function changeLanguage(){const lang=document.getElementById('lang').value,headline=document.getElementById('headline');if(lang==='hi'){headline.textContent='आपको इस वेबसाइट पर हर एक कार्टून फ्री में देखने को मिल जाएगा';document.querySelectorAll('.episode h3').forEach((el,i)=>el.textContent=`डोरेमोन एपिसोड ${episodesData[i].number} (हिंदी)`);}else{headline.textContent='You can watch every cartoon for free on this website';document.querySelectorAll('.episode h3').forEach((el,i)=>el.textContent=`Doraemon Episode ${episodesData[i].number} (Hindi)`);}}
+    
+    // Search
+    function searchEpisodes(){const query=document.getElementById('search').value.toLowerCase();document.querySelectorAll('.episode').forEach(episode=>episode.style.display=episode.querySelector('h3').textContent.toLowerCase().includes(query)?'block':'none');}
+    const debouncedSearch=debounce(searchEpisodes,300);
+    
     // Hamburger Menu
-    function toggleMenu() {
-      document.getElementById('menu').classList.toggle('active');
-    }
-
+    function toggleMenu(){document.getElementById('menu').classList.toggle('active');}
+    
     // Scroll Progress and Back to Top
-    const updateScrollProgress = debounce(() => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-      document.getElementById('scrollProgress').style.width = scrollPercent + '%';
-      document.getElementById('backToTop').classList.toggle('visible', scrollTop > 300);
-    }, 50);
-    window.addEventListener('scroll', updateScrollProgress);
+    const updateScrollProgress=debounce(()=>{const scrollTop=window.scrollY,docHeight=document.documentElement.scrollHeight-window.innerHeight,scrollPercent=scrollTop/docHeight*100;document.getElementById('scrollProgress').style.width=scrollPercent+'%';document.getElementById('backToTop').classList.toggle('visible',scrollTop>300);},50);
+    window.addEventListener('scroll',updateScrollProgress);
+    
+    // Render Episodes
+    function renderEpisodes(data=episodesData,start=0,end=6){const container=document.getElementById('episodes');if(start===0)container.innerHTML='';data.slice(start,end).forEach((ep,i)=>{const div=document.createElement('div');div.className='episode';div.innerHTML=`<div class="episode-number">${ep.number}</div><img class="thumbnail" src="${ep.thumbnail.replace('.jpg','.webp')}" alt="Episode ${ep.number}" loading="lazy"><h3>${ep.title}</h3><iframe data-src="https://www.youtube.com/embed/${ep.id}?enablejsapi=1&cc_load_policy=1" allowfullscreen aria-label="Doraemon Episode ${ep.number}"></iframe><div class="play-overlay">▶</div><div class="loading"></div><div class="episode-info">Duration: <span class="duration">Loading...</span></div><div class="rating" data-id="${ep.id}">${Array(5).fill().map((_,j)=>`<span data-value="${j+1}" class="${localStorage.getItem(`rating-${ep.id}`)>j?'filled':''}">⭐</span>`).join('')}</div><div class="episode-actions"><button onclick="toggleWatchLater('${ep.id}')">${localStorage.getItem('watchLater')?.includes(ep.id)?'Remove from Watch Later':'Add to Watch Later'}</button><button onclick="requestFullscreen(this)">Fullscreen</button><button onclick="skipIntro(this)">Skip Intro</button></div><div class="related-episodes"><h4>You May Also Like</h4><ul>${ep.related.map(r=>`<li onclick="scrollToEpisode(${r})">Episode ${r}</li>`).join('')}</ul></div>`;container.appendChild(div);setTimeout(()=>{div.classList.add('visible');},i*100);});fetchDurations();if(end<data.length)document.getElementById('loadMore').style.display='block';}
+    renderEpisodes();
+    
+    // Infinite Scroll / Load More
+    let currentPage=0;
+    function loadMoreEpisodes(){currentPage++;renderEpisodes(episodesData,currentPage*6,(currentPage+1)*6);}
+    
+    // Lazy Loading
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){const iframe=entry.target;if(iframe.dataset.src&&!iframe.src){iframe.src=iframe.dataset.src;observer.unobserve(iframe);}}}),{rootMargin:'100px'});
+    document.querySelectorAll('iframe').forEach(iframe=>observer.observe(iframe));
+    
+    // YouTube API for Duration and Auto Play
+    const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);
+    let players={};
+    window.onYouTubeIframeAPIReady=()=>{document.querySelectorAll('iframe').forEach(iframe=>{const id=iframe.dataset.src.split('/').pop().split('?')[0];players[id]=new YT.Player(iframe,{events:{onStateChange:e=>onPlayerStateChange(e,id)}});});};
+    function onPlayerStateChange(e,id){if(e.data===YT.PlayerState.PLAYING){document.querySelectorAll('.episode').forEach(ep=>ep.classList.remove('playing'));document.querySelector(`[data-id="${id}"]`).closest('.episode').classList.add('playing');localStorage.setItem(`resume-${id}`,Date.now());}if(e.data===YT.PlayerState.ENDED){const nextEpisode=episodesData.find(ep=>ep.number===parseInt(document.querySelector(`[data-id="${id}"]`).closest('.episode').querySelector('.episode-number').textContent)+1);if(nextEpisode){const nextIframe=document.querySelector(`[data-id="${nextEpisode.id}"]`).closest('.episode').querySelector('iframe');if(nextIframe.src)players[nextEpisode.id].playVideo();else{nextIframe.src=nextIframe.dataset.src;nextIframe.onload=()=>players[nextEpisode.id].playVideo();}}}}
+    function fetchDurations(){episodesData.forEach(ep=>{fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${ep.id}&key=AIzaSyD_your_api_key_here`).then(res=>res.json()).then(data=>{const duration=data.items[0]?.contentDetails?.duration||'N/A';document.querySelector(`[data-id="${ep.id}"] .duration`).textContent=duration.replace('PT','').toLowerCase();}).catch(()=>'N/A');});}
+    
+    // Watch Later
+    function toggleWatchLater(id){let watchLater=JSON.parse(localStorage.getItem('watchLater')||'[]');if(watchLater.includes(id)){watchLater=watchLater.filter(i=>i!==id);}else{watchLater.push(id);}localStorage.setItem('watchLater',JSON.stringify(watchLater));document.querySelector(`[data-id="${id}"]`).closest('.episode').querySelector('.episode-actions button').textContent=watchLater.includes(id)?'Remove from Watch Later':'Add to Watch Later';}
+    
+    // Fullscreen
+    function requestFullscreen(btn){const iframe=btn.closest('.episode').querySelector('iframe');iframe.requestFullscreen();}
 
-    // Lazy Loading Iframes
-    const iframes = document.querySelectorAll('iframe');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const iframe = entry.target;
-          if (iframe.dataset.src && !iframe.src) {
-            iframe.src = iframe.dataset.src;
-          }
-          observer.unobserve(iframe);
-        }
-      });
-    }, { rootMargin: '100px' });
-    iframes.forEach(iframe => observer.observe(iframe));
-
-    // Swipe Gestures
-    let touchStartX = 0;
-    let touchStartY = 0;
-    document.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    });
-    document.addEventListener('touchend', e => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const touchEndY = e.changedTouches[0].screenY;
-      const deltaX = touchStartX - touchEndX;
-      const deltaY = touchStartY - touchEndY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0) {
-          window.scrollBy({ top: 200, behavior: 'smooth' });
-        } else {
-          window.scrollBy({ top: -200, behavior: 'smooth' });
-        }
-      }
-    });
+    // Skip Intro (Placeholder: Assumes 30s intro)
+    function skipIntro(btn){const iframe=btn.closest('.episode').querySelector('iframe'),id=iframe.dataset.src.split('/').pop().split('?')[0];players[id]?.seekTo(30);}
+    
+    // Rating
+    document.addEventListener('click',e=>{if(e.target.matches('.rating span')){const id=e.target.closest('.rating').dataset.id,value=e.target.dataset.value;localStorage.setItem(`rating-${id}`,value);e.target.closest('.rating').querySelectorAll('span').forEach(s=>s.classList.toggle('filled',s.dataset.value<=value));}});
+    
+    // Keyboard Navigation
+    document.addEventListener('keydown',e=>{const episodes=Array.from(document.querySelectorAll('.episode')).filter(ep=>ep.style.display!=='none'),current=document.querySelector('.playing')||episodes[0];if(!current)return;const index=episodes.indexOf(current);if(e.key==='ArrowDown'&&index<episodes.length-1){episodes[index+1].scrollIntoView({behavior:'smooth'});}if(e.key==='ArrowUp'&&index>0){episodes[index-1].scrollIntoView({behavior:'smooth'});}});
+    
+    // Sort Episodes
+    function sortEpisodes(){const sort=document.getElementById('sort').value,container=document.getElementById('episodes');let sorted=[...episodesData];if(sort==='number-asc')sorted.sort((a,b)=>a.number-b.number);else if(sort==='number-desc')sorted.sort((a,b)=>b.number-a.number);else if(sort==='title')sorted.sort((a,b)=>a.title.localeCompare(b.title));container.innerHTML='';renderEpisodes(sorted,0,6);currentPage=0;}
+    
+    // Scroll to Episode
+    function scrollToEpisode(number){const episode=document.querySelector(`.episode-number${number}`).closest('.episode');episode.scrollIntoView({behavior:'smooth'});}
+    
+    // Resume Watching
+    window.addEventListener('load',()=>{const lastWatched=Object.keys(localStorage).filter(k=>k.startsWith('resume-')).sort((a,b)=>localStorage[b]-localStorage[a])[0];if(lastWatched){const id=lastWatched.replace('resume-',''),episode=document.querySelector(`[data-id="${id}"]`).closest('.episode');episode.scrollIntoView({behavior:'smooth'});}});
+    
+    // Service Worker for PWA
+    if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(err=>console.error('Service Worker Error:',err));}
+    
+    // Prefetch Next Episode
+    function prefetchNext(){const visible=Array.from(document.querySelectorAll('.episode.visible'));if(visible.length){const last=visible[visible.length-1],next=episodesData.find(ep=>ep.number===parseInt(last.querySelector('.episode-number').textContent)+1);if(next){const link=document.createElement('link');link.rel='prefetch';link.href=`https://www.youtube.com/embed/${next.id}?enablejsapi=1`;document.head.appendChild(link);}}}
+    window.addEventListener('scroll',debounce(prefetchNext,100));
+    
+    // Schema Markup
+    const schema={ "@context":"https://schema.org", "@type":"ItemList", "itemListElement":episodesData.map((ep,i)=>({ "@type":"VideoObject", "position":i+1, "name":ep.title, "url":`https://jokefi-watch.example.com#episode-${ep.id}`, "thumbnailUrl":ep.thumbnail, "embedUrl":`https://www.youtube.com/embed/${ep.id}` })) };document.head.insertAdjacentHTML('beforeend',`<script type="application/ld+json">${JSON.stringify(schema)}</script>`);
   </script>
 </body>
 </html>
