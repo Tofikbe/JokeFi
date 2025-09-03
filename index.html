@@ -15,6 +15,9 @@
         body {
             background-color: #f0f2f5;
             transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         body.dark {
@@ -23,9 +26,10 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 480px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
+            flex: 1;
         }
 
         .navbar {
@@ -45,15 +49,15 @@
         }
 
         .navbar .logo {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
         }
 
         .navbar .nav-links a {
             color: white;
             text-decoration: none;
-            margin: 0 15px;
-            font-size: 16px;
+            margin: 0 10px;
+            font-size: 14px;
         }
 
         .navbar .nav-links a:hover {
@@ -61,17 +65,24 @@
         }
 
         .search-bar {
-            margin: 20px 0;
-            text-align: center;
+            background-color: white;
+            padding: 10px;
+            position: sticky;
+            top: 60px;
+            z-index: 100;
+        }
+
+        body.dark .search-bar {
+            background-color: #2a2a2a;
         }
 
         .search-bar input {
             width: 100%;
-            max-width: 400px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
             font-size: 16px;
+            outline: none;
         }
 
         body.dark .search-bar input {
@@ -80,41 +91,106 @@
             border-color: #555;
         }
 
-        .dashboard {
+        .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .card {
+        .app-card {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 10px;
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
         }
 
-        body.dark .card {
+        body.dark .app-card {
             background-color: #2a2a2a;
         }
 
-        .card h3 {
-            margin-bottom: 10px;
+        .app-card:hover {
+            transform: scale(1.05);
         }
 
-        .card button {
+        .app-icon {
+            width: 50px;
+            height: 50px;
             background-color: #007bff;
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .app-card h3 {
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        body.dark .app-card h3 {
+            color: #fff;
+        }
+
+        .app-card button {
+            background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             cursor: pointer;
-            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.2s;
         }
 
-        .card button:hover {
-            background-color: #0056b3;
+        .app-card button:hover {
+            background-color: #218838;
+        }
+
+        .bottom-nav {
+            background-color: white;
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        body.dark .bottom-nav {
+            background-color: #2a2a2a;
+            border-top-color: #555;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            color: #555;
+        }
+
+        body.dark .nav-item span {
+            color: #ccc;
         }
 
         .modal {
@@ -135,7 +211,7 @@
             padding: 20px;
             border-radius: 10px;
             width: 90%;
-            max-width: 500px;
+            max-width: 400px;
             position: relative;
         }
 
@@ -203,9 +279,10 @@
 
         .transaction-history th,
         .transaction-history td {
-            padding: 15px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            font-size: 14px;
         }
 
         body.dark .transaction-history th,
@@ -218,9 +295,22 @@
             text-align: center;
         }
 
+        .wallet button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .wallet button:hover {
+            background-color: #0056b3;
+        }
+
         .profile, .settings, .support, .terms {
             margin: 20px 0;
-            padding: 20px;
+            padding: 15px;
             background-color: white;
             border-radius: 10px;
         }
@@ -234,19 +324,20 @@
 
         .theme-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 12px;
         }
 
         .notifications {
             margin: 20px 0;
-            padding: 20px;
+            padding: 15px;
             background-color: white;
             border-radius: 10px;
         }
@@ -266,18 +357,13 @@
             cursor: pointer;
         }
 
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 10px;
+        @media (min-width: 769px) {
+            .container {
+                max-width: 480px;
             }
 
-            .navbar .nav-links a {
-                margin: 5px 0;
-            }
-
-            .dashboard {
-                grid-template-columns: 1fr;
+            .app-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -306,110 +392,119 @@
             <button onclick="openAddMoneyModal()">Add Money</button>
         </div>
 
-        <div class="dashboard" id="dashboard">
-            <!-- Payment Categories (22 specified + additional for 100 features) -->
-            <div class="card">
+        <div class="app-grid" id="dashboard">
+            <!-- Payment Categories -->
+            <div class="app-card">
+                <div class="app-icon">CC</div>
                 <h3>Credit Card Bill</h3>
                 <button onclick="openPaymentModal('Credit Card Bill')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">MR</div>
                 <h3>Mobile Recharge</h3>
-                <button onclick="openPaymentModal('Mobile Recharge')">Pay Now</button>
+                <button onclick="openPaymentModal('Mobile Recharge')">Recharge</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">DTH</div>
                 <h3>DTH Recharge</h3>
-                <button onclick="openPaymentModal('DTH Recharge')">Pay Now</button>
+                <button onclick="openPaymentModal('DTH Recharge')">Recharge</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">EB</div>
                 <h3>Electricity Bill</h3>
                 <button onclick="openPaymentModal('Electricity Bill')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">GB</div>
                 <h3>Gas Bill</h3>
                 <button onclick="openPaymentModal('Gas Bill')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">WB</div>
                 <h3>Water Bill</h3>
                 <button onclick="openPaymentModal('Water Bill')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">BB</div>
                 <h3>Broadband Bill</h3>
                 <button onclick="openPaymentModal('Broadband Bill')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">SF</div>
                 <h3>School Fee</h3>
                 <button onclick="openPaymentModal('School Fee')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">CF</div>
                 <h3>College Fee</h3>
                 <button onclick="openPaymentModal('College Fee')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">EF</div>
                 <h3>Education Fee</h3>
                 <button onclick="openPaymentModal('Education Fee')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">IP</div>
                 <h3>Insurance Payment</h3>
                 <button onclick="openPaymentModal('Insurance Payment')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">EP</div>
                 <h3>EMI Payment</h3>
                 <button onclick="openPaymentModal('EMI Payment')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">LR</div>
                 <h3>Loan Repayment</h3>
                 <button onclick="openPaymentModal('Loan Repayment')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">DO</div>
                 <h3>Donation</h3>
-                <button onclick="openPaymentModal('Donation')">Pay Now</button>
+                <button onclick="openPaymentModal('Donation')">Donate</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">SP</div>
                 <h3>Shopping Payment</h3>
                 <button onclick="openPaymentModal('Shopping Payment')">Pay Now</button>
             </div>
-            <div class="card">
-                <h3>Travel Booking Payment</h3>
-                <button onclick="openPaymentModal('Travel Booking Payment')">Pay Now</button>
+            <div class="app-card">
+                <div class="app-icon">TB</div>
+                <h3>Travel Booking</h3>
+                <button onclick="openPaymentModal('Travel Booking')">Pay Now</button>
             </div>
-            <div class="card">
-                <h3>Movie Ticket Payment</h3>
-                <button onclick="openPaymentModal('Movie Ticket Payment')">Pay Now</button>
+            <div class="app-card">
+                <div class="app-icon">MT</div>
+                <h3>Movie Ticket</h3>
+                <button onclick="openPaymentModal('Movie Ticket')">Pay Now</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">FR</div>
                 <h3>Fastag Recharge</h3>
-                <button onclick="openPaymentModal('Fastag Recharge')">Pay Now</button>
+                <button onclick="openPaymentModal('Fastag Recharge')">Recharge</button>
             </div>
-            <div class="card">
+            <div class="app-card">
+                <div class="app-icon">MR</div>
                 <h3>Metro Recharge</h3>
-                <button onclick="openPaymentModal('Metro Recharge')">Pay Now</button>
+                <button onclick="openPaymentModal('Metro Recharge')">Recharge</button>
             </div>
-            <div class="card">
-                <h3>Housing Rent Payment</h3>
-                <button onclick="openPaymentModal('Housing Rent Payment')">Pay Now</button>
+            <div class="app-card">
+                <div class="app-icon">HR</div>
+                <h3>Housing Rent</h3>
+                <button onclick="openPaymentModal('Housing Rent')">Pay Now</button>
             </div>
-            <div class="card">
-                <h3>Property Tax Payment</h3>
-                <button onclick="openPaymentModal('Property Tax Payment')">Pay Now</button>
+            <div class="app-card">
+                <div class="app-icon">PT</div>
+                <h3>Property Tax</h3>
+                <button onclick="openPaymentModal('Property Tax')">Pay Now</button>
             </div>
-            <div class="card">
-                <h3>Vehicle Tax Payment</h3>
-                <button onclick="openPaymentModal('Vehicle Tax Payment')">Pay Now</button>
+            <div class="app-card">
+                <div class="app-icon">VT</div>
+                <h3>Vehicle Tax</h3>
+                <button onclick="openPaymentModal('Vehicle Tax')">Pay Now</button>
             </div>
-            <!-- Additional categories to reach 100 features -->
-            <div class="card">
-                <h3>Health Insurance</h3>
-                <button onclick="openPaymentModal('Health Insurance')">Pay Now</button>
-            </div>
-            <div class="card">
-                <h3>Car Loan EMI</h3>
-                <button onclick="openPaymentModal('Car Loan EMI')">Pay Now</button>
-            </div>
-            <div class="card">
-                <h3>Home Loan EMI</h3>
-                <button onclick="openPaymentModal('Home Loan EMI')">Pay Now</button>
-            </div>
-            <!-- Add more categories dynamically via JavaScript if needed -->
+            <!-- Additional categories added via JavaScript -->
         </div>
 
         <div class="transaction-history" id="transactions">
@@ -459,6 +554,25 @@
         </div>
 
         <button class="logout" onclick="logout()">Logout</button>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="navigate('home')">
+                <span>🏠</span>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="navigate('wallet')">
+                <span>💳</span>
+                <span>Wallet</span>
+            </div>
+            <div class="nav-item" onclick="navigate('offers')">
+                <span>🎁</span>
+                <span>Offers</span>
+            </div>
+            <div class="nav-item" onclick="navigate('profile')">
+                <span>👤</span>
+                <span>Profile</span>
+            </div>
+        </div>
     </div>
 
     <!-- Payment Modal -->
@@ -592,30 +706,43 @@
 
         function searchCategories() {
             const search = document.getElementById('search').value.toLowerCase();
-            const cards = document.querySelectorAll('.dashboard .card');
+            const cards = document.querySelectorAll('.app-card');
             cards.forEach(card => {
                 const title = card.querySelector('h3').textContent.toLowerCase();
                 card.style.display = title.includes(search) ? 'block' : 'none';
             });
         }
 
+        function navigate(tab) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            if (tab === 'home') {
+                document.getElementById('dashboard').scrollIntoView();
+            } else if (tab === 'wallet') {
+                document.querySelector('.wallet').scrollIntoView();
+            } else if (tab === 'offers') {
+                alert('No offers available at the moment.');
+            } else if (tab === 'profile') {
+                document.getElementById('profile').scrollIntoView();
+            }
+        }
+
         function logout() {
             alert('Logged out successfully!');
-            // Simulate logout (e.g., redirect to login page)
             window.location.reload();
         }
 
-        // Dynamically add more payment categories to reach 100 features
+        // Dynamically add more payment categories
         const additionalCategories = [
-            'Cable TV Bill', 'Internet Bill', 'Municipal Tax', 'Charity Contribution', 'Gym Membership',
-            'Car Insurance', 'Life Insurance', 'Medical Bill', 'Hospital Bill', 'Credit Card EMI',
-            'Personal Loan EMI', 'Education Loan EMI', 'Utility Bill', 'Mobile Bill', 'Landline Bill',
-            'Gas Cylinder Booking', 'Piped Gas Bill', 'Water Tanker Payment', 'Parking Fee', 'Toll Payment',
-            'Bus Ticket Payment', 'Train Ticket Payment', 'Flight Ticket Payment', 'Hotel Booking Payment',
-            'Event Ticket Payment', 'Concert Ticket Payment', 'Sports Event Payment', 'Online Subscription',
-            'Streaming Service Payment', 'Magazine Subscription', 'Newspaper Subscription', 'Club Membership',
-            'Professional Fee', 'Consultancy Fee', 'Legal Fee', 'Tax Consultant Fee', 'Audit Fee',
-            'Home Maintenance', 'Gardening Service', 'Cleaning Service', 'Pest Control Payment',
+            'Health Insurance', 'Car Loan EMI', 'Home Loan EMI', 'Cable TV Bill', 'Internet Bill',
+            'Municipal Tax', 'Charity Contribution', 'Gym Membership', 'Life Insurance', 'Medical Bill',
+            'Hospital Bill', 'Credit Card EMI', 'Personal Loan EMI', 'Education Loan EMI', 'Utility Bill',
+            'Mobile Bill', 'Landline Bill', 'Gas Cylinder Booking', 'Piped Gas Bill', 'Water Tanker Payment',
+            'Parking Fee', 'Toll Payment', 'Bus Ticket Payment', 'Train Ticket Payment', 'Flight Ticket Payment',
+            'Hotel Booking Payment', 'Event Ticket Payment', 'Concert Ticket Payment', 'Sports Event Payment',
+            'Online Subscription', 'Streaming Service Payment', 'Magazine Subscription', 'Newspaper Subscription',
+            'Club Membership', 'Professional Fee', 'Consultancy Fee', 'Legal Fee', 'Tax Consultant Fee',
+            'Audit Fee', 'Home Maintenance', 'Gardening Service', 'Cleaning Service', 'Pest Control Payment',
             'Security Service Payment', 'Laundry Service', 'Dry Cleaning Payment', 'Courier Payment',
             'Freight Payment', 'Shipping Payment', 'Storage Fee', 'Warehouse Rent', 'Office Rent',
             'Shop Rent', 'Apartment Maintenance', 'Society Maintenance', 'Lift Maintenance', 'Generator Bill',
@@ -629,8 +756,10 @@
         const dashboard = document.getElementById('dashboard');
         additionalCategories.forEach(category => {
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'app-card';
+            const iconText = category.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
             card.innerHTML = `
+                <div class="app-icon">${iconText}</div>
                 <h3>${category}</h3>
                 <button onclick="openPaymentModal('${category}')">Pay Now</button>
             `;
