@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hacker Simulator</title>
+  <title>Hacker Simulator Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       background: black;
@@ -10,78 +10,123 @@
       font-family: monospace;
       margin: 0;
       padding: 0;
+      overflow-x: hidden;
     }
     header {
       background: #111;
-      padding: 10px;
-      display: flex;
-      justify-content: space-around;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
       border-bottom: 2px solid #00ff00;
     }
     header a {
+      background: #000;
+      border: 1px solid #00ff00;
+      padding: 5px;
+      font-size: 11px;
       color: #00ff00;
       text-decoration: none;
-      font-weight: bold;
+      text-align: center;
       cursor: pointer;
+      border-radius: 5px;
     }
     #terminal {
-      padding: 20px;
-      font-size: 14px;
+      padding: 10px;
+      font-size: 13px;
       white-space: pre-wrap;
-      height: 80vh;
+      height: 60vh;
       overflow-y: auto;
+      background: #000;
     }
     #inputArea {
       background: #111;
-      padding: 10px;
+      padding: 8px;
       border-top: 2px solid #00ff00;
+      display: flex;
+      gap: 5px;
     }
     input {
       background: black;
       border: 1px solid #00ff00;
       color: #00ff00;
       padding: 5px;
-      width: 200px;
+      flex: 1;
     }
     button {
       background: #00ff00;
       border: none;
       color: black;
       font-weight: bold;
-      padding: 6px 10px;
+      padding: 5px 8px;
       cursor: pointer;
+      border-radius: 4px;
     }
     .warning {
       color: red;
       font-weight: bold;
       animation: blink 1s infinite;
     }
-    @keyframes blink {
-      50% { opacity: 0; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .status-bar {
+      background: #111;
+      padding: 6px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      border-top: 2px solid #00ff00;
+    }
+    .progress-bar {
+      width: 100%;
+      background: #111;
+      border: 1px solid #00ff00;
+      height: 8px;
+      border-radius: 4px;
+      margin: 5px 0;
+    }
+    .progress {
+      height: 100%;
+      background: #00ff00;
+      width: 0%;
+      transition: width 0.5s;
     }
   </style>
 </head>
 <body>
-  <header>
-    <a onclick="fakeOption('Camera Hack')">Camera Hack</a>
-    <a onclick="fakeOption('Password Cracker')">Password Cracker</a>
-    <a onclick="fakeOption('Location Trace')">Location Trace</a>
-    <a onclick="fakeOption('File Stealer')">File Stealer</a>
-    <a onclick="fakeOption('System Override')">System Override</a>
-  </header>
-
-  <div id="terminal">Initializing Hacker Terminal...\n</div>
-
-  <div id="inputArea">
-    <label>Enter Target Number:</label>
-    <input type="text" id="phone" placeholder="+91XXXXXXXXXX">
-    <button onclick="hackNumber()">Hack Now</button>
-  </div>
-
-  <script>
+  <header id="menu"></header>  <div id="terminal">Initializing Hacker Terminal...\n</div>  <div id="inputArea">
+    <input type="text" id="phone" placeholder="Enter target number">
+    <button onclick="hackNumber()">Hack</button>
+  </div>  <div class="status-bar">
+    <span id="cpu">CPU: 12%</span>
+    <span id="ram">RAM: 45%</span>
+    <span id="net">NET: Active</span>
+  </div>  <script>
     const terminal = document.getElementById("terminal");
+    const menu = document.getElementById("menu");
 
-    function printLine(text, delay = 50) {
+    // 50+ fake hacking tools
+    const tools = [
+      "Camera Hack", "Password Cracker", "Location Trace", "File Stealer", "System Override",
+      "WiFi Breach", "Bank Account Cloner", "Satellite Hijack", "AI Voice Clone", "Face ID Bypass",
+      "Credit Card Dump", "Fingerprint Clone", "Drone Control", "CCTV Override", "Browser History Leak",
+      "GPS Jammer", "Bluetooth Sniffer", "Darknet Bridge", "Deepfake Generator", "Database Breach",
+      "Firewall Destroyer", "Server Flooder", "ISP Hijack", "Botnet Builder", "Social Media Stealer",
+      "Cloud Storage Leak", "Root Access Injector", "Fake Update Installer", "Keylogger Implant",
+      "Crypto Wallet Drain", "Email Breach", "Virus Injector", "DDOS Engine", "AI Assistant Override",
+      "Voice Call Tap", "SIM Cloner", "VPN Cracker", "Dark Web Scanner", "Proxy Override",
+      "USB Autorun Attack", "Remote Desktop Hijack", "Bios Override", "Kernel Injector",
+      "Encrypted Chat Leak", "Network Worm", "IP Mask Breaker", "Honeypot Scanner", "Data Scraper",
+      "Quantum Decryptor", "Smart Home Control", "Nuclear Launch Access"
+    ];
+
+    tools.forEach(t => {
+      let a = document.createElement("a");
+      a.textContent = t;
+      a.onclick = () => fakeOption(t);
+      menu.appendChild(a);
+    });
+
+    function printLine(text, delay = 40) {
       let i = 0;
       const interval = setInterval(() => {
         terminal.innerHTML += text[i];
@@ -94,16 +139,15 @@
       }, delay);
     }
 
-    // Fake menu actions
     function fakeOption(option) {
       printLine("> Executing " + option + "...");
-      for (let i = 0; i < 10; i++) {
+      progressBar();
+      for (let i = 0; i < 5; i++) {
         printLine("Processing " + option + " | Code: " + Math.random().toString(36).substring(2,12));
       }
-      printLine(option + " Completed ✅\n");
+      setTimeout(() => printLine(option + " Completed ✅\n"), 2000);
     }
 
-    // Fake number hack
     function hackNumber() {
       const num = document.getElementById("phone").value;
       if (!num) {
@@ -111,22 +155,45 @@
         return;
       }
       printLine("> Target number received: " + num);
-      setTimeout(() => printLine("Connecting to telecom servers..."), 800);
-      setTimeout(() => printLine("Bypassing OTP firewall..."), 1600);
-      setTimeout(() => printLine("Extracting SIM data..."), 2400);
-      setTimeout(() => printLine("Cloning WhatsApp database..."), 3200);
+      setTimeout(() => printLine("Connecting to telecom servers..."), 700);
+      setTimeout(() => printLine("Bypassing OTP firewall..."), 1400);
+      setTimeout(() => printLine("Extracting SIM data..."), 2100);
+      setTimeout(() => printLine("Cloning WhatsApp database..."), 2800);
       setTimeout(() => {
         printLine("⚠ Number " + num + " hacked successfully! ⚠");
         terminal.innerHTML += "<span class='warning'>DEVICE COMPROMISED!</span>\n";
-      }, 4000);
+      }, 3500);
     }
 
-    // Auto boot sequence
+    function progressBar() {
+      const bar = document.createElement("div");
+      bar.className = "progress-bar";
+      const prog = document.createElement("div");
+      prog.className = "progress";
+      bar.appendChild(prog);
+      terminal.appendChild(bar);
+      let percent = 0;
+      const interval = setInterval(() => {
+        percent += 10;
+        prog.style.width = percent + "%";
+        if (percent >= 100) clearInterval(interval);
+      }, 200);
+    }
+
+    // Fake system status updater
+    setInterval(() => {
+      document.getElementById("cpu").innerText = "CPU: " + Math.floor(Math.random()*90+5) + "%";
+      document.getElementById("ram").innerText = "RAM: " + Math.floor(Math.random()*90+5) + "%";
+    }, 2000);
+
+    // Boot sequence
     let bootLines = [
       "Loading kernel modules...",
       "Scanning local network...",
       "Injecting payload...",
       "Initializing root access...",
+      "Encrypting backdoor...",
+      "Launching exploit modules...",
       "Connection stable.",
     ];
     let j = 0;
@@ -134,10 +201,9 @@
       if (j < bootLines.length) {
         printLine(bootLines[j]);
         j++;
-        setTimeout(boot, 1000);
+        setTimeout(boot, 900);
       }
     }
     boot();
-  </script>
-</body>
+  </script></body>
 </html>
