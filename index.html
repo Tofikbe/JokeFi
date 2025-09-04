@@ -2,63 +2,142 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hacker Terminal</title>
+  <title>Hacker Simulator</title>
   <style>
     body {
       background: black;
       color: #00ff00;
       font-family: monospace;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #111;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 2px solid #00ff00;
+    }
+    header a {
+      color: #00ff00;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
     }
     #terminal {
+      padding: 20px;
+      font-size: 14px;
       white-space: pre-wrap;
-      font-size: 16px;
-      line-height: 1.4;
+      height: 80vh;
+      overflow-y: auto;
     }
-    .cursor {
-      display: inline-block;
-      width: 10px;
+    #inputArea {
+      background: #111;
+      padding: 10px;
+      border-top: 2px solid #00ff00;
+    }
+    input {
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 5px;
+      width: 200px;
+    }
+    button {
       background: #00ff00;
-      animation: blink 0.7s infinite;
+      border: none;
+      color: black;
+      font-weight: bold;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .warning {
+      color: red;
+      font-weight: bold;
+      animation: blink 1s infinite;
     }
     @keyframes blink {
-      50% { background: transparent; }
+      50% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div id="terminal"></div>
+  <header>
+    <a onclick="fakeOption('Camera Hack')">Camera Hack</a>
+    <a onclick="fakeOption('Password Cracker')">Password Cracker</a>
+    <a onclick="fakeOption('Location Trace')">Location Trace</a>
+    <a onclick="fakeOption('File Stealer')">File Stealer</a>
+    <a onclick="fakeOption('System Override')">System Override</a>
+  </header>
+
+  <div id="terminal">Initializing Hacker Terminal...\n</div>
+
+  <div id="inputArea">
+    <label>Enter Target Number:</label>
+    <input type="text" id="phone" placeholder="+91XXXXXXXXXX">
+    <button onclick="hackNumber()">Hack Now</button>
+  </div>
+
   <script>
     const terminal = document.getElementById("terminal");
-    const lines = [
-      "Initializing system...",
-      "Loading user data...",
-      "Bypassing firewall...",
-      "Accessing server 192.168.0.1...",
-      "Decrypting files...",
-      "ACCESS GRANTED ✅",
-      "Welcome to the system!"
-    ];
-    
-    let lineIndex = 0;
-    let charIndex = 0;
-    function typeLine() {
-      if (lineIndex < lines.length) {
-        if (charIndex < lines[lineIndex].length) {
-          terminal.innerHTML += lines[lineIndex].charAt(charIndex);
-          charIndex++;
-          setTimeout(typeLine, 50);
-        } else {
+
+    function printLine(text, delay = 50) {
+      let i = 0;
+      const interval = setInterval(() => {
+        terminal.innerHTML += text[i];
+        i++;
+        terminal.scrollTop = terminal.scrollHeight;
+        if (i === text.length) {
+          clearInterval(interval);
           terminal.innerHTML += "\n";
-          charIndex = 0;
-          lineIndex++;
-          setTimeout(typeLine, 500);
         }
-      } else {
-        terminal.innerHTML += "\n> Operation complete.";
+      }, delay);
+    }
+
+    // Fake menu actions
+    function fakeOption(option) {
+      printLine("> Executing " + option + "...");
+      for (let i = 0; i < 10; i++) {
+        printLine("Processing " + option + " | Code: " + Math.random().toString(36).substring(2,12));
+      }
+      printLine(option + " Completed ✅\n");
+    }
+
+    // Fake number hack
+    function hackNumber() {
+      const num = document.getElementById("phone").value;
+      if (!num) {
+        alert("Please enter a number!");
+        return;
+      }
+      printLine("> Target number received: " + num);
+      setTimeout(() => printLine("Connecting to telecom servers..."), 800);
+      setTimeout(() => printLine("Bypassing OTP firewall..."), 1600);
+      setTimeout(() => printLine("Extracting SIM data..."), 2400);
+      setTimeout(() => printLine("Cloning WhatsApp database..."), 3200);
+      setTimeout(() => {
+        printLine("⚠ Number " + num + " hacked successfully! ⚠");
+        terminal.innerHTML += "<span class='warning'>DEVICE COMPROMISED!</span>\n";
+      }, 4000);
+    }
+
+    // Auto boot sequence
+    let bootLines = [
+      "Loading kernel modules...",
+      "Scanning local network...",
+      "Injecting payload...",
+      "Initializing root access...",
+      "Connection stable.",
+    ];
+    let j = 0;
+    function boot() {
+      if (j < bootLines.length) {
+        printLine(bootLines[j]);
+        j++;
+        setTimeout(boot, 1000);
       }
     }
-    typeLine();
+    boot();
   </script>
 </body>
 </html>
