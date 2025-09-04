@@ -5,131 +5,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      font-family: monospace;
+      background: black;
+      color: #00ff00;
+    }
+    /* Matrix background */
+    canvas#matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      background: black;
     }
     header {
       background: #111;
       padding: 8px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      border-bottom: 2px solid #00ff00;
-    }
-    header a {
-      background: #000;
-      border: 1px solid #00ff00;
-      padding: 5px;
-      font-size: 11px;
-      color: #00ff00;
-      text-decoration: none;
-      text-align: center;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    #terminal {
-      padding: 10px;
-      font-size: 13px;
-      white-space: pre-wrap;
-      height: 60vh;
-      overflow-y: auto;
-      background: #000;
-    }
-    #inputArea {
-      background: #111;
-      padding: 8px;
-      border-top: 2px solid #00ff00;
-      display: flex;
-      gap: 5px;
-    }
-    input {
-      background: black;
-      border: 1px solid #00ff00;
-      color: #00ff00;
-      padding: 5px;
-      flex: 1;
-    }
-    button {
-      background: #00ff00;
-      border: none;
-      color: black;
-      font-weight: bold;
-      padding: 5px 8px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .warning {
-      color: red;
-      font-weight: bold;
-      animation: blink 1s infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-    .status-bar {
-      background: #111;
-      padding: 6px;
-      font-size: 12px;
       display: flex;
       justify-content: space-between;
-      border-top: 2px solid #00ff00;
+      align-items: center;
+      border-bottom: 2px solid #00ff00;
     }
-    .progress-bar {
-      width: 100%;
+    header span {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    #menuBtn {
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      background: #00ff00;
+      color: black;
+      border-radius: 4px;
+    }
+    /* Sliding menu */
+    #sideMenu {
+      position: fixed;
+      top: 0;
+      right: -75%;
+      width: 75%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      border-left: 2px solid #00ff00;
+      overflow-y: auto;
+      transition: right 0.5s ease;
+      padding: 10px;
+      z-index: 999;
+    }
+    #sideMenu.active { right: 0; }
+    #sideMenu h2 { color: #00ff00; text-align: center; }
+    #sideMenu a {
+      display: block;
+      padding: 8px;
+      margin: 5px 0;
       background: #111;
       border: 1px solid #00ff00;
-      height: 8px;
-      border-radius: 4px;
-      margin: 5px 0;
+      color: #00ff00;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 13px;
+      animation: fadeIn 0.5s;
     }
-    .progress {
-      height: 100%;
-      background: #00ff00;
-      width: 0%;
-      transition: width 0.5s;
-    }
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }#terminal {
+  padding: 10px;
+  font-size: 13px;
+  white-space: pre-wrap;
+  height: 60vh;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.85);
+  text-shadow: 0 0 5px #00ff00;
+}
+#inputArea {
+  background: #111;
+  padding: 8px;
+  border-top: 2px solid #00ff00;
+  display: flex;
+  gap: 5px;
+}
+input {
+  background: black;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px;
+  flex: 1;
+}
+button {
+  background: #00ff00;
+  border: none;
+  color: black;
+  font-weight: bold;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.warning { color: red; font-weight: bold; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.status-bar {
+  background: #111;
+  padding: 6px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 2px solid #00ff00;
+}
+.progress-bar {
+  width: 100%;
+  background: #111;
+  border: 1px solid #00ff00;
+  height: 8px;
+  border-radius: 4px;
+  margin: 5px 0;
+}
+.progress {
+  height: 100%;
+  background: #00ff00;
+  width: 0%;
+  transition: width 0.3s;
+}
+
   </style>
 </head>
 <body>
-  <header id="menu"></header>  <div id="terminal">Initializing Hacker Terminal...\n</div>  <div id="inputArea">
+  <canvas id="matrix"></canvas>
+  <header>
+    <span>Hacker Simulator</span>
+    <div id="menuBtn">☰</div>
+  </header>  <div id="sideMenu">
+    <h2>Hacking Tools</h2>
+  </div>  <div id="terminal">Initializing Hacker Terminal...\n</div>  <div id="inputArea">
     <input type="text" id="phone" placeholder="Enter target number">
     <button onclick="hackNumber()">Hack</button>
   </div>  <div class="status-bar">
     <span id="cpu">CPU: 12%</span>
     <span id="ram">RAM: 45%</span>
     <span id="net">NET: Active</span>
-  </div>  <script>
-    const terminal = document.getElementById("terminal");
-    const menu = document.getElementById("menu");
+  </div><audio id="typeSound" src="https://actions.google.com/sounds/v1/office/typewriter.ogg"></audio> <audio id="errorSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio> <audio id="successSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 
-    // 50+ fake hacking tools
+  <script>
+    const terminal = document.getElementById("terminal");
+    const menuBtn = document.getElementById("menuBtn");
+    const sideMenu = document.getElementById("sideMenu");
+
+    menuBtn.onclick = () => sideMenu.classList.toggle("active");
+
     const tools = [
       "Camera Hack", "Password Cracker", "Location Trace", "File Stealer", "System Override",
       "WiFi Breach", "Bank Account Cloner", "Satellite Hijack", "AI Voice Clone", "Face ID Bypass",
-      "Credit Card Dump", "Fingerprint Clone", "Drone Control", "CCTV Override", "Browser History Leak",
-      "GPS Jammer", "Bluetooth Sniffer", "Darknet Bridge", "Deepfake Generator", "Database Breach",
-      "Firewall Destroyer", "Server Flooder", "ISP Hijack", "Botnet Builder", "Social Media Stealer",
-      "Cloud Storage Leak", "Root Access Injector", "Fake Update Installer", "Keylogger Implant",
-      "Crypto Wallet Drain", "Email Breach", "Virus Injector", "DDOS Engine", "AI Assistant Override",
-      "Voice Call Tap", "SIM Cloner", "VPN Cracker", "Dark Web Scanner", "Proxy Override",
-      "USB Autorun Attack", "Remote Desktop Hijack", "Bios Override", "Kernel Injector",
-      "Encrypted Chat Leak", "Network Worm", "IP Mask Breaker", "Honeypot Scanner", "Data Scraper",
-      "Quantum Decryptor", "Smart Home Control", "Nuclear Launch Access"
+      "Crypto Wallet Drain", "Dark Web Scanner", "Drone Control", "CCTV Override", "Kernel Injector",
+      "VPN Cracker", "Quantum Decryptor", "Smart Home Control", "Deepfake Generator", "Botnet Builder"
     ];
 
     tools.forEach(t => {
       let a = document.createElement("a");
       a.textContent = t;
       a.onclick = () => fakeOption(t);
-      menu.appendChild(a);
+      sideMenu.appendChild(a);
     });
+
+    function playSound(id) { document.getElementById(id).play(); }
 
     function printLine(text, delay = 40) {
       let i = 0;
       const interval = setInterval(() => {
         terminal.innerHTML += text[i];
+        playSound("typeSound");
         i++;
         terminal.scrollTop = terminal.scrollHeight;
         if (i === text.length) {
@@ -142,27 +185,22 @@
     function fakeOption(option) {
       printLine("> Executing " + option + "...");
       progressBar();
-      for (let i = 0; i < 5; i++) {
-        printLine("Processing " + option + " | Code: " + Math.random().toString(36).substring(2,12));
-      }
-      setTimeout(() => printLine(option + " Completed ✅\n"), 2000);
+      setTimeout(() => printLine(option + " Completed ✅\n"), 2500);
     }
 
     function hackNumber() {
       const num = document.getElementById("phone").value;
-      if (!num) {
-        alert("Please enter a number!");
-        return;
-      }
+      if (!num) { alert("Please enter a number!"); return; }
       printLine("> Target number received: " + num);
-      setTimeout(() => printLine("Connecting to telecom servers..."), 700);
-      setTimeout(() => printLine("Bypassing OTP firewall..."), 1400);
-      setTimeout(() => printLine("Extracting SIM data..."), 2100);
-      setTimeout(() => printLine("Cloning WhatsApp database..."), 2800);
+      setTimeout(() => printLine("Connecting to telecom servers..."), 600);
+      setTimeout(() => printLine("Bypassing OTP firewall..."), 1200);
+      setTimeout(() => printLine("Extracting SIM data..."), 1800);
+      setTimeout(() => printLine("Cloning WhatsApp database..."), 2400);
       setTimeout(() => {
+        playSound("successSound");
         printLine("⚠ Number " + num + " hacked successfully! ⚠");
         terminal.innerHTML += "<span class='warning'>DEVICE COMPROMISED!</span>\n";
-      }, 3500);
+      }, 3000);
     }
 
     function progressBar() {
@@ -174,10 +212,10 @@
       terminal.appendChild(bar);
       let percent = 0;
       const interval = setInterval(() => {
-        percent += 10;
+        percent += 20;
         prog.style.width = percent + "%";
         if (percent >= 100) clearInterval(interval);
-      }, 200);
+      }, 300);
     }
 
     // Fake system status updater
@@ -205,5 +243,24 @@
       }
     }
     boot();
+
+    // Matrix background animation
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    let letters = Array(256).join(1).split("");
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#0f0";
+      letters.map(function(y_pos, index){
+        text = String.fromCharCode(3e4+Math.random()*33);
+        x_pos = index * 10;
+        ctx.fillText(text, x_pos, y_pos);
+        letters[index] = (y_pos > 758 + Math.random()*1e4) ? 0 : y_pos + 10;
+      });
+    }
+    setInterval(drawMatrix, 50);
   </script></body>
 </html>
