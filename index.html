@@ -1,18 +1,17 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hacker Simulator Mobile</title>
+  <title>Ultimate Hacker Simulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
       font-family: monospace;
       background: black;
       color: #00ff00;
+      overflow-x: hidden;
     }
-    /* Matrix background */
     canvas#matrix {
       position: fixed;
       top: 0;
@@ -20,14 +19,13 @@
       z-index: -1;
       width: 100%;
       height: 100%;
-      background: black;
     }
     header {
-      background: #111;
-      padding: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px;
+      background: rgba(0,0,0,0.85);
       border-bottom: 2px solid #00ff00;
     }
     header span {
@@ -35,104 +33,103 @@
       font-weight: bold;
     }
     #menuBtn {
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
-      padding: 4px 8px;
       background: #00ff00;
       color: black;
+      padding: 4px 8px;
       border-radius: 4px;
     }
-    /* Sliding menu */
     #sideMenu {
       position: fixed;
       top: 0;
       right: -75%;
       width: 75%;
       height: 100%;
-      background: rgba(0,0,0,0.95);
+      background: rgba(0,0,0,0.97);
       border-left: 2px solid #00ff00;
       overflow-y: auto;
-      transition: right 0.5s ease;
+      transition: right 0.6s ease;
       padding: 10px;
       z-index: 999;
     }
     #sideMenu.active { right: 0; }
-    #sideMenu h2 { color: #00ff00; text-align: center; }
+    #sideMenu h2 {
+      text-align: center;
+      color: #00ff00;
+      margin-bottom: 10px;
+    }
     #sideMenu a {
       display: block;
-      padding: 8px;
-      margin: 5px 0;
+      padding: 10px;
+      margin: 6px 0;
       background: #111;
       border: 1px solid #00ff00;
       color: #00ff00;
       text-decoration: none;
       border-radius: 5px;
-      font-size: 13px;
-      animation: fadeIn 0.5s;
+      font-size: 14px;
+      transition: 0.3s;
     }
-    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }#terminal {
-  padding: 10px;
-  font-size: 13px;
-  white-space: pre-wrap;
-  height: 60vh;
-  overflow-y: auto;
-  background: rgba(0,0,0,0.85);
-  text-shadow: 0 0 5px #00ff00;
-}
-#inputArea {
-  background: #111;
-  padding: 8px;
-  border-top: 2px solid #00ff00;
-  display: flex;
-  gap: 5px;
-}
-input {
-  background: black;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  padding: 5px;
-  flex: 1;
-}
-button {
-  background: #00ff00;
-  border: none;
-  color: black;
-  font-weight: bold;
-  padding: 5px 8px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.warning { color: red; font-weight: bold; animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-.status-bar {
-  background: #111;
-  padding: 6px;
-  font-size: 12px;
-  display: flex;
-  justify-content: space-between;
-  border-top: 2px solid #00ff00;
-}
-.progress-bar {
-  width: 100%;
-  background: #111;
-  border: 1px solid #00ff00;
-  height: 8px;
-  border-radius: 4px;
-  margin: 5px 0;
-}
-.progress {
-  height: 100%;
-  background: #00ff00;
-  width: 0%;
-  transition: width 0.3s;
-}
-
+    #sideMenu a:hover {
+      background: #00ff00;
+      color: black;
+      transform: translateX(-3px);
+    }
+    #terminal {
+      padding: 12px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      height: 60vh;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.85);
+      text-shadow: 0 0 8px #00ff00;
+      border-top: 2px solid #00ff00;
+    }
+    #inputArea {
+      display: flex;
+      gap: 5px;
+      padding: 10px;
+      border-top: 2px solid #00ff00;
+      background: rgba(0,0,0,0.85);
+    }
+    input {
+      flex: 1;
+      padding: 6px;
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      border-radius: 4px;
+    }
+    button {
+      background: #00ff00;
+      color: black;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+    button:hover { transform: scale(1.05); }
+    .warning { color: red; font-weight: bold; animation: blink 1s infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-top: 2px solid #00ff00;
+      background: rgba(0,0,0,0.85);
+      font-size: 13px;
+    }
+    .progress-bar { width: 100%; height: 10px; background: #111; border-radius: 5px; margin: 5px 0; border: 1px solid #00ff00; }
+    .progress { height: 100%; width: 0%; background: #00ff00; border-radius: 5px; transition: width 0.3s; }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
   <header>
-    <span>Hacker Simulator</span>
+    <span>Ultimate Hacker Simulator</span>
     <div id="menuBtn">☰</div>
   </header>  <div id="sideMenu">
     <h2>Hacking Tools</h2>
@@ -168,7 +165,7 @@ button {
 
     function playSound(id) { document.getElementById(id).play(); }
 
-    function printLine(text, delay = 40) {
+    function printLine(text, delay = 30) {
       let i = 0;
       const interval = setInterval(() => {
         terminal.innerHTML += text[i];
@@ -192,15 +189,15 @@ button {
       const num = document.getElementById("phone").value;
       if (!num) { alert("Please enter a number!"); return; }
       printLine("> Target number received: " + num);
-      setTimeout(() => printLine("Connecting to telecom servers..."), 600);
-      setTimeout(() => printLine("Bypassing OTP firewall..."), 1200);
-      setTimeout(() => printLine("Extracting SIM data..."), 1800);
-      setTimeout(() => printLine("Cloning WhatsApp database..."), 2400);
+      setTimeout(() => printLine("Connecting to telecom servers..."), 500);
+      setTimeout(() => printLine("Bypassing OTP firewall..."), 1000);
+      setTimeout(() => printLine("Extracting SIM data..."), 1500);
+      setTimeout(() => printLine("Cloning WhatsApp database..."), 2000);
       setTimeout(() => {
         playSound("successSound");
         printLine("⚠ Number " + num + " hacked successfully! ⚠");
         terminal.innerHTML += "<span class='warning'>DEVICE COMPROMISED!</span>\n";
-      }, 3000);
+      }, 2500);
     }
 
     function progressBar() {
@@ -212,19 +209,17 @@ button {
       terminal.appendChild(bar);
       let percent = 0;
       const interval = setInterval(() => {
-        percent += 20;
+        percent += 25;
         prog.style.width = percent + "%";
         if (percent >= 100) clearInterval(interval);
-      }, 300);
+      }, 200);
     }
 
-    // Fake system status updater
     setInterval(() => {
-      document.getElementById("cpu").innerText = "CPU: " + Math.floor(Math.random()*90+5) + "%";
-      document.getElementById("ram").innerText = "RAM: " + Math.floor(Math.random()*90+5) + "%";
+      document.getElementById("cpu").innerText = "CPU: " + Math.floor(Math.random()*80+10) + "%";
+      document.getElementById("ram").innerText = "RAM: " + Math.floor(Math.random()*80+10) + "%";
     }, 2000);
 
-    // Boot sequence
     let bootLines = [
       "Loading kernel modules...",
       "Scanning local network...",
@@ -239,12 +234,12 @@ button {
       if (j < bootLines.length) {
         printLine(bootLines[j]);
         j++;
-        setTimeout(boot, 900);
+        setTimeout(boot, 800);
       }
     }
     boot();
 
-    // Matrix background animation
+    // Matrix animation
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
     canvas.height = window.innerHeight;
@@ -258,7 +253,7 @@ button {
         text = String.fromCharCode(3e4+Math.random()*33);
         x_pos = index * 10;
         ctx.fillText(text, x_pos, y_pos);
-        letters[index] = (y_pos > 758 + Math.random()*1e4) ? 0 : y_pos + 10;
+        letters[index] = (y_pos > canvas.height + Math.random()*1000) ? 0 : y_pos + 10;
       });
     }
     setInterval(drawMatrix, 50);
