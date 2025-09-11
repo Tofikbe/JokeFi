@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JioMart Coupons</title>
+<title>JioMart Fake Coupon</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -35,25 +35,39 @@
         font-size: 14px;
         color: #555;
     }
-    .coupon {
-        background: #e0f7fa;
-        margin: 20px 0;
-        padding: 15px;
-        border-radius: 8px;
+    .coupon-container {
         text-align: center;
-        cursor: pointer;
+        margin: 20px 0;
     }
-    .coupon:hover {
-        background: #b2ebf2;
+    .coupon-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 10px;
     }
     .coupon-code {
         font-weight: bold;
-        font-size: 20px;
-        margin-bottom: 8px;
+        font-size: 22px;
+        margin: 10px 0;
         display: block;
+        color: #000;
     }
-    .coupon-apply {
-        font-size: 14px;
+    .copy-btn {
+        display: inline-block;
+        background: #00bcd4;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        margin-bottom: 5px;
+    }
+    .copy-btn:hover {
+        background: #0097a7;
+    }
+    .coupon-note {
+        font-size: 12px;
         color: #555;
     }
     .footer-image {
@@ -82,10 +96,14 @@
         (Coupon not applicable for fresh Milk, Baby food, Oil and Ghee. T&CA)</p>
     </div>
 
-    <!-- Single Coupon Section -->
-    <div class="coupon" id="coupon-box">
+    <!-- Coupon Section -->
+    <div class="coupon-container">
+        <div class="coupon-image">
+            <img src="https://i.postimg.cc/QCm7LH5L/20250911-184044.png" alt="Coupon Box">
+        </div>
         <span class="coupon-code" id="coupon-code"></span>
-        <span class="coupon-apply">Click to copy and apply your code</span>
+        <a class="copy-btn" id="copy-btn">Copy Code</a>
+        <div class="coupon-note">This code works only here</div>
     </div>
 
     <!-- Bottom Image -->
@@ -110,11 +128,11 @@ const couponCode = document.getElementById('coupon-code');
 const code = generateCoupon();
 couponCode.textContent = code;
 
-// Copy to clipboard on click
-const couponBox = document.getElementById('coupon-box');
-couponBox.addEventListener('click', () => {
+// Copy and open website on click
+const copyBtn = document.getElementById('copy-btn');
+copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(code);
-    alert('Coupon code copied: ' + code + '\nVisit: https://jiomartshoppingcopuncodes.vercel.app/');
+    window.open('https://jiomartshoppingcopuncodes.vercel.app/', '_blank');
 });
 </script>
 
