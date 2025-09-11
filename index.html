@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JioMart Fake Coupons</title>
+<title>JioMart Fake Coupon</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -37,7 +37,7 @@
     }
     .coupon {
         background: #e0f7fa;
-        margin: 10px 0;
+        margin: 20px 0;
         padding: 15px;
         border-radius: 8px;
         text-align: center;
@@ -48,12 +48,12 @@
     }
     .coupon-code {
         font-weight: bold;
-        font-size: 16px;
+        font-size: 20px;
         margin-bottom: 8px;
         display: block;
     }
     .coupon-apply {
-        font-size: 12px;
+        font-size: 14px;
         color: #555;
     }
     .footer-image {
@@ -82,8 +82,11 @@
         (Coupon not applicable for fresh Milk, Baby food, Oil and Ghee. T&CA)</p>
     </div>
 
-    <!-- Coupons Section -->
-    <div id="coupon-list"></div>
+    <!-- Single Coupon Section -->
+    <div class="coupon" id="coupon-box">
+        <span class="coupon-code" id="coupon-code"></span>
+        <span class="coupon-apply">Click to copy and apply your code</span>
+    </div>
 
     <!-- Bottom Image -->
     <div class="footer-image">
@@ -102,23 +105,17 @@ function generateCoupon() {
     return code;
 }
 
-// Generate 100 coupons
-const couponList = document.getElementById('coupon-list');
-for(let i=0; i<100; i++) {
-    const code = generateCoupon();
-    const couponDiv = document.createElement('div');
-    couponDiv.className = 'coupon';
-    couponDiv.innerHTML = `<span class="coupon-code">${code}</span>
-                           <span class="coupon-apply">Click to copy and apply your code</span>`;
-    
-    // Copy to clipboard on click
-    couponDiv.addEventListener('click', () => {
-        navigator.clipboard.writeText(code);
-        alert('Coupon code copied: ' + code + '\nVisit: https://jiomartshoppingcopuncodes.vercel.app/');
-    });
-    
-    couponList.appendChild(couponDiv);
-}
+// Show one coupon
+const couponCode = document.getElementById('coupon-code');
+const code = generateCoupon();
+couponCode.textContent = code;
+
+// Copy to clipboard on click
+const couponBox = document.getElementById('coupon-box');
+couponBox.addEventListener('click', () => {
+    navigator.clipboard.writeText(code);
+    alert('Coupon code copied: ' + code + '\nVisit: https://jiomartshoppingcopuncodes.vercel.app/');
+});
 </script>
 
 </body>
