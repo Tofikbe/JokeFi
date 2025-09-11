@@ -56,6 +56,13 @@
         font-size: 14px;
         color: #555;
     }
+    .coupon-note {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #007bff;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 </style>
 </head>
 <body>
@@ -77,6 +84,7 @@
     <div class="coupon" id="coupon-box">
         <span class="coupon-code" id="coupon-code"></span>
         <span class="coupon-apply">Click to copy and apply your code</span>
+        <div class="coupon-note" id="coupon-note">This code works only here</div>
     </div>
 </div>
 
@@ -96,11 +104,17 @@ const couponCode = document.getElementById('coupon-code');
 const code = generateCoupon();
 couponCode.textContent = code;
 
-// Copy to clipboard on click
+// Copy to clipboard on coupon click
 const couponBox = document.getElementById('coupon-box');
 couponBox.addEventListener('click', () => {
     navigator.clipboard.writeText(code);
-    alert('Coupon code copied: ' + code + '\nVisit: https://jiomartshoppingcopuncodes.vercel.app/');
+    alert('Coupon code copied: ' + code);
+});
+
+// Open website on note click
+const couponNote = document.getElementById('coupon-note');
+couponNote.addEventListener('click', () => {
+    window.open('https://jiomartshoppingcopuncodes.vercel.app/', '_blank');
 });
 </script>
 
