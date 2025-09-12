@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Chat</title>
+    <title>Space Chat Mobile</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&display=swap');
 
         * {
             margin: 0;
@@ -14,16 +14,25 @@
         }
 
         body {
-            font-family: 'Orbitron', monospace;
+            font-family: 'Exo 2', sans-serif;
             background: #000;
             color: #fff;
             height: 100vh;
             overflow: hidden;
             position: relative;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        /* Hide on desktop */
+        @media (min-width: 768px) {
+            body {
+                display: none;
+            }
         }
 
         /* Animated Space Background */
-        .stars {
+        .space-bg {
             position: fixed;
             top: 0;
             left: 0;
@@ -31,21 +40,54 @@
             height: 100%;
             background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
             overflow: hidden;
+            z-index: -1;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .star {
             position: absolute;
             background: #fff;
             border-radius: 50%;
-            animation: twinkle 2s infinite alternate;
+            animation: twinkle 3s infinite alternate, float 6s infinite linear;
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Generate stars with JS */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-10px) rotate(360deg); }
+        }
+
+        /* Shooting stars */
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            box-shadow: 0 0 10px #fff;
+            animation: shoot 5s infinite linear;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateX(100vw) translateY(0vh) rotate(45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100px) translateY(100vh) rotate(45deg);
+                opacity: 0;
+            }
+        }
 
         /* Header */
         .header {
@@ -58,35 +100,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 15px;
             z-index: 10;
             backdrop-filter: blur(10px);
         }
 
-        .menu-btn {
+        .menu-btn, .new-chat-btn {
             background: none;
             border: none;
-            color: #fff;
-            font-size: 24px;
             cursor: pointer;
+            width: 30px;
+            height: 30px;
         }
 
-        .new-chat-btn {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
+        .menu-img, .pencil-img, .camera-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         /* Sidebar Menu */
         .sidebar {
             position: fixed;
             top: 60px;
-            left: -300px;
-            width: 300px;
+            left: -100%;
+            width: 80%;
             height: calc(100vh - 60px);
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             transition: left 0.3s ease;
             z-index: 9;
             padding: 20px;
@@ -102,10 +142,11 @@
         }
 
         .chat-item {
-            padding: 10px;
+            padding: 15px;
             cursor: pointer;
             border-bottom: 1px solid #333;
             transition: background 0.2s;
+            font-size: 14px;
         }
 
         .chat-item:hover {
@@ -113,24 +154,24 @@
         }
 
         .chat-item.active {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(0, 255, 255, 0.3);
         }
 
         /* Main Chat Area */
         .chat-container {
-            height: calc(100vh - 120px);
+            height: calc(100vh - 140px);
             overflow-y: auto;
-            padding: 20px;
-            margin: 60px 0 120px 0;
+            padding: 70px 15px 100px;
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
 
         .message {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 70%;
+            padding: 12px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
         }
 
         .user-message {
@@ -144,8 +185,9 @@
         }
 
         .message img {
-            max-width: 200px;
+            max-width: 150px;
             border-radius: 10px;
+            margin-top: 5px;
         }
 
         /* Footer Input */
@@ -154,11 +196,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 80px;
+            height: 70px;
             background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 15px;
             z-index: 10;
             backdrop-filter: blur(10px);
         }
@@ -167,11 +209,12 @@
             flex: 1;
             position: relative;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 15px 20px;
+            border-radius: 40px;
+            padding: 10px 15px;
             margin-right: 10px;
             display: flex;
             align-items: center;
+            max-height: 50px;
         }
 
         .input-box input[type="text"] {
@@ -180,9 +223,8 @@
             border: none;
             color: #fff;
             font-family: inherit;
-            font-size: 16px;
+            font-size: 14px;
             outline: none;
-            padding-right: 10px;
         }
 
         .file-input {
@@ -190,33 +232,34 @@
         }
 
         .file-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: none;
             border: none;
-            color: #fff;
-            padding: 10px;
-            border-radius: 50%;
             cursor: pointer;
+            width: 25px;
+            height: 25px;
             margin-right: 10px;
         }
 
         .send-btn {
-            background: rgba(0, 255, 0, 0.5);
+            background: linear-gradient(45deg, #00ff88, #00ccff);
             border: none;
-            color: #fff;
+            color: #000;
             padding: 10px 20px;
-            border-radius: 50px;
+            border-radius: 25px;
             cursor: pointer;
             font-family: inherit;
+            font-weight: 700;
+            font-size: 14px;
         }
 
-        /* Overlay for sidebar */
+        /* Overlay */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 8;
             display: none;
         }
@@ -227,17 +270,28 @@
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
+    <div class="space-bg">
+        <div class="stars" id="stars"></div>
+        <div class="shooting-star" style="top: 10%; animation-delay: 0s;"></div>
+        <div class="shooting-star" style="top: 30%; animation-delay: 1s;"></div>
+        <div class="shooting-star" style="top: 50%; animation-delay: 2s;"></div>
+        <div class="shooting-star" style="top: 70%; animation-delay: 3s;"></div>
+        <div class="shooting-star" style="top: 90%; animation-delay: 4s;"></div>
+    </div>
 
     <div class="header">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <button class="new-chat-btn" onclick="newChat()">✏️</button>
+        <button class="menu-btn" onclick="toggleSidebar()">
+            <img src="https://cdn-icons-png.flaticon.com/512/201/2018534.png" alt="Menu" class="menu-img">
+        </button>
+        <button class="new-chat-btn" onclick="newChat()">
+            <img src="https://cdn-icons-png.flaticon.com/512/12602/12602135.png" alt="New Chat" class="pencil-img">
+        </button>
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
     <div class="sidebar" id="sidebar">
-        <h3>Saved Chats</h3>
+        <h3 style="margin-bottom: 20px; color: #00ff88;">Saved Chats</h3>
         <ul class="chat-list" id="chatList"></ul>
     </div>
 
@@ -248,30 +302,56 @@
     <div class="footer">
         <div class="input-box">
             <input type="file" id="fileInput" class="file-input" accept="image/*" onchange="handleImageSelect(event)">
-            <button class="file-btn" onclick="document.getElementById('fileInput').click()">📷</button>
-            <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button class="file-btn" onclick="document.getElementById('fileInput').click()">
+                <img src="https://cdn-icons-png.flaticon.com/512/1404/1404945.png" alt="Camera" class="camera-img">
+            </button>
+            <input type="text" id="messageInput" placeholder="Type your message in space..." onkeypress="handleKeyPress(event)">
         </div>
-        <button class="send-btn" onclick="sendMessage()">Send</button>
+        <button class="send-btn" onclick="sendMessage()">Launch</button>
     </div>
 
     <script>
-        // Generate animated stars
+        // Enhanced stars with box-shadow for galaxy effect
+        const galaxyStars = document.createElement('div');
+        galaxyStars.className = 'main';
+        galaxyStars.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            height: 1px;
+            width: 1px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: -42vw -4vh 0px 0px #fff,25vw -41vh 0px 0px #fff,-20vw 49vh 0px 1px #fff,5vw 40vh 1px 1px #fff,29vw 19vh 1px 0px #fff,-44vw -13vh 0px 0px #fff,46vw 41vh 0px 1px #fff,-3vw -45vh 0px 1px #fff,47vw 35vh 1px 0px #fff,12vw -8vh 1px 0px #fff,-34vw 48vh 1px 1px #fff,32vw 26vh 1px 1px #fff,32vw -41vh 1px 1px #fff,0vw 37vh 1px 1px #fff,34vw -26vh 1px 0px #fff,-14vw -49vh 1px 0px #fff,-12vw 45vh 0px 1px #fff,-44vw -33vh 0px 1px #fff,-13vw 41vh 0px 0px #fff,-36vw -11vh 0px 1px #fff,-23vw -24vh 1px 0px #fff,-38vw -27vh 0px 1px #fff,16vw -19vh 0px 0px #fff,28vw 33vh 1px 0px #fff,-49vw -4vh 0px 0px #fff,16vw 32vh 0px 1px #fff,36vw -18vh 1px 0px #fff,-25vw -30vh 1px 0px #fff,-23vw 24vh 0px 1px #fff,-2vw -35vh 1px 1px #fff,-25vw 9vh 0px 0px #fff,-15vw -34vh 0px 0px #fff,-8vw -19vh 1px 0px #fff,-20vw -20vh 1px 1px #fff,42vw 50vh 0px 1px #fff,-32vw 10vh 1px 0px #fff,-23vw -17vh 0px 0px #fff,44vw 15vh 1px 0px #fff,-40vw 33vh 1px 1px #fff,-43vw 8vh 0px 0px #fff,-48vw -15vh 1px 1px #fff,-24vw 17vh 0px 0px #fff,-31vw 50vh 1px 0px #fff,36vw -38vh 0px 1px #fff,-7vw 48vh 0px 0px #fff,15vw -32vh 0px 0px #fff,29vw -41vh 0px 0px #fff,2vw 37vh 1px 0px #fff,7vw -40vh 1px 1px #fff,15vw 18vh 0px 0px #fff,25vw -13vh 1px 1px #fff,-46vw -12vh 1px 1px #fff,-18vw 22vh 0px 0px #fff,23vw -9vh 1px 0px #fff,50vw 12vh 0px 1px #fff,45vw 2vh 0px 0px #fff,14vw -48vh 1px 0px #fff,23vw 43vh 0px 1px #fff,-40vw 16vh 1px 1px #fff,20vw -31vh 0px 1px #fff,-17vw 44vh 1px 1px #fff,18vw -45vh 0px 0px #fff,33vw -6vh 0px 0px #fff,0vw 7vh 0px 1px #fff,-10vw -18vh 0px 1px #fff,-19vw 5vh 1px 0px #fff,-50vw 50vh 0px 0px #fff,40vw -50vh 0px 0px #fff;
+            z-index: -2;
+            animation: rotate 20s linear infinite;
+        `;
+        galaxyStars.style.animation = 'rotate 20s linear infinite';
+        document.body.appendChild(galaxyStars);
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        // Generate twinkle stars
         function createStars() {
             const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < 150; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.width = star.style.height = Math.random() * 3 + 'px';
-                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 starsContainer.appendChild(star);
             }
         }
 
         createStars();
 
-        // Chat management
+        // Chat logic remains the same
         let chats = JSON.parse(localStorage.getItem('spaceChats')) || [{ id: 1, title: 'New Chat', messages: [] }];
         let currentChatId = 1;
         let selectedImage = null;
@@ -315,7 +395,9 @@
                         img.src = msg.image;
                         div.appendChild(img);
                     }
-                    div.textContent += msg.text || '';
+                    const textDiv = document.createElement('div');
+                    textDiv.textContent = msg.text || '';
+                    div.appendChild(textDiv);
                     container.appendChild(div);
                 });
             }
@@ -330,22 +412,20 @@
             const currentChat = chats.find(c => c.id === currentChatId);
             if (!currentChat.messages) currentChat.messages = [];
 
-            // Add user message
             currentChat.messages.push({
                 type: 'user-message',
                 text: text,
                 image: selectedImage
             });
 
-            // Simulate bot response
             setTimeout(() => {
                 currentChat.messages.push({
                     type: 'bot-message',
-                    text: `Echo: ${text} (Image processed if any)`
+                    text: `Galactic response: ${text} (Image analyzed in zero gravity)`
                 });
                 renderMessages();
                 saveChats();
-            }, 500);
+            }, 800);
 
             input.value = '';
             selectedImage = null;
