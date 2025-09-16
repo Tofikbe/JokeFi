@@ -1,193 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nardiyan Tournament</title>
-<style>
-  /* -------------- GENERAL -------------- */
-  * { box-sizing:border-box; margin:0; padding:0; font-family:'Poppins',sans-serif; }
-  body { background: linear-gradient(145deg,#121212,#1c1c1c); color:#fff; height:100vh; display:flex; flex-direction:column; }
-  button { cursor:pointer; font-weight:bold; }
-  .hidden { display:none; }
-
-  /* -------------- TOP BAR -------------- */
-  .top-bar { position:fixed; top:0; left:0; width:100%; height:5vh; background:linear-gradient(90deg,#0d47a1,#1976d2); z-index:10; border-bottom-left-radius:15px; border-bottom-right-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.5); }
-
-  /* -------------- WALLET BUTTON -------------- */
-  .wallet-btn { position:fixed; top:10px; right:15px; background:linear-gradient(45deg,#ff9800,#ffc107); color:#121212; padding:10px 18px; border-radius:15px; font-weight:bold; box-shadow:0 3px 8px rgba(0,0,0,0.5); z-index:11; transition:0.3s; }
-  .wallet-btn:hover { transform:scale(1.05); }
-
-  /* -------------- CONTAINER -------------- */
-  .container { flex:1; padding-top:7vh; padding-bottom:12vh; overflow-y:auto; }
-
-  /* -------------- BOTTOM NAV -------------- */
-  .bottom-nav { position:fixed; bottom:0; left:0; width:100%; height:10vh; background:#1e1e1e; display:flex; justify-content:space-around; align-items:center; z-index:10; box-shadow:0 -2px 10px rgba(0,0,0,0.5); border-top-left-radius:15px; border-top-right-radius:15px; }
-  .bottom-nav div { text-align:center; font-size:13px; cursor:pointer; transition:0.3s; }
-  .bottom-nav div.active { color:#00e676; transform:scale(1.1); }
-
-  /* -------------- PROFILE PAGE -------------- */
-  .profile-page { display:none; padding:20px; }
-  .avatar-container { display:flex; align-items:center; margin-bottom:25px; }
-  .avatar { width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; color:#fff; box-shadow:0 4px 15px rgba(0,0,0,0.5); margin-right:15px; transition:0.3s; }
-  .avatar:hover { transform:scale(1.1); }
-  .edit-avatar { font-size:20px; cursor:pointer; margin-left:-20px; margin-top:50px; color:#00e676; transition:0.3s; }
-  .edit-avatar:hover { transform:scale(1.2); }
-  .username { font-size:22px; font-weight:bold; margin-bottom:5px; }
-  .bio-container { margin:10px 0; display:flex; align-items:center; }
-  .bio { flex:1; border-bottom:1px solid #555; padding:5px 0; font-size:14px; color:#ccc; }
-  .edit-bio { margin-left:10px; cursor:pointer; color:#00e676; font-size:18px; }
-  .game-select-container { margin:20px 0; position:relative; }
-  .game-select { border:1px solid #555; padding:12px; border-radius:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:#2a2a2a; transition:0.3s; }
-  .game-select:hover { background:#333; }
-  .game-popup { display:none; position:absolute; top:55px; left:0; right:0; background:#2b2b2b; border-radius:15px; overflow:hidden; z-index:5; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
-  .game-popup div { padding:12px; border-bottom:1px solid #555; cursor:pointer; transition:0.3s; }
-  .game-popup div:hover { background:#3a3a3a; }
-  .game-popup div:last-child { border-bottom:none; }
-
-  /* -------------- TRANSACTION PAGE -------------- */
-  .transaction-page { display:none; padding:20px; }
-  .transaction-card { background:#1e1e1e; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.5); transition:0.3s; }
-  .transaction-card:hover { transform:scale(1.02); }
-
-  /* -------------- TOURNAMENT PAGE -------------- */
-  .tournament-page { display:none; padding:20px; }
-  .tournament-card { background:#2b2b2b; padding:18px; border-radius:20px; margin-bottom:18px; box-shadow:0 4px 12px rgba(0,0,0,0.5); cursor:pointer; transition:0.3s; }
-  .tournament-card:hover { transform:scale(1.02); background:#333; }
-
-  /* -------------- WALLET POPUP -------------- */
-  .wallet-popup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:12; }
-  .wallet-popup .wallet-content { background:#1e1e1e; padding:30px; border-radius:25px; width:90%; max-width:400px; text-align:center; box-shadow:0 5px 20px rgba(0,0,0,0.7); }
-  .wallet-content h3 { margin-bottom:20px; color:#00e676; font-size:22px; }
-  .wallet-content .balance { font-size:28px; font-weight:bold; margin-bottom:25px; }
-  .wallet-content button { width:80%; margin:12px 0; padding:16px; border-radius:18px; border:none; font-weight:bold; font-size:16px; transition:0.3s; }
-  .add-money { background:linear-gradient(45deg,#00e676,#66ff99); color:#121212; }
-  .withdraw-money { background:linear-gradient(45deg,#ffc107,#ffd54f); color:#121212; }
-  .close-wallet { background:#f44336; color:#fff; }
-
-  /* -------------- COMING SOON POPUP -------------- */
-  .popup { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#1e1e1e; padding:25px; border-radius:20px; display:none; z-index:15; box-shadow:0 4px 20px rgba(0,0,0,0.6); animation:fadeIn 0.3s; font-size:18px; }
-  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header img {
+            width: 30px;
+            cursor: pointer;
+        }
+        .app-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .search-bar {
+            margin: 20px;
+            text-align: center;
+        }
+        .search-bar input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .notes-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
+        .note-tab {
+            background-color: #f9f9f9;
+            width: 150px;
+            height: 150px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .new-tab-icon {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #fff;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            padding: 10px 0;
+        }
+        .invite-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            max-width: 300px;
+            z-index: 1000;
+            border-radius: 8px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+        }
+        .alert-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            max-width: 300px;
+            z-index: 1000;
+            border-radius: 8px;
+        }
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="top-bar"></div>
+    <header>
+        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu Icon">
+        <div class="app-title">Save Notes</div>
+        <img src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet Icon">
+    </header>
 
-<!-- WALLET BUTTON -->
-<div class="wallet-btn" onclick="openWallet()">Wallet ₹<span id="balance">500</span></div>
-
-<!-- MAIN CONTAINER -->
-<div class="container">
-
-  <!-- HOME / TOURNAMENT PAGE -->
-  <div class="tournament-page" id="homePage">
-    <div class="tournament-card" onclick="comingSoon()">Weekly Challenge</div>
-    <div class="tournament-card" onclick="comingSoon()">Daily Duel</div>
-    <div class="tournament-card" onclick="comingSoon()">Grand Battle</div>
-  </div>
-
-  <!-- PROFILE PAGE -->
-  <div class="profile-page" id="profilePage">
-    <div class="avatar-container">
-      <div class="avatar" id="avatar">😎</div>
-      <div class="edit-avatar" onclick="changeAvatar()">🗺️</div>
+    <div class="search-bar">
+        <input type="text" placeholder="Search your notes...">
     </div>
-    <div class="username" id="userName">PlayerOne</div>
-    <div class="bio-container">
-      <div class="bio" id="bio">This is my bio</div>
-      <div class="edit-bio" onclick="editBio()">✏️</div>
+
+    <div class="notes-container">
+        <!-- Example Notes Tabs -->
+        <div class="note-tab">
+            Note 1
+            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Icon" style="position:absolute; top:5px; right:5px; width:20px;">
+        </div>
+        <div class="note-tab">
+            Note 2
+            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Icon" style="position:absolute; top:5px; right:5px; width:20px;">
+        </div>
     </div>
-    <div class="game-select-container">
-      <div class="game-select" onclick="toggleGamePopup()">
-        <span id="selectedGame">Select your game</span> <span>⬇️</span>
-      </div>
-      <div class="game-popup" id="gamePopup">
-        <div onclick="selectGame('BGMI')">BGMI</div>
-        <div onclick="selectGame('FREE FIRE')">FREE FIRE</div>
-        <div onclick="selectGame('COD')">COD</div>
-        <div onclick="selectGame('VALORANT')">VALORANT</div>
-      </div>
+
+    <div class="new-tab-icon">
+        <img src="https://i.postimg.cc/wxRxpRTJ/1758009430835.png" alt="New Tab">
     </div>
-  </div>
 
-  <!-- TRANSACTION PAGE -->
-  <div class="transaction-page" id="transactionPage"></div>
+    <footer>
+        <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home Icon" title="Home">
+        <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends Icon" title="Invite Friends" onclick="showInvitePopup()">
+        <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings Icon" title="Settings" onclick="showAlertPopup()">
+    </footer>
 
-</div>
+    <div class="overlay" id="overlay"></div>
 
-<!-- BOTTOM NAVIGATION -->
-<div class="bottom-nav">
-  <div class="nav-item active" onclick="showPage('home')">Home</div>
-  <div class="nav-item" onclick="showPage('transaction')">Transaction</div>
-  <div class="nav-item" onclick="showPage('home')">My Tournaments</div>
-  <div class="nav-item" onclick="showPage('profile')">Profile</div>
-</div>
+    <div class="invite-popup" id="invitePopup">
+        <p>You can invite your friends using link and in the future you will get your personal referral code in the Invite section.</p>
+        <p>Once available you will be able to share your code and earn ₹ rewards directly into your wallet for every successful referral.</p>
+        <p>Start inviting now and get ready to earn soon.</p>
+        <input type="text" readonly value="https://jokefitabs.vercel.app/" style="width:100%; margin-bottom: 10px;">
+        <button onclick="copyReferralLink()">Copy Link</button>
+        <div style="margin-top: 10px;">
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Facebook" style="width:30px; cursor:pointer;">
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="WhatsApp" style="width:30px; cursor:pointer;">
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="X Icon" style="width:30px; cursor:pointer;">
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Instagram" style="width:30px; cursor:pointer;">
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Telegram" style="width:30px; cursor:pointer;">
+        </div>
+        <button onclick="closeInvitePopup()">Close</button>
+    </div>
 
-<!-- WALLET POPUP -->
-<div class="wallet-popup" id="walletPopup">
-  <div class="wallet-content">
-    <h3>Wallet</h3>
-    <div class="balance">₹<span id="walletBalance">500</span></div>
-    <button class="add-money" onclick="addMoney()">Add Money</button>
-    <button class="withdraw-money" onclick="withdrawMoney()">Withdraw</button>
-    <button class="close-wallet" onclick="closeWallet()">Close</button>
-  </div>
-</div>
+    <div class="alert-popup" id="alertPopup">
+        <img src="https://i.postimg.cc/xC8fqtDj/1758012015965.png" alt="Alert Icon" style="width:40px;">
+        <p>If you confirm now all your saved notes files will be permanently deleted from the system.</p>
+        <p>This action cannot be undone and you will lose all your data forever.</p>
+        <p>Please make sure you have backed up any important information before proceeding.</p>
+        <div class="popup-buttons">
+            <button onclick="confirmClearData()">Confirm</button>
+            <button onclick="closeAlertPopup()">Cancel</button>
+        </div>
+    </div>
 
-<!-- COMING SOON POPUP -->
-<div class="popup" id="comingSoonPopup">Coming Soon</div>
+    <script>
+        function showInvitePopup() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('invitePopup').style.display = 'block';
+        }
 
-<script>
-  // ---------------- PAGE NAVIGATION ----------------
-  function showPage(page){
-    document.getElementById('homePage').style.display='none';
-    document.getElementById('profilePage').style.display='none';
-    document.getElementById('transactionPage').style.display='none';
-    document.querySelectorAll('.bottom-nav div').forEach(e=>e.classList.remove('active'));
-    if(page==='home'){ document.getElementById('homePage').style.display='block'; document.querySelector('.bottom-nav div:nth-child(1)').classList.add('active'); }
-    if(page==='transaction'){ document.getElementById('transactionPage').style.display='block'; document.querySelector('.bottom-nav div:nth-child(2)').classList.add('active'); loadTransactions(); }
-    if(page==='profile'){ document.getElementById('profilePage').style.display='block'; document.querySelector('.bottom-nav div:nth-child(4)').classList.add('active'); }
-  }
+        function closeInvitePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('invitePopup').style.display = 'none';
+        }
 
-  // ---------------- WALLET ----------------
-  let balance=500;
-  function openWallet(){ document.getElementById('walletPopup').style.display='flex'; }
-  function closeWallet(){ document.getElementById('walletPopup').style.display='none'; }
-  function addMoney(){ balance+=100; updateBalance(); addTransaction('Add'); }
-  function withdrawMoney(){ if(balance>=100){ balance-=100; updateBalance(); addTransaction('Withdraw'); } else alert('Insufficient balance'); }
-  function updateBalance(){ document.getElementById('balance').innerText=balance; document.getElementById('walletBalance').innerText=balance; }
+        function copyReferralLink() {
+            const linkInput = document.querySelector('.invite-popup input');
+            linkInput.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard');
+        }
 
-  // ---------------- PROFILE ----------------
-  function randomColor(){ return '#'+Math.floor(Math.random()*16777215).toString(16); }
-  function changeAvatar(){ document.getElementById('avatar').style.background=randomColor(); alert('Gallery selection simulated'); }
-  function editBio(){ let newBio=prompt('Enter your bio'); if(newBio) document.getElementById('bio').innerText=newBio; }
-  function toggleGamePopup(){ document.getElementById('gamePopup').style.display=document.getElementById('gamePopup').style.display==='block'?'none':'block'; }
-  function selectGame(game){ document.getElementById('selectedGame').innerText=game; document.getElementById('gamePopup').style.display='none'; }
+        function showAlertPopup() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('alertPopup').style.display = 'block';
+        }
 
-  // ---------------- TRANSACTIONS ----------------
-  function loadTransactions(){
-    const container=document.getElementById('transactionPage');
-    container.innerHTML='';
-    for(let i=0;i<5;i++){
-      let id=Math.random().toString(36).substring(2,15);
-      let date=new Date(); let dateStr=date.getDate()+'-'+(date.getMonth()+1)+'-'+date.getFullYear();
-      let amount=(Math.floor(Math.random()*500)+50);
-      container.innerHTML+=`<div class="transaction-card"><p>Transaction ID: ${id}</p><p>Date: ${dateStr}</p><p>Amount: ₹${amount}</p><p>Done ✅</p></div>`;
-    }
-  }
+        function closeAlertPopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('alertPopup').style.display = 'none';
+        }
 
-  // ---------------- COMING SOON ----------------
-  function comingSoon(){
-    let popup=document.getElementById('comingSoonPopup');
-    popup.style.display='block';
-    setTimeout(()=>{ popup.style.display='none'; },3000);
-  }
-
-  // INITIAL PAGE
-  showPage('home');
-</script>
+        function confirmClearData() {
+            alert('All data cleared and app reset');
+            location.reload();
+        }
+    </script>
 
 </body>
 </html>
