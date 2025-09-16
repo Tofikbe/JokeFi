@@ -64,9 +64,13 @@
             border-radius: 5px;
             margin-bottom: 10px;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
         .note-file:hover {
             background-color: #f9f9f9;
+        }
+        .note-file.clickable:active {
+            transform: scale(0.98);
         }
         .note-actions {
             display: flex;
@@ -77,10 +81,17 @@
             font-size: 16px;
             flex: 1;
         }
-        .edit-icon, .notification-icon {
+        .edit-icon, .notification-icon, .delete-btn {
             width: 30px;
             height: 30px;
             cursor: pointer;
+        }
+        .delete-btn {
+            font-size: 20px;
+            color: #ff4444;
+            background: none;
+            border: none;
+            padding: 0;
         }
         .new-tab-btn {
             position: fixed;
@@ -95,6 +106,10 @@
             justify-content: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        .new-tab-btn:active {
+            transform: scale(0.95);
         }
         .new-tab-icon {
             width: 45px;
@@ -112,12 +127,14 @@
             width: 100%;
         }
         .nav-icon {
-            width: 35px;
-            height: 35px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        .nav-icon:active {
+            transform: scale(0.95);
         }
         .nav-icon img {
             width: 35px;
@@ -149,6 +166,9 @@
             overflow-y: auto;
             text-align: center;
         }
+        .trash-content {
+            text-align: left;
+        }
         .editor-content {
             text-align: left;
         }
@@ -169,6 +189,19 @@
             box-sizing: border-box;
             resize: vertical;
         }
+        .deleted-note {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .deleted-actions {
+            display: flex;
+            gap: 10px;
+        }
         .alert-icon {
             width: 50px;
             height: 50px;
@@ -184,6 +217,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        .btn:active {
+            transform: scale(0.95);
         }
         .confirm-btn {
             background-color: #ff4444;
@@ -204,6 +241,10 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 0 5px;
             cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        .share-icon:active {
+            transform: scale(0.95);
         }
         /* Onboarding guide placeholder */
         .onboarding {
@@ -250,6 +291,10 @@
             align-items: center;
             padding: 5px;
             cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        .settings-item:active {
+            transform: scale(0.98);
         }
         .settings-item img {
             width: 30px;
@@ -262,14 +307,35 @@
             font-size: 16px;
             margin-top: 50px;
         }
+        .no-deleted {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .clickable {
+            transition: transform 0.1s ease-in-out;
+        }
+        .clickable:active {
+            transform: scale(0.95);
+        }
+        .menu-icon.clickable:active, .wallet-icon.clickable:active {
+            transform: scale(0.95);
+        }
+        .notification-icon.clickable:active {
+            transform: scale(0.95);
+        }
+        .edit-icon.clickable:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <div class="header">
-        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon">
+        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon clickable" id="menuIcon">
         <div> </div> <!-- Spacer -->
-        <img src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet" class="wallet-icon">
+        <img src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet" class="wallet-icon clickable">
     </div>
 
     <!-- App Name Bar -->
@@ -288,27 +354,40 @@
     </div>
 
     <!-- New Tab Button -->
-    <div class="new-tab-btn" onclick="createNewNote()">
+    <div class="new-tab-btn clickable" onclick="createNewNote()">
         <img src="https://i.postimg.cc/wxRxpRTJ/1758009430835.png" alt="New Tab" class="new-tab-icon">
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-icon" onclick="goHome()">
+        <div class="nav-icon clickable" onclick="goHome()">
             <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home">
             <div class="nav-label">Home</div>
         </div>
-        <div class="nav-icon">
+        <div class="nav-icon clickable" onclick="openInvite()">
             <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends">
             <div class="nav-label">Invite</div>
         </div>
-        <div class="nav-icon">
+        <div class="nav-icon clickable" onclick="openSettings()">
             <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings">
             <div class="nav-label">Settings</div>
         </div>
-        <div class="nav-icon">
+        <div class="nav-icon clickable">
             <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification">
             <div class="nav-label">Notify</div>
+        </div>
+    </div>
+
+    <!-- Trash Popup -->
+    <div id="trashPopup" class="popup">
+        <div class="popup-content trash-content">
+            <h3>Deleted Notes</h3>
+            <div id="trashContent">
+                <div class="no-deleted">No deleted notes.</div>
+            </div>
+            <div class="popup-buttons">
+                <button class="btn cancel-btn" onclick="closeTrash()">Close</button>
+            </div>
         </div>
     </div>
 
@@ -320,13 +399,13 @@
             <p>Once available you will be able to share your code and earn ₹ rewards directly into your wallet for every successful referral.</p>
             <p>Start inviting now and get ready to earn soon.</p>
             <p>https://jokefitabs.vercel.app/</p>
-            <button class="btn" id="copyBtn">Copy Link</button>
+            <button class="btn clickable" id="copyBtn">Copy Link</button>
             <div class="share-icons">
-                <img src="https://i.postimg.cc/Gm4Zftw2/1758012881988.png" alt="Facebook" class="share-icon">
-                <img src="https://i.postimg.cc/br2y8T4G/1758012910289.png" alt="WhatsApp" class="share-icon">
-                <img src="https://i.postimg.cc/LXg56216/1758012926671.png" alt="X" class="share-icon">
-                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Instagram" class="share-icon">
-                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Telegram" class="share-icon">
+                <img src="https://i.postimg.cc/Gm4Zftw2/1758012881988.png" alt="Facebook" class="share-icon clickable">
+                <img src="https://i.postimg.cc/br2y8T4G/1758012910289.png" alt="WhatsApp" class="share-icon clickable">
+                <img src="https://i.postimg.cc/LXg56216/1758012926671.png" alt="X" class="share-icon clickable">
+                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Instagram" class="share-icon clickable">
+                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Telegram" class="share-icon clickable">
             </div>
         </div>
     </div>
@@ -342,7 +421,7 @@
             <p>Say goodbye to fear of data misuse and hello to a reliable solution where your files are yours alone.</p>
             <p>JokeFi Notes is made for those who value privacy, security, and speed the perfect choice for anyone who wants their notes safe forever without worrying about hidden fees or data leaks.</p>
             <p>Experience the future of note-saving apps today with JokeFi Notes safe simple and always yours.</p>
-            <button class="btn" onclick="closeAbout()">Close</button>
+            <button class="btn clickable" onclick="closeAbout()">Close</button>
         </div>
     </div>
 
@@ -352,8 +431,8 @@
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
             <textarea id="editorText" class="editor-text" placeholder="Write your note here..."></textarea>
             <div class="popup-buttons">
-                <button class="btn" onclick="saveNote()">Save</button>
-                <button class="btn cancel-btn" onclick="closeEditor()">Cancel</button>
+                <button class="btn clickable" onclick="saveNote()">Save</button>
+                <button class="btn cancel-btn clickable" onclick="closeEditor()">Cancel</button>
             </div>
         </div>
     </div>
@@ -366,19 +445,19 @@
             <p>This action cannot be undone and you will lose all your data forever.</p>
             <p>Please make sure you have backed up any important information before proceeding.</p>
             <div class="popup-buttons">
-                <button class="btn confirm-btn">Confirm</button>
-                <button class="btn cancel-btn">Cancel</button>
+                <button class="btn confirm-btn clickable">Confirm</button>
+                <button class="btn cancel-btn clickable">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Settings Menu -->
     <div id="settingsMenu" class="settings-menu">
-        <div class="settings-item" onclick="showAboutPopup()">
+        <div class="settings-item clickable" onclick="showAboutPopup()">
             <img src="https://i.postimg.cc/W1z2b5M9/1758011685776.png" alt="About">
             <span>About</span>
         </div>
-        <div class="settings-item" onclick="showClearDataPopup()">
+        <div class="settings-item clickable" onclick="showClearDataPopup()">
             <img src="https://i.postimg.cc/T1N4kJpw/1758011671773.png" alt="Clear All Data">
             <span>Clear All Data</span>
         </div>
@@ -386,7 +465,7 @@
 
     <!-- Onboarding Guide Placeholder -->
     <div id="onboarding" class="onboarding">
-        <button class="skip-btn">Skip</button>
+        <button class="skip-btn clickable">Skip</button>
         <!-- Guide steps with lines/arrows would need JS/CSS for positioning -->
         <div class="guide-step" style="top: 10px; left: 10px;">
             <p>Menu: Access settings and more</p>
@@ -397,7 +476,17 @@
 
     <script>
         let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        let deletedNotes = JSON.parse(localStorage.getItem('deletedNotes')) || [];
         let currentEditingId = null;
+        const url = 'https://jokefitabs.vercel.app/';
+        const longText = `I use JokeFi Notes to securely save my personal data, important files, and private stories. 
+
+It feels extremely safe because my information stays fully protected and private Unlike other apps, JokeFi Notes never sells your data and keeps everything encrypted, giving me peace of mind.
+
+It’s the perfect app to store important notes fast and securely, knowing my data is safe and always accessible only to me.
+
+${url}`;
+        const shortText = `Loving JokeFi Notes for secure, private note saving! No data selling, full encryption. Perfect for personal files & stories. ${url}`;
 
         function renderNotes(filter = '') {
             const mainContent = document.getElementById('mainContent');
@@ -410,11 +499,29 @@
             }
 
             mainContent.innerHTML = filteredNotes.map(note => `
-                <div class="note-file" onclick="openEditor('${note.id}')">
+                <div class="note-file clickable" onclick="openEditor('${note.id}')">
                     <span class="note-title">${note.title}</span>
                     <div class="note-actions">
-                        <img src="https://i.postimg.cc/L8GKvNLb/1758010335631.png" alt="Edit" class="edit-icon" onclick="editTitle(event, '${note.id}'); event.stopPropagation();">
-                        <img src="${note.notification ? 'https://i.postimg.cc/xT7dmGx6/1758009449096.png' : 'https://i.postimg.cc/XYFz838T/1758009466327.png'}" alt="Notification" class="notification-icon" onclick="toggleNotification(event, '${note.id}'); event.stopPropagation();">
+                        <img src="https://i.postimg.cc/L8GKvNLb/1758010335631.png" alt="Edit" class="edit-icon clickable" onclick="editTitle(event, '${note.id}'); event.stopPropagation();">
+                        <img src="${note.notification ? 'https://i.postimg.cc/xT7dmGx6/1758009449096.png' : 'https://i.postimg.cc/XYFz838T/1758009466327.png'}" alt="Notification" class="notification-icon clickable" onclick="toggleNotification(event, '${note.id}'); event.stopPropagation();">
+                        <button class="delete-btn clickable" onclick="deleteNote(event, '${note.id}'); event.stopPropagation();">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTrash() {
+            const trashContent = document.getElementById('trashContent');
+            if (deletedNotes.length === 0) {
+                trashContent.innerHTML = '<div class="no-deleted">No deleted notes.</div>';
+                return;
+            }
+            trashContent.innerHTML = deletedNotes.map(note => `
+                <div class="deleted-note">
+                    <span class="note-title">${note.title}</span>
+                    <div class="deleted-actions">
+                        <button class="btn clickable" onclick="restoreNote('${note.id}')">Restore</button>
+                        <button class="btn confirm-btn clickable" onclick="permanentDelete('${note.id}')">Delete Forever</button>
                     </div>
                 </div>
             `).join('');
@@ -457,6 +564,36 @@
             renderNotes(document.getElementById('searchInput').value);
         }
 
+        function deleteNote(event, id) {
+            event.stopPropagation();
+            const noteIndex = notes.findIndex(n => n.id === id);
+            if (noteIndex !== -1) {
+                deletedNotes.unshift(notes.splice(noteIndex, 1)[0]);
+                saveNotes();
+                saveDeletedNotes();
+                renderNotes(document.getElementById('searchInput').value);
+            }
+        }
+
+        function restoreNote(id) {
+            const delIndex = deletedNotes.findIndex(n => n.id === id);
+            if (delIndex !== -1) {
+                notes.unshift(deletedNotes.splice(delIndex, 1)[0]);
+                saveNotes();
+                saveDeletedNotes();
+                renderTrash();
+            }
+        }
+
+        function permanentDelete(id) {
+            const delIndex = deletedNotes.findIndex(n => n.id === id);
+            if (delIndex !== -1) {
+                deletedNotes.splice(delIndex, 1);
+                saveDeletedNotes();
+                renderTrash();
+            }
+        }
+
         function saveNote() {
             const title = document.getElementById('editorTitle').value.trim();
             const content = document.getElementById('editorText').value;
@@ -483,17 +620,72 @@
             localStorage.setItem('notes', JSON.stringify(notes));
         }
 
+        function saveDeletedNotes() {
+            localStorage.setItem('deletedNotes', JSON.stringify(deletedNotes));
+        }
+
         function goHome() {
             // Already on home
         }
 
-        // Event listeners
-        document.querySelector('.nav-icon:nth-child(2)').addEventListener('click', () => {
+        function openInvite() {
             document.getElementById('invitePopup').style.display = 'flex';
-        });
-        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', () => {
+        }
+
+        function openSettings() {
             document.getElementById('settingsMenu').style.display = 'block';
+        }
+
+        function openTrash() {
+            renderTrash();
+            document.getElementById('trashPopup').style.display = 'flex';
+        }
+
+        function closeTrash() {
+            document.getElementById('trashPopup').style.display = 'none';
+        }
+
+        // Event listeners
+        document.getElementById('menuIcon').addEventListener('click', openTrash);
+        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', openSettings);
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard!');
+            });
         });
+
+        // Share icons
+        document.querySelectorAll('.share-icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                const alt = icon.alt;
+                let shareUrl = '';
+                let text = '';
+                if (alt === 'X') {
+                    text = shortText;
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                } else if (alt === 'Facebook') {
+                    text = longText;
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text.replace(url, ''))}`;
+                } else if (alt === 'WhatsApp') {
+                    text = longText;
+                    shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+                } else if (alt === 'Telegram') {
+                    text = longText;
+                    shareUrl = `https://t.me/share/url?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                } else if (alt === 'Instagram') {
+                    text = longText;
+                    if (navigator.share) {
+                        navigator.share({title: 'JokeFi Notes', text: text});
+                    } else {
+                        alert('Open Instagram and share:\n' + text);
+                        window.open('https://www.instagram.com/', '_blank');
+                    }
+                    return;
+                }
+                window.open(shareUrl, '_blank');
+            });
+        });
+
         document.querySelector('.cancel-btn').addEventListener('click', () => {
             document.getElementById('clearDataPopup').style.display = 'none';
         });
@@ -503,7 +695,9 @@
         }
         document.querySelector('.confirm-btn').addEventListener('click', () => {
             notes = [];
+            deletedNotes = [];
             saveNotes();
+            saveDeletedNotes();
             renderNotes();
             document.getElementById('clearDataPopup').style.display = 'none';
         });
@@ -514,18 +708,6 @@
         function closeAbout() {
             document.getElementById('aboutPopup').style.display = 'none';
         }
-        // Copy link
-        document.getElementById('copyBtn').addEventListener('click', () => {
-            navigator.clipboard.writeText('https://jokefitabs.vercel.app/').then(() => {
-                alert('Link copied to clipboard!');
-            });
-        });
-        // Share icons (placeholder actions)
-        document.querySelectorAll('.share-icon').forEach(icon => {
-            icon.addEventListener('click', () => {
-                alert('Sharing via ' + icon.alt + ' (placeholder)');
-            });
-        });
         // Close popups on outside click
         document.querySelectorAll('.popup').forEach(popup => {
             popup.addEventListener('click', (e) => {
