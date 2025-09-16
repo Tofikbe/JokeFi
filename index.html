@@ -23,9 +23,23 @@
             background-color: white;
             border-bottom: 1px solid #eee;
         }
-        .menu-icon, .wallet-icon {
+        .menu-icon {
             width: 45px;
             height: 45px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .menu-icon:active {
+            transform: scale(0.9) rotate(10deg);
+        }
+        .share-icon-header {
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .share-icon-header:active {
+            transform: scale(0.9) rotate(-10deg);
         }
         .app-name-bar {
             background-color: white;
@@ -54,6 +68,37 @@
             flex: 1;
             padding: 10px;
             overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background-color: white;
+            border-right: 1px solid #ddd;
+            transition: left 0.3s ease-in-out;
+            z-index: 1001;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .overlay.open {
+            display: block;
         }
         .note-file {
             display: flex;
@@ -64,13 +109,13 @@
             border-radius: 5px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .note-file:hover {
             background-color: #f9f9f9;
         }
-        .note-file.clickable:active {
-            transform: scale(0.98);
+        .note-file:active {
+            transform: scale(0.98) translateY(2px);
         }
         .note-actions {
             display: flex;
@@ -85,6 +130,10 @@
             width: 30px;
             height: 30px;
             cursor: pointer;
+            transition: transform 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .edit-icon:active, .notification-icon:active, .delete-btn:active {
+            transform: scale(0.8) rotate(180deg);
         }
         .delete-btn {
             font-size: 20px;
@@ -106,10 +155,10 @@
             justify-content: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             cursor: pointer;
-            transition: transform 0.1s ease-in-out;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .new-tab-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.95) rotate(360deg);
         }
         .new-tab-icon {
             width: 45px;
@@ -131,10 +180,10 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.1s ease-in-out;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .nav-icon:active {
-            transform: scale(0.95);
+            transform: scale(1.1) bounce;
         }
         .nav-icon img {
             width: 35px;
@@ -217,10 +266,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.1s ease-in-out;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .btn:active {
-            transform: scale(0.95);
+            transform: scale(0.95) bounce;
         }
         .confirm-btn {
             background-color: #ff4444;
@@ -241,10 +290,10 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 0 5px;
             cursor: pointer;
-            transition: transform 0.1s ease-in-out;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .share-icon:active {
-            transform: scale(0.95);
+            transform: scale(1.2) rotate(360deg);
         }
         /* Onboarding guide placeholder */
         .onboarding {
@@ -291,10 +340,10 @@
             align-items: center;
             padding: 5px;
             cursor: pointer;
-            transition: transform 0.1s ease-in-out;
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .settings-item:active {
-            transform: scale(0.98);
+            transform: scale(1.05);
         }
         .settings-item img {
             width: 30px;
@@ -313,29 +362,28 @@
             font-size: 16px;
             margin-top: 20px;
         }
-        .clickable {
-            transition: transform 0.1s ease-in-out;
-        }
-        .clickable:active {
-            transform: scale(0.95);
-        }
-        .menu-icon.clickable:active, .wallet-icon.clickable:active {
-            transform: scale(0.95);
-        }
-        .notification-icon.clickable:active {
-            transform: scale(0.95);
-        }
-        .edit-icon.clickable:active {
-            transform: scale(0.95);
-        }
     </style>
 </head>
 <body>
+    <!-- Overlay for sidebar -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar" id="sidebar">
+        <h3>Deleted Notes</h3>
+        <div id="trashContent">
+            <div class="no-deleted">No deleted notes.</div>
+        </div>
+        <div class="popup-buttons">
+            <button class="btn cancel-btn" onclick="closeSidebar()">Close</button>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="header">
-        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon clickable" id="menuIcon">
+        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon" id="menuIcon" onclick="openSidebar()">
         <div> </div> <!-- Spacer -->
-        <img src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet" class="wallet-icon clickable">
+        <img src="https://i.postimg.cc/rsNdR41F/share-icon-on-transparent-background-free-png.png" alt="Share" class="share-icon-header" onclick="openInvite()">
     </div>
 
     <!-- App Name Bar -->
@@ -354,40 +402,23 @@
     </div>
 
     <!-- New Tab Button -->
-    <div class="new-tab-btn clickable" onclick="createNewNote()">
+    <div class="new-tab-btn" onclick="createNewNote()">
         <img src="https://i.postimg.cc/wxRxpRTJ/1758009430835.png" alt="New Tab" class="new-tab-icon">
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-icon clickable" onclick="goHome()">
+        <div class="nav-icon" onclick="goHome()">
             <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home">
             <div class="nav-label">Home</div>
         </div>
-        <div class="nav-icon clickable" onclick="openInvite()">
+        <div class="nav-icon">
             <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends">
             <div class="nav-label">Invite</div>
         </div>
-        <div class="nav-icon clickable" onclick="openSettings()">
+        <div class="nav-icon">
             <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings">
             <div class="nav-label">Settings</div>
-        </div>
-        <div class="nav-icon clickable">
-            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification">
-            <div class="nav-label">Notify</div>
-        </div>
-    </div>
-
-    <!-- Trash Popup -->
-    <div id="trashPopup" class="popup">
-        <div class="popup-content trash-content">
-            <h3>Deleted Notes</h3>
-            <div id="trashContent">
-                <div class="no-deleted">No deleted notes.</div>
-            </div>
-            <div class="popup-buttons">
-                <button class="btn cancel-btn" onclick="closeTrash()">Close</button>
-            </div>
         </div>
     </div>
 
@@ -399,13 +430,13 @@
             <p>Once available you will be able to share your code and earn ₹ rewards directly into your wallet for every successful referral.</p>
             <p>Start inviting now and get ready to earn soon.</p>
             <p>https://jokefitabs.vercel.app/</p>
-            <button class="btn clickable" id="copyBtn">Copy Link</button>
+            <button class="btn" id="copyBtn">Copy Link</button>
             <div class="share-icons">
-                <img src="https://i.postimg.cc/Gm4Zftw2/1758012881988.png" alt="Facebook" class="share-icon clickable">
-                <img src="https://i.postimg.cc/br2y8T4G/1758012910289.png" alt="WhatsApp" class="share-icon clickable">
-                <img src="https://i.postimg.cc/LXg56216/1758012926671.png" alt="X" class="share-icon clickable">
-                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Instagram" class="share-icon clickable">
-                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Telegram" class="share-icon clickable">
+                <img src="https://i.postimg.cc/Gm4Zftw2/1758012881988.png" alt="Facebook" class="share-icon">
+                <img src="https://i.postimg.cc/br2y8T4G/1758012910289.png" alt="WhatsApp" class="share-icon">
+                <img src="https://i.postimg.cc/LXg56216/1758012926671.png" alt="X" class="share-icon">
+                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Instagram" class="share-icon">
+                <img src="https://i.postimg.cc/8C8hVK3v/1758012946979.png" alt="Telegram" class="share-icon">
             </div>
         </div>
     </div>
@@ -421,7 +452,7 @@
             <p>Say goodbye to fear of data misuse and hello to a reliable solution where your files are yours alone.</p>
             <p>JokeFi Notes is made for those who value privacy, security, and speed the perfect choice for anyone who wants their notes safe forever without worrying about hidden fees or data leaks.</p>
             <p>Experience the future of note-saving apps today with JokeFi Notes safe simple and always yours.</p>
-            <button class="btn clickable" onclick="closeAbout()">Close</button>
+            <button class="btn" onclick="closeAbout()">Close</button>
         </div>
     </div>
 
@@ -431,8 +462,8 @@
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
             <textarea id="editorText" class="editor-text" placeholder="Write your note here..."></textarea>
             <div class="popup-buttons">
-                <button class="btn clickable" onclick="saveNote()">Save</button>
-                <button class="btn cancel-btn clickable" onclick="closeEditor()">Cancel</button>
+                <button class="btn" onclick="saveNote()">Save</button>
+                <button class="btn cancel-btn" onclick="closeEditor()">Cancel</button>
             </div>
         </div>
     </div>
@@ -445,19 +476,19 @@
             <p>This action cannot be undone and you will lose all your data forever.</p>
             <p>Please make sure you have backed up any important information before proceeding.</p>
             <div class="popup-buttons">
-                <button class="btn confirm-btn clickable">Confirm</button>
-                <button class="btn cancel-btn clickable">Cancel</button>
+                <button class="btn confirm-btn">Confirm</button>
+                <button class="btn cancel-btn">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Settings Menu -->
     <div id="settingsMenu" class="settings-menu">
-        <div class="settings-item clickable" onclick="showAboutPopup()">
+        <div class="settings-item" onclick="showAboutPopup()">
             <img src="https://i.postimg.cc/W1z2b5M9/1758011685776.png" alt="About">
             <span>About</span>
         </div>
-        <div class="settings-item clickable" onclick="showClearDataPopup()">
+        <div class="settings-item" onclick="showClearDataPopup()">
             <img src="https://i.postimg.cc/T1N4kJpw/1758011671773.png" alt="Clear All Data">
             <span>Clear All Data</span>
         </div>
@@ -465,7 +496,7 @@
 
     <!-- Onboarding Guide Placeholder -->
     <div id="onboarding" class="onboarding">
-        <button class="skip-btn clickable">Skip</button>
+        <button class="skip-btn">Skip</button>
         <!-- Guide steps with lines/arrows would need JS/CSS for positioning -->
         <div class="guide-step" style="top: 10px; left: 10px;">
             <p>Menu: Access settings and more</p>
@@ -478,6 +509,7 @@
         let notes = JSON.parse(localStorage.getItem('notes')) || [];
         let deletedNotes = JSON.parse(localStorage.getItem('deletedNotes')) || [];
         let currentEditingId = null;
+        let notificationIntervals = {}; // To store intervals for each note
         const url = 'https://jokefitabs.vercel.app/';
         const longText = `I use JokeFi Notes to securely save my personal data, important files, and private stories. 
 
@@ -487,6 +519,36 @@ It’s the perfect app to store important notes fast and securely, knowing my da
 
 ${url}`;
         const shortText = `Loving JokeFi Notes for secure, private note saving! No data selling, full encryption. Perfect for personal files & stories. ${url}`;
+
+        // Notification setup
+        if ('Notification' in window) {
+            Notification.requestPermission();
+        }
+
+        function showNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, { body });
+            }
+        }
+
+        function startNoteNotifications(id) {
+            const interval = setInterval(() => {
+                const note = notes.find(n => n.id === id);
+                if (note && note.notification) {
+                    showNotification('Note Reminder', `Don't forget: ${note.title}`);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 5 * 60 * 1000); // 5 minutes
+            notificationIntervals[id] = interval;
+        }
+
+        function stopNoteNotifications(id) {
+            if (notificationIntervals[id]) {
+                clearInterval(notificationIntervals[id]);
+                delete notificationIntervals[id];
+            }
+        }
 
         function renderNotes(filter = '') {
             const mainContent = document.getElementById('mainContent');
@@ -499,12 +561,12 @@ ${url}`;
             }
 
             mainContent.innerHTML = filteredNotes.map(note => `
-                <div class="note-file clickable" onclick="openEditor('${note.id}')">
+                <div class="note-file" onclick="openEditor('${note.id}')">
                     <span class="note-title">${note.title}</span>
                     <div class="note-actions">
-                        <img src="https://i.postimg.cc/L8GKvNLb/1758010335631.png" alt="Edit" class="edit-icon clickable" onclick="editTitle(event, '${note.id}'); event.stopPropagation();">
-                        <img src="${note.notification ? 'https://i.postimg.cc/xT7dmGx6/1758009449096.png' : 'https://i.postimg.cc/XYFz838T/1758009466327.png'}" alt="Notification" class="notification-icon clickable" onclick="toggleNotification(event, '${note.id}'); event.stopPropagation();">
-                        <button class="delete-btn clickable" onclick="deleteNote(event, '${note.id}'); event.stopPropagation();">🗑️</button>
+                        <img src="https://i.postimg.cc/L8GKvNLb/1758010335631.png" alt="Edit" class="edit-icon" onclick="editTitle(event, '${note.id}'); event.stopPropagation();">
+                        <img src="${note.notification ? 'https://i.postimg.cc/xT7dmGx6/1758009449096.png' : 'https://i.postimg.cc/XYFz838T/1758009466327.png'}" alt="Notification" class="notification-icon" onclick="toggleNotification(event, '${note.id}'); event.stopPropagation();">
+                        <button class="delete-btn" onclick="deleteNote(event, '${note.id}'); event.stopPropagation();">🗑️</button>
                     </div>
                 </div>
             `).join('');
@@ -520,8 +582,8 @@ ${url}`;
                 <div class="deleted-note">
                     <span class="note-title">${note.title}</span>
                     <div class="deleted-actions">
-                        <button class="btn clickable" onclick="restoreNote('${note.id}')">Restore</button>
-                        <button class="btn confirm-btn clickable" onclick="permanentDelete('${note.id}')">Delete Forever</button>
+                        <button class="btn" onclick="restoreNote('${note.id}')">Restore</button>
+                        <button class="btn confirm-btn" onclick="permanentDelete('${note.id}')">Delete Forever</button>
                     </div>
                 </div>
             `).join('');
@@ -560,6 +622,12 @@ ${url}`;
             event.stopPropagation();
             const note = notes.find(n => n.id === id);
             note.notification = !note.notification;
+            if (note.notification) {
+                showNotification('Notification Enabled', 'Successful notification on for ' + note.title);
+                startNoteNotifications(id);
+            } else {
+                stopNoteNotifications(id);
+            }
             saveNotes();
             renderNotes(document.getElementById('searchInput').value);
         }
@@ -568,6 +636,8 @@ ${url}`;
             event.stopPropagation();
             const noteIndex = notes.findIndex(n => n.id === id);
             if (noteIndex !== -1) {
+                const note = notes[noteIndex];
+                stopNoteNotifications(id);
                 deletedNotes.unshift(notes.splice(noteIndex, 1)[0]);
                 saveNotes();
                 saveDeletedNotes();
@@ -578,7 +648,11 @@ ${url}`;
         function restoreNote(id) {
             const delIndex = deletedNotes.findIndex(n => n.id === id);
             if (delIndex !== -1) {
+                const note = deletedNotes[delIndex];
                 notes.unshift(deletedNotes.splice(delIndex, 1)[0]);
+                if (note.notification) {
+                    startNoteNotifications(id);
+                }
                 saveNotes();
                 saveDeletedNotes();
                 renderTrash();
@@ -588,6 +662,7 @@ ${url}`;
         function permanentDelete(id) {
             const delIndex = deletedNotes.findIndex(n => n.id === id);
             if (delIndex !== -1) {
+                stopNoteNotifications(id);
                 deletedNotes.splice(delIndex, 1);
                 saveDeletedNotes();
                 renderTrash();
@@ -636,17 +711,19 @@ ${url}`;
             document.getElementById('settingsMenu').style.display = 'block';
         }
 
-        function openTrash() {
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('open');
             renderTrash();
-            document.getElementById('trashPopup').style.display = 'flex';
         }
 
-        function closeTrash() {
-            document.getElementById('trashPopup').style.display = 'none';
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('open');
         }
 
         // Event listeners
-        document.getElementById('menuIcon').addEventListener('click', openTrash);
+        document.querySelector('.nav-icon:nth-child(2)').addEventListener('click', openInvite);
         document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', openSettings);
         document.getElementById('copyBtn').addEventListener('click', () => {
             navigator.clipboard.writeText(url).then(() => {
@@ -694,6 +771,9 @@ ${url}`;
             document.getElementById('settingsMenu').style.display = 'none';
         }
         document.querySelector('.confirm-btn').addEventListener('click', () => {
+            // Clear intervals
+            Object.keys(notificationIntervals).forEach(id => clearInterval(notificationIntervals[id]));
+            notificationIntervals = {};
             notes = [];
             deletedNotes = [];
             saveNotes();
@@ -718,8 +798,13 @@ ${url}`;
         document.getElementById('searchInput').addEventListener('input', (e) => {
             renderNotes(e.target.value);
         });
-        // Initial render
+        // Initial render and restore notifications
         renderNotes();
+        notes.forEach(note => {
+            if (note.notification) {
+                startNoteNotifications(note.id);
+            }
+        });
     </script>
 </body>
 </html>
