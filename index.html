@@ -24,8 +24,8 @@
             border-bottom: 1px solid #eee;
         }
         .menu-icon, .wallet-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
         }
         .app-name-bar {
             background-color: white;
@@ -63,30 +63,42 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .note-file:hover {
+            background-color: #f9f9f9;
+        }
+        .note-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .note-title {
             font-size: 16px;
+            flex: 1;
         }
-        .notification-icon {
+        .edit-icon, .notification-icon {
             width: 30px;
             height: 30px;
+            cursor: pointer;
         }
         .new-tab-btn {
             position: fixed;
             bottom: 80px;
             right: 20px;
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             background-color: #f0f0f0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
         }
         .new-tab-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
         }
         .bottom-nav {
             display: flex;
@@ -132,10 +144,30 @@
             background-color: white;
             padding: 20px;
             border-radius: 10px;
-            max-width: 300px;
-            text-align: center;
+            max-width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            text-align: center;
+        }
+        .editor-content {
+            text-align: left;
+        }
+        .editor-title {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .editor-text {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            resize: vertical;
         }
         .alert-icon {
             width: 50px;
@@ -224,6 +256,12 @@
             height: 30px;
             margin-right: 10px;
         }
+        .no-notes {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
@@ -241,30 +279,22 @@
 
     <!-- Search Bar -->
     <div class="search-bar">
-        <input type="text" class="search-input" placeholder="Search notes...">
+        <input type="text" class="search-input" placeholder="Search notes..." id="searchInput">
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <div class="note-file">
-            <span class="note-title">Sample Note 1</span>
-            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Off" class="notification-icon">
-        </div>
-        <div class="note-file">
-            <span class="note-title">Sample Note 2</span>
-            <img src="https://i.postimg.cc/xT7dmGx6/1758009449096.png" alt="Notification On" class="notification-icon">
-        </div>
-        <!-- Add more notes as needed -->
+    <div class="main-content" id="mainContent">
+        <div class="no-notes">No notes yet. Create a new one!</div>
     </div>
 
     <!-- New Tab Button -->
-    <div class="new-tab-btn">
+    <div class="new-tab-btn" onclick="createNewNote()">
         <img src="https://i.postimg.cc/wxRxpRTJ/1758009430835.png" alt="New Tab" class="new-tab-icon">
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-icon">
+        <div class="nav-icon" onclick="goHome()">
             <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home">
             <div class="nav-label">Home</div>
         </div>
@@ -316,6 +346,18 @@
         </div>
     </div>
 
+    <!-- Editor Popup -->
+    <div id="editorPopup" class="popup">
+        <div class="popup-content editor-content">
+            <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
+            <textarea id="editorText" class="editor-text" placeholder="Write your note here..."></textarea>
+            <div class="popup-buttons">
+                <button class="btn" onclick="saveNote()">Save</button>
+                <button class="btn cancel-btn" onclick="closeEditor()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Clear All Data Alert Popup -->
     <div id="clearDataPopup" class="popup">
         <div class="popup-content">
@@ -354,7 +396,98 @@
     </div>
 
     <script>
-        // Basic interactions (minimal JS for UI demo)
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        let currentEditingId = null;
+
+        function renderNotes(filter = '') {
+            const mainContent = document.getElementById('mainContent');
+            const searchTerm = filter.toLowerCase();
+            let filteredNotes = notes.filter(note => note.title.toLowerCase().includes(searchTerm));
+
+            if (filteredNotes.length === 0) {
+                mainContent.innerHTML = '<div class="no-notes">No notes yet. Create a new one!</div>';
+                return;
+            }
+
+            mainContent.innerHTML = filteredNotes.map(note => `
+                <div class="note-file" onclick="openEditor('${note.id}')">
+                    <span class="note-title">${note.title}</span>
+                    <div class="note-actions">
+                        <img src="https://i.postimg.cc/L8GKvNLb/1758010335631.png" alt="Edit" class="edit-icon" onclick="editTitle(event, '${note.id}'); event.stopPropagation();">
+                        <img src="${note.notification ? 'https://i.postimg.cc/xT7dmGx6/1758009449096.png' : 'https://i.postimg.cc/XYFz838T/1758009466327.png'}" alt="Notification" class="notification-icon" onclick="toggleNotification(event, '${note.id}'); event.stopPropagation();">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function createNewNote() {
+            const id = Date.now().toString();
+            const newNote = { id, title: 'New Note', content: '', notification: false };
+            notes.unshift(newNote);
+            saveNotes();
+            openEditor(id);
+        }
+
+        function openEditor(id) {
+            currentEditingId = id;
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                document.getElementById('editorTitle').value = note.title;
+                document.getElementById('editorText').value = note.content;
+                document.getElementById('editorPopup').style.display = 'flex';
+            }
+        }
+
+        function editTitle(event, id) {
+            event.stopPropagation();
+            const newTitle = prompt('Enter new title:', notes.find(n => n.id === id).title);
+            if (newTitle && newTitle.trim()) {
+                const note = notes.find(n => n.id === id);
+                note.title = newTitle.trim();
+                saveNotes();
+                renderNotes(document.getElementById('searchInput').value);
+            }
+        }
+
+        function toggleNotification(event, id) {
+            event.stopPropagation();
+            const note = notes.find(n => n.id === id);
+            note.notification = !note.notification;
+            saveNotes();
+            renderNotes(document.getElementById('searchInput').value);
+        }
+
+        function saveNote() {
+            const title = document.getElementById('editorTitle').value.trim();
+            const content = document.getElementById('editorText').value;
+            if (title && currentEditingId) {
+                const note = notes.find(n => n.id === currentEditingId);
+                if (note) {
+                    note.title = title;
+                    note.content = content;
+                    saveNotes();
+                    renderNotes(document.getElementById('searchInput').value);
+                }
+            } else {
+                alert('Please enter a title.');
+            }
+            closeEditor();
+        }
+
+        function closeEditor() {
+            document.getElementById('editorPopup').style.display = 'none';
+            currentEditingId = null;
+        }
+
+        function saveNotes() {
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function goHome() {
+            // Already on home
+        }
+
+        // Event listeners
         document.querySelector('.nav-icon:nth-child(2)').addEventListener('click', () => {
             document.getElementById('invitePopup').style.display = 'flex';
         });
@@ -369,9 +502,10 @@
             document.getElementById('settingsMenu').style.display = 'none';
         }
         document.querySelector('.confirm-btn').addEventListener('click', () => {
-            // Simulate reset
+            notes = [];
+            saveNotes();
+            renderNotes();
             document.getElementById('clearDataPopup').style.display = 'none';
-            location.reload();
         });
         function showAboutPopup() {
             document.getElementById('aboutPopup').style.display = 'flex';
@@ -398,8 +532,12 @@
                 if (e.target === popup) popup.style.display = 'none';
             });
         });
-        // Onboarding start (placeholder)
-        // document.getElementById('onboarding').style.display = 'flex';
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderNotes(e.target.value);
+        });
+        // Initial render
+        renderNotes();
     </script>
 </body>
 </html>
