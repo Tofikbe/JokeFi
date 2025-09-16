@@ -23,6 +23,11 @@
             background-color: white;
             border-bottom: 1px solid #eee;
             z-index: 1002;
+            transition: opacity 0.3s ease;
+        }
+        .header.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         .menu-icon, .settings-icon {
             width: 45px;
@@ -39,6 +44,11 @@
             padding: 10px;
             border-bottom: 1px solid #eee;
             z-index: 1002;
+            transition: opacity 0.3s ease;
+        }
+        .app-name-bar.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         .app-name {
             font-size: 20px;
@@ -50,6 +60,11 @@
             background-color: white;
             border-bottom: 1px solid #eee;
             z-index: 1002;
+            transition: opacity 0.3s ease;
+        }
+        .search-bar.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         .search-input {
             width: 100%;
@@ -398,8 +413,8 @@
     </div>
 
     <!-- Header -->
-    <div class="header">
-        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon" id="menuIcon" onclick="openLeftSidebar()">
+    <div class="header" id="header">
+        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon" id="menuIcon" onclick="toggleLeftSidebar()">
         <div> </div> <!-- Spacer -->
     </div>
 
@@ -445,7 +460,7 @@
             <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends">
             <div class="nav-label">Invite</div>
         </div>
-        <div class="nav-icon" onclick="openRightSidebar()">
+        <div class="nav-icon" onclick="toggleRightSidebar()">
             <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings">
             <div class="nav-label">Settings</div>
         </div>
@@ -717,25 +732,77 @@ ${url}`;
             document.getElementById('invitePopup').style.display = 'flex';
         }
 
-        function openLeftSidebar() {
-            document.getElementById('leftSidebar').classList.add('open');
-            document.getElementById('overlay').classList.add('open');
-            renderTrash();
+        function toggleLeftSidebar() {
+            const sidebar = document.getElementById('leftSidebar');
+            const overlay = document.getElementById('overlay');
+            const header = document.getElementById('header');
+            const appNameBar = document.getElementById('appNameBar');
+            const searchBar = document.getElementById('searchBar');
+
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+                header.classList.remove('hidden');
+                appNameBar.classList.remove('hidden');
+                searchBar.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('open');
+                header.classList.add('hidden');
+                appNameBar.classList.add('hidden');
+                searchBar.classList.add('hidden');
+                renderTrash();
+            }
         }
 
         function closeLeftSidebar() {
-            document.getElementById('leftSidebar').classList.remove('open');
-            document.getElementById('overlay').classList.remove('open');
+            const sidebar = document.getElementById('leftSidebar');
+            const overlay = document.getElementById('overlay');
+            const header = document.getElementById('header');
+            const appNameBar = document.getElementById('appNameBar');
+            const searchBar = document.getElementById('searchBar');
+
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+            header.classList.remove('hidden');
+            appNameBar.classList.remove('hidden');
+            searchBar.classList.remove('hidden');
         }
 
-        function openRightSidebar() {
-            document.getElementById('rightSidebar').classList.add('open');
-            document.getElementById('overlay').classList.add('open');
+        function toggleRightSidebar() {
+            const sidebar = document.getElementById('rightSidebar');
+            const overlay = document.getElementById('overlay');
+            const header = document.getElementById('header');
+            const appNameBar = document.getElementById('appNameBar');
+            const searchBar = document.getElementById('searchBar');
+
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+                header.classList.remove('hidden');
+                appNameBar.classList.remove('hidden');
+                searchBar.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('open');
+                header.classList.add('hidden');
+                appNameBar.classList.add('hidden');
+                searchBar.classList.add('hidden');
+            }
         }
 
         function closeRightSidebar() {
-            document.getElementById('rightSidebar').classList.remove('open');
-            document.getElementById('overlay').classList.remove('open');
+            const sidebar = document.getElementById('rightSidebar');
+            const overlay = document.getElementById('overlay');
+            const header = document.getElementById('header');
+            const appNameBar = document.getElementById('appNameBar');
+            const searchBar = document.getElementById('searchBar');
+
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+            header.classList.remove('hidden');
+            appNameBar.classList.remove('hidden');
+            searchBar.classList.remove('hidden');
         }
 
         function closeSidebars() {
@@ -752,9 +819,9 @@ ${url}`;
         }
 
         // Event listeners
-        document.getElementById('menuIcon').addEventListener('click', openLeftSidebar);
+        document.getElementById('menuIcon').addEventListener('click', toggleLeftSidebar);
         document.querySelector('.nav-icon:nth-child(2)').addEventListener('click', openInvite);
-        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', openRightSidebar);
+        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', toggleRightSidebar);
         document.getElementById('copyBtn').addEventListener('click', () => {
             navigator.clipboard.writeText(url).then(() => {
                 alert('Link copied to clipboard!');
