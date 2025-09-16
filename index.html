@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Save Notes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -79,6 +81,9 @@
             overflow-y: auto;
             position: relative;
             z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
         }
         .left-sidebar {
             position: fixed;
@@ -127,15 +132,16 @@
         }
         .note-file {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            flex-direction: column;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            margin-bottom: 10px;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease;
-            min-height: 60px;
+            min-height: 200px;
+            aspect-ratio: 1;
+            draggable: true;
+            position: relative;
         }
         .note-file:hover {
             background-color: #f9f9f9;
@@ -150,30 +156,31 @@
             opacity: 0.7;
             border-left: 4px solid #ffc107;
         }
-        .note-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: auto;
-        }
         .note-title {
             font-size: 16px;
             flex: 1;
+            margin-bottom: 5px;
         }
         .note-preview {
             font-size: 14px;
             color: #888;
-            margin: 5px 0 0 0;
             word-break: break-word;
             line-height: 1.3;
+            flex: 1;
         }
-        .edit-icon, .notification-icon, .delete-btn, .pin-icon, .reminder-icon, .lock-icon, .mic-btn {
-            width: 30px;
-            height: 30px;
+        .note-actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: auto;
+        }
+        .edit-icon, .notification-icon, .delete-btn, .pin-icon, .reminder-icon, .lock-icon, .mic-btn, .export-btn, .color-btn {
+            width: 25px;
+            height: 25px;
             cursor: pointer;
             transition: transform 0.1s ease;
         }
-        .edit-icon:active, .notification-icon:active, .delete-btn:active, .pin-icon:active, .reminder-icon:active, .lock-icon:active, .mic-btn:active {
+        .edit-icon:active, .notification-icon:active, .delete-btn:active, .pin-icon:active, .reminder-icon:active, .lock-icon:active, .mic-btn:active, .export-btn:active, .color-btn:active {
             transform: scale(0.9);
         }
         .delete-btn {
@@ -292,6 +299,33 @@
             box-sizing: border-box;
             margin-bottom: 10px;
         }
+        .formatting-toolbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .formatting-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .checklist-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .color-picker {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
         .deleted-note {
             display: flex;
             justify-content: space-between;
@@ -399,6 +433,35 @@
             text-decoration: underline;
             cursor: pointer;
             margin-top: 10px;
+        }
+        .export-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1004;
+        }
+        .export-popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .export-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
         /* Onboarding guide placeholder */
         .onboarding {
@@ -515,7 +578,21 @@
     <div id="editorPopup" class="popup">
         <div class="popup-content editor-content">
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
-            <textarea id="editorText" class="editor-text" placeholder="Write your note here..."></textarea>
+            <div class="formatting-toolbar">
+                <button class="formatting-btn" onclick="formatText('bold')">B</button>
+                <button class="formatting-btn" onclick="formatText('italic')">I</button>
+                <button class="formatting-btn" onclick="formatText('underline')">U</button>
+                <button class="formatting-btn" onclick="formatText('strikeThrough')">S</button>
+                <button class="formatting-btn" onclick="formatText('insertUnorderedList')">UL</button>
+                <button class="formatting-btn" onclick="formatText('insertOrderedList')">OL</button>
+                <button class="formatting-btn" onclick="formatText('formatBlock', 'h1')">H1</button>
+                <button class="formatting-btn" onclick="formatText('formatBlock', 'h2')">H2</button>
+                <button class="formatting-btn" onclick="formatText('formatBlock', 'h3')">H3</button>
+                <button class="formatting-btn" onclick="formatText('insertHTML', '<code>_<span contenteditable=true></span>_</code>')">Code</button>
+                <button class="checklist-btn" onclick="insertChecklist()">Checklist</button>
+                <input type="color" class="color-picker" id="colorPicker" onchange="setNoteColor(this.value)" title="Color Label">
+            </div>
+            <div id="editorText" contenteditable="true" class="editor-text" placeholder="Write your note here..."></div>
             <div class="editor-reminder">
                 <label>Date: <input type="date" id="reminderDate"></label>
                 <label>Time: <input type="time" id="reminderTime"></label>
@@ -552,6 +629,19 @@
                 <button class="btn cancel-btn" onclick="closePasswordPopup()">Cancel</button>
             </div>
             <a class="forget-link" onclick="forgetPassword()">Forget Password</a>
+        </div>
+    </div>
+
+    <!-- Export Popup -->
+    <div id="exportPopup" class="export-popup">
+        <div class="export-popup-content">
+            <h3>Export Note</h3>
+            <div class="export-options">
+                <button class="export-btn" onclick="exportNote('txt')">TXT</button>
+                <button class="export-btn" onclick="exportNote('pdf')">PDF</button>
+                <button class="export-btn" onclick="exportNote('image')">Image</button>
+            </div>
+            <button class="btn cancel-btn" onclick="closeExportPopup()">Cancel</button>
         </div>
     </div>
 
@@ -643,6 +733,7 @@
         let reminderTimeouts = {}; // To store timeouts for reminders
         let currentReminderNoteId = null;
         let currentPasswordNoteId = null;
+        let draggedNoteId = null;
         const url = 'https://jokefitabs.vercel.app/';
         const longText = `I use JokeFi Notes to securely save my personal data, important files, and private stories. 
 
@@ -658,6 +749,11 @@ ${url}`;
         const pinIcon = 'https://i.postimg.cc/kXLXxpyd/1758047844505.png';
         const reminderIcon = 'https://i.postimg.cc/GpL0YF6C/1758047829493.png';
         const lockIcon = 'https://i.postimg.cc/nL0y1stQ/images-12.png';
+
+        // Offline mode - register service worker if possible
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,' + btoa('self.addEventListener("fetch", e => e.respondWith(fetch(e.request)));'));
+        }
 
         // Functions to hide/show top bars
         function hideTopBars() {
@@ -738,16 +834,17 @@ ${url}`;
             }
 
             mainContent.innerHTML = filteredNotes.map(note => `
-                <div class="note-file ${note.pinned ? 'pinned' : ''} ${note.password ? 'locked' : ''}" onclick="editNote('${note.id}')">
+                <div class="note-file ${note.pinned ? 'pinned' : ''} ${note.password ? 'locked' : ''}" data-id="${note.id}" style="background-color: ${note.color || 'white'}">
                     <div style="flex: 1;">
                         <span class="note-title">${note.title} ${note.pinned ? '📌' : ''} ${note.password ? '🔒' : ''}</span>
-                        <p class="note-preview">${note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : ''}</p>
+                        <div class="note-preview">${note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : ''}</div>
                     </div>
                     <div class="note-actions">
                         <img src="${pinIcon}" class="pin-icon" onclick="togglePin(event, '${note.id}')" alt="Pin">
                         <img src="${note.notification ? notificationOnIcon : notificationOffIcon}" class="notification-icon" onclick="toggleNotification(event, '${note.id}')" alt="${note.notification ? 'On' : 'Off'}">
                         <img src="${reminderIcon}" class="reminder-icon" onclick="setNoteReminder(event, '${note.id}')" alt="Reminder">
                         <img src="${lockIcon}" class="lock-icon" onclick="toggleLock(event, '${note.id}')" alt="Lock">
+                        <button class="export-btn" onclick="openExport('${note.id}')">📤</button>
                         <button class="delete-btn" onclick="deleteNote(event, '${note.id}')">×</button>
                     </div>
                 </div>
@@ -904,7 +1001,7 @@ ${url}`;
                 recognition.interimResults = false;
                 recognition.lang = 'en-US';
                 recognition.onresult = function(event) {
-                    document.getElementById('editorText').value += event.results[0][0].transcript;
+                    document.getElementById('editorText').innerHTML += event.results[0][0].transcript;
                 };
                 recognition.onerror = function(event) {
                     console.error('Speech recognition error', event.error);
@@ -913,6 +1010,65 @@ ${url}`;
             } else {
                 alert('Speech recognition not supported');
             }
+        }
+
+        function formatText(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('editorText').focus();
+        }
+
+        function insertChecklist() {
+            document.execCommand('insertHTML', false, '<input type="checkbox"> <span contenteditable="true"></span><br>');
+            document.getElementById('editorText').focus();
+        }
+
+        function setNoteColor(color) {
+            if (currentEditingId) {
+                const note = notes.find(n => n.id === currentEditingId);
+                if (note) {
+                    note.color = color;
+                    saveNotes();
+                }
+            }
+        }
+
+        function openExport(id) {
+            currentEditingId = id; // Reuse for export
+            document.getElementById('exportPopup').style.display = 'flex';
+            hideTopBars();
+        }
+
+        function closeExportPopup() {
+            document.getElementById('exportPopup').style.display = 'none';
+            showTopBars();
+            currentEditingId = null;
+        }
+
+        function exportNote(type) {
+            const note = notes.find(n => n.id === currentEditingId);
+            if (!note) return;
+            if (type === 'txt') {
+                const blob = new Blob([`Title: ${note.title}\n\n${note.content}`], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${note.title}.txt`;
+                a.click();
+            } else if (type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text(`Title: ${note.title}`, 10, 10);
+                doc.text(note.content, 10, 20);
+                doc.save(`${note.title}.pdf`);
+            } else if (type === 'image') {
+                html2canvas(document.querySelector(`[data-id="${currentEditingId}"]`)).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `${note.title}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            }
+            closeExportPopup();
         }
 
         function editNote(id) {
@@ -926,10 +1082,11 @@ ${url}`;
                     }
                 }
                 document.getElementById('editorTitle').value = note.title;
-                document.getElementById('editorText').value = note.content;
+                document.getElementById('editorText').innerHTML = note.content;
                 const [date, time] = note.reminderTime ? note.reminderTime.split('T') : ['', ''];
                 document.getElementById('reminderDate').value = date;
                 document.getElementById('reminderTime').value = time;
+                document.getElementById('colorPicker').value = note.color || '#ffffff';
                 currentEditingId = id;
                 hideTopBars();
                 document.getElementById('overlay').classList.add('open');
@@ -939,9 +1096,10 @@ ${url}`;
 
         function createNewNote() {
             document.getElementById('editorTitle').value = '';
-            document.getElementById('editorText').value = '';
+            document.getElementById('editorText').innerHTML = '';
             document.getElementById('reminderDate').value = '';
             document.getElementById('reminderTime').value = '';
+            document.getElementById('colorPicker').value = '#ffffff';
             currentEditingId = null;
             hideTopBars();
             document.getElementById('overlay').classList.add('open');
@@ -950,7 +1108,7 @@ ${url}`;
 
         function saveNote() {
             const title = document.getElementById('editorTitle').value.trim();
-            const content = document.getElementById('editorText').value;
+            const content = document.getElementById('editorText').innerHTML;
             const reminderDate = document.getElementById('reminderDate').value;
             const reminderTime = document.getElementById('reminderTime').value;
             if (!title) {
@@ -970,6 +1128,7 @@ ${url}`;
                         note.reminderTime = null;
                         clearReminder(currentEditingId);
                     }
+                    note.color = document.getElementById('colorPicker').value;
                 }
             } else {
                 const newNote = {
@@ -979,7 +1138,8 @@ ${url}`;
                     notification: false,
                     pinned: false,
                     reminderTime: (reminderDate && reminderTime) ? reminderDate + 'T' + reminderTime : null,
-                    password: null
+                    password: null,
+                    color: document.getElementById('colorPicker').value
                 };
                 if (newNote.reminderTime) {
                     setReminder(newNote.id, newNote.reminderTime);
@@ -1139,6 +1299,50 @@ ${url}`;
             document.getElementById('clearDataPopup').style.display = 'flex';
         }
 
+        // Drag and Drop
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('note-file')) {
+                draggedNoteId = e.target.dataset.id;
+                e.target.style.opacity = '0.5';
+            }
+        });
+
+        document.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('note-file')) {
+                e.target.style.opacity = '1';
+            }
+        });
+
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (draggedNoteId && e.target.closest('.main-content')) {
+                const dropY = e.clientY;
+                const allNotes = [...document.querySelectorAll('.note-file')];
+                const afterElement = allNotes.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = dropY - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+
+                const draggedNote = notes.find(n => n.id === draggedNoteId);
+                const draggedIndex = notes.indexOf(draggedNote);
+                notes.splice(draggedIndex, 1);
+                const dropIndex = afterElement ? notes.indexOf(notes.find(n => n.id === afterElement.dataset.id)) : notes.length;
+                notes.splice(dropIndex, 0, draggedNote);
+                saveNotes();
+                renderNotes(document.getElementById('searchInput').value);
+            }
+            draggedNoteId = null;
+        });
+
         // Event listeners
         document.getElementById('menuIcon').addEventListener('click', toggleLeftSidebar);
         document.getElementById('copyBtn').addEventListener('click', () => {
@@ -1209,6 +1413,12 @@ ${url}`;
                     showTopBars();
                 }
             });
+        });
+
+        document.getElementById('exportPopup').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('exportPopup')) {
+                closeExportPopup();
+            }
         });
 
         // Search
