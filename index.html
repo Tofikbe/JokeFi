@@ -290,6 +290,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
+            margin-bottom: 10px;
         }
         .deleted-note {
             display: flex;
@@ -349,6 +350,55 @@
         }
         .share-icon:active {
             transform: scale(0.95);
+        }
+        /* Reminder Popup Styles */
+        #reminderPopup .popup-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        #reminderPopup .popup-content h3 {
+            margin-bottom: 20px;
+        }
+        #reminderPopup .popup-content label {
+            display: block;
+            margin: 15px 0;
+            text-align: left;
+        }
+        #reminderPopup .popup-content input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        /* Password Popup Styles */
+        #passwordPopup .popup-content {
+            text-align: center;
+            max-width: 300px;
+        }
+        #passwordPopup .popup-content h3 {
+            margin-bottom: 10px;
+        }
+        #passwordPopup .popup-content p {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        #passwordPopup .popup-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        #passwordPopup .forget-link {
+            font-size: 12px;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 10px;
         }
         /* Onboarding guide placeholder */
         .onboarding {
@@ -411,13 +461,6 @@
             margin-top: 20px;
         }
     </style>
-<!-- App Manifest -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
-
-<!-- Icons -->
-<link rel="icon" href="https://i.postimg.cc/qRCNFQgg/20250916-164449.jpg" sizes="192x192" type="image/png">
-<link rel="apple-touch-icon" href="https://i.postimg.cc/qRCNFQgg/20250916-164449.jpg">
 </head>
 <body>
     <!-- Overlay for sidebars -->
@@ -474,14 +517,41 @@
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
             <textarea id="editorText" class="editor-text" placeholder="Write your note here..."></textarea>
             <div class="editor-reminder">
-                <label for="reminderTime">Set Reminder:</label>
-                <input type="datetime-local" id="reminderTime">
+                <label>Date: <input type="date" id="reminderDate"></label>
+                <label>Time: <input type="time" id="reminderTime"></label>
             </div>
             <button class="mic-btn" onclick="startVoiceToText()" style="background: none; border: none; font-size: 20px;">🎤</button>
             <div class="popup-buttons">
                 <button class="btn" onclick="saveNote()">Save</button>
                 <button class="btn cancel-btn" onclick="closeEditor()">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Reminder Popup -->
+    <div id="reminderPopup" class="popup">
+        <div class="popup-content">
+            <h3>Set Reminder for <span id="reminderNoteTitle"></span></h3>
+            <label>Date: <input type="date" id="popupReminderDate"></label>
+            <label>Time: <input type="time" id="popupReminderTime"></label>
+            <div class="popup-buttons">
+                <button class="btn" onclick="saveReminder()">Save</button>
+                <button class="btn cancel-btn" onclick="closeReminderPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Popup -->
+    <div id="passwordPopup" class="popup">
+        <div class="popup-content">
+            <h3 id="passwordNoteTitle"></h3>
+            <p>Set Password</p>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <div class="popup-buttons">
+                <button class="btn" onclick="savePassword()">Save</button>
+                <button class="btn cancel-btn" onclick="closePasswordPopup()">Cancel</button>
+            </div>
+            <a class="forget-link" onclick="forgetPassword()">Forget Password</a>
         </div>
     </div>
 
@@ -571,6 +641,8 @@
         let currentEditingId = null;
         let notificationIntervals = {}; // To store intervals for each note
         let reminderTimeouts = {}; // To store timeouts for reminders
+        let currentReminderNoteId = null;
+        let currentPasswordNoteId = null;
         const url = 'https://jokefitabs.vercel.app/';
         const longText = `I use JokeFi Notes to securely save my personal data, important files, and private stories. 
 
@@ -583,6 +655,9 @@ ${url}`;
 
         const notificationOnIcon = 'https://i.postimg.cc/xT7dmGx6/1758009449096.png';
         const notificationOffIcon = 'https://i.postimg.cc/XYFz838T/1758009466327.png';
+        const pinIcon = 'https://i.postimg.cc/kXLXxpyd/1758047844505.png';
+        const reminderIcon = 'https://i.postimg.cc/GpL0YF6C/1758047829493.png';
+        const lockIcon = 'https://i.postimg.cc/nL0y1stQ/images-12.png';
 
         // Functions to hide/show top bars
         function hideTopBars() {
@@ -627,14 +702,15 @@ ${url}`;
             }
         }
 
-        function setReminder(id, time) {
+        function setReminder(id, datetime) {
+            clearReminder(id);
             const timeout = setTimeout(() => {
                 const note = notes.find(n => n.id === id);
                 if (note) {
                     showNotification('Reminder', `Reminder for: ${note.title}`);
                 }
                 delete reminderTimeouts[id];
-            }, new Date(time) - Date.now());
+            }, new Date(datetime) - Date.now());
             reminderTimeouts[id] = timeout;
         }
 
@@ -668,10 +744,10 @@ ${url}`;
                         <p class="note-preview">${note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : ''}</p>
                     </div>
                     <div class="note-actions">
-                        <span class="pin-icon" onclick="togglePin(event, '${note.id}')">${note.pinned ? '📌' : '📍'}</span>
+                        <img src="${pinIcon}" class="pin-icon" onclick="togglePin(event, '${note.id}')" alt="Pin">
                         <img src="${note.notification ? notificationOnIcon : notificationOffIcon}" class="notification-icon" onclick="toggleNotification(event, '${note.id}')" alt="${note.notification ? 'On' : 'Off'}">
-                        <span class="reminder-icon" onclick="setNoteReminder(event, '${note.id}')">⏰</span>
-                        <span class="lock-icon" onclick="toggleLock(event, '${note.id}')">${note.password ? '🔓' : '🔒'}</span>
+                        <img src="${reminderIcon}" class="reminder-icon" onclick="setNoteReminder(event, '${note.id}')" alt="Reminder">
+                        <img src="${lockIcon}" class="lock-icon" onclick="toggleLock(event, '${note.id}')" alt="Lock">
                         <button class="delete-btn" onclick="deleteNote(event, '${note.id}')">×</button>
                     </div>
                 </div>
@@ -727,36 +803,97 @@ ${url}`;
             event.stopPropagation();
             const note = notes.find(n => n.id === id);
             if (note) {
-                const time = prompt('Set reminder time (YYYY-MM-DDTHH:MM):');
-                if (time) {
-                    note.reminderTime = time;
-                    clearReminder(id);
-                    setReminder(id, time);
+                currentReminderNoteId = id;
+                document.getElementById('reminderNoteTitle').textContent = note.title;
+                const [date, time] = note.reminderTime ? note.reminderTime.split('T') : ['', ''];
+                document.getElementById('popupReminderDate').value = date;
+                document.getElementById('popupReminderTime').value = time;
+                hideTopBars();
+                document.getElementById('overlay').classList.add('open');
+                document.getElementById('reminderPopup').style.display = 'flex';
+            }
+        }
+
+        function saveReminder() {
+            const date = document.getElementById('popupReminderDate').value;
+            const time = document.getElementById('popupReminderTime').value;
+            if (date && time && currentReminderNoteId) {
+                const datetime = date + 'T' + time;
+                const note = notes.find(n => n.id === currentReminderNoteId);
+                if (note) {
+                    note.reminderTime = datetime;
+                    clearReminder(currentReminderNoteId);
+                    setReminder(currentReminderNoteId, datetime);
                     saveNotes();
                     renderNotes(document.getElementById('searchInput').value);
                 }
             }
+            closeReminderPopup();
+        }
+
+        function closeReminderPopup() {
+            document.getElementById('reminderPopup').style.display = 'none';
+            document.getElementById('overlay').classList.remove('open');
+            showTopBars();
+            currentReminderNoteId = null;
         }
 
         function toggleLock(event, id) {
             event.stopPropagation();
             const note = notes.find(n => n.id === id);
             if (note) {
+                currentPasswordNoteId = id;
+                document.getElementById('passwordNoteTitle').textContent = note.title;
+                document.getElementById('passwordInput').value = '';
                 if (note.password) {
-                    const pass = prompt('Enter password to unlock:');
-                    if (pass === note.password) {
-                        note.password = null;
-                    } else {
-                        alert('Incorrect password');
-                    }
+                    document.querySelector('#passwordPopup .popup-content p').textContent = 'Enter Password to Unlock';
                 } else {
-                    const pass = prompt('Set password to lock:');
-                    if (pass) {
+                    document.querySelector('#passwordPopup .popup-content p').textContent = 'Set Password';
+                }
+                hideTopBars();
+                document.getElementById('overlay').classList.add('open');
+                document.getElementById('passwordPopup').style.display = 'flex';
+            }
+        }
+
+        function savePassword() {
+            const pass = document.getElementById('passwordInput').value;
+            if (currentPasswordNoteId) {
+                const note = notes.find(n => n.id === currentPasswordNoteId);
+                if (note) {
+                    if (note.password) {
+                        if (pass === note.password) {
+                            note.password = null;
+                        } else {
+                            alert('Incorrect password');
+                            return;
+                        }
+                    } else {
                         note.password = pass;
                     }
+                    saveNotes();
+                    renderNotes(document.getElementById('searchInput').value);
                 }
-                saveNotes();
-                renderNotes(document.getElementById('searchInput').value);
+            }
+            closePasswordPopup();
+        }
+
+        function closePasswordPopup() {
+            document.getElementById('passwordPopup').style.display = 'none';
+            document.getElementById('overlay').classList.remove('open');
+            showTopBars();
+            currentPasswordNoteId = null;
+        }
+
+        function forgetPassword() {
+            if (confirm('Are you sure you want to forget the password? This will unlock the note.')) {
+                const note = notes.find(n => n.id === currentPasswordNoteId);
+                if (note) {
+                    note.password = null;
+                    saveNotes();
+                    renderNotes(document.getElementById('searchInput').value);
+                }
+                closePasswordPopup();
             }
         }
 
@@ -790,7 +927,9 @@ ${url}`;
                 }
                 document.getElementById('editorTitle').value = note.title;
                 document.getElementById('editorText').value = note.content;
-                document.getElementById('reminderTime').value = note.reminderTime || '';
+                const [date, time] = note.reminderTime ? note.reminderTime.split('T') : ['', ''];
+                document.getElementById('reminderDate').value = date;
+                document.getElementById('reminderTime').value = time;
                 currentEditingId = id;
                 hideTopBars();
                 document.getElementById('overlay').classList.add('open');
@@ -801,6 +940,7 @@ ${url}`;
         function createNewNote() {
             document.getElementById('editorTitle').value = '';
             document.getElementById('editorText').value = '';
+            document.getElementById('reminderDate').value = '';
             document.getElementById('reminderTime').value = '';
             currentEditingId = null;
             hideTopBars();
@@ -811,6 +951,7 @@ ${url}`;
         function saveNote() {
             const title = document.getElementById('editorTitle').value.trim();
             const content = document.getElementById('editorText').value;
+            const reminderDate = document.getElementById('reminderDate').value;
             const reminderTime = document.getElementById('reminderTime').value;
             if (!title) {
                 alert('Please enter a title.');
@@ -821,10 +962,10 @@ ${url}`;
                 if (note) {
                     note.title = title;
                     note.content = content;
-                    if (reminderTime) {
-                        note.reminderTime = reminderTime;
+                    if (reminderDate && reminderTime) {
+                        note.reminderTime = reminderDate + 'T' + reminderTime;
                         clearReminder(currentEditingId);
-                        setReminder(currentEditingId, reminderTime);
+                        setReminder(currentEditingId, note.reminderTime);
                     } else {
                         note.reminderTime = null;
                         clearReminder(currentEditingId);
@@ -837,11 +978,11 @@ ${url}`;
                     content,
                     notification: false,
                     pinned: false,
-                    reminderTime: reminderTime || null,
+                    reminderTime: (reminderDate && reminderTime) ? reminderDate + 'T' + reminderTime : null,
                     password: null
                 };
-                if (reminderTime) {
-                    setReminder(newNote.id, reminderTime);
+                if (newNote.reminderTime) {
+                    setReminder(newNote.id, newNote.reminderTime);
                 }
                 notes.unshift(newNote);
             }
