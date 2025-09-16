@@ -19,7 +19,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 5px;
             background-color: white;
             border-bottom: 1px solid #eee;
             z-index: 1002;
@@ -41,7 +41,7 @@
         .app-name-bar {
             background-color: white;
             text-align: center;
-            padding: 10px;
+            padding: 5px;
             border-bottom: 1px solid #eee;
             z-index: 1002;
             transition: opacity 0.3s ease;
@@ -56,7 +56,7 @@
             color: #333;
         }
         .search-bar {
-            padding: 10px;
+            padding: 5px;
             background-color: white;
             border-bottom: 1px solid #eee;
             z-index: 1002;
@@ -240,7 +240,7 @@
             background-color: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 1003;
         }
         .popup-content {
             background-color: white;
@@ -551,6 +551,9 @@ It’s the perfect app to store important notes fast and securely, knowing my da
 ${url}`;
         const shortText = `Loving JokeFi Notes for secure, private note saving! No data selling, full encryption. Perfect for personal files & stories. ${url}`;
 
+        const notificationOnIcon = 'https://i.postimg.cc/xT7dmGx6/1758009449096.png';
+        const notificationOffIcon = 'https://i.postimg.cc/XYFz838T/1758009466327.png';
+
         // Functions to hide/show top bars
         function hideTopBars() {
             document.getElementById('header').classList.add('hidden');
@@ -614,7 +617,7 @@ ${url}`;
                         <p class="note-preview">${note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : ''}</p>
                     </div>
                     <div class="note-actions">
-                        <span class="notification-icon" onclick="toggleNotification(event, '${note.id}')">${note.notification ? '🔔' : '🔕'}</span>
+                        <img src="${note.notification ? notificationOnIcon : notificationOffIcon}" class="notification-icon" onclick="toggleNotification(event, '${note.id}')" alt="${note.notification ? 'On' : 'Off'}">
                         <button class="delete-btn" onclick="deleteNote(event, '${note.id}')">×</button>
                     </div>
                 </div>
@@ -663,6 +666,7 @@ ${url}`;
                 document.getElementById('editorText').value = note.content;
                 currentEditingId = id;
                 hideTopBars();
+                document.getElementById('overlay').classList.add('open');
                 document.getElementById('editorPopup').style.display = 'flex';
             }
         }
@@ -672,6 +676,7 @@ ${url}`;
             document.getElementById('editorText').value = '';
             currentEditingId = null;
             hideTopBars();
+            document.getElementById('overlay').classList.add('open');
             document.getElementById('editorPopup').style.display = 'flex';
         }
 
@@ -741,6 +746,7 @@ ${url}`;
 
         function closeEditor() {
             document.getElementById('editorPopup').style.display = 'none';
+            document.getElementById('overlay').classList.remove('open');
             currentEditingId = null;
             showTopBars();
         }
@@ -764,6 +770,7 @@ ${url}`;
 
         function openInvite() {
             hideTopBars();
+            document.getElementById('overlay').classList.add('open');
             document.getElementById('invitePopup').style.display = 'flex';
         }
 
@@ -827,16 +834,19 @@ ${url}`;
 
         function showAboutPopup() {
             hideTopBars();
+            document.getElementById('overlay').classList.add('open');
             document.getElementById('aboutPopup').style.display = 'flex';
         }
 
         function closeAbout() {
             document.getElementById('aboutPopup').style.display = 'none';
+            document.getElementById('overlay').classList.remove('open');
             showTopBars();
         }
 
         function showClearDataPopup() {
             hideTopBars();
+            document.getElementById('overlay').classList.add('open');
             document.getElementById('clearDataPopup').style.display = 'flex';
         }
 
@@ -889,11 +899,13 @@ ${url}`;
             saveDeletedNotes();
             renderNotes();
             document.getElementById('clearDataPopup').style.display = 'none';
+            document.getElementById('overlay').classList.remove('open');
             showTopBars();
         });
 
         document.getElementById('cancelClear').addEventListener('click', () => {
             document.getElementById('clearDataPopup').style.display = 'none';
+            document.getElementById('overlay').classList.remove('open');
             showTopBars();
         });
 
@@ -902,6 +914,7 @@ ${url}`;
             popup.addEventListener('click', (e) => {
                 if (e.target === popup) {
                     popup.style.display = 'none';
+                    document.getElementById('overlay').classList.remove('open');
                     showTopBars();
                 }
             });
