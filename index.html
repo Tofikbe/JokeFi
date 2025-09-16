@@ -508,8 +508,8 @@
             <p>This action cannot be undone and you will lose all your data forever.</p>
             <p>Please make sure you have backed up any important information before proceeding.</p>
             <div class="popup-buttons">
-                <button class="btn confirm-btn">Confirm</button>
-                <button class="btn cancel-btn">Cancel</button>
+                <button class="btn confirm-btn" id="confirmClear">Confirm</button>
+                <button class="btn cancel-btn" id="cancelClear">Cancel</button>
             </div>
         </div>
     </div>
@@ -539,6 +539,19 @@ It’s the perfect app to store important notes fast and securely, knowing my da
 
 ${url}`;
         const shortText = `Loving JokeFi Notes for secure, private note saving! No data selling, full encryption. Perfect for personal files & stories. ${url}`;
+
+        // Functions to hide/show top bars
+        function hideTopBars() {
+            document.getElementById('header').classList.add('hidden');
+            document.getElementById('appNameBar').classList.add('hidden');
+            document.getElementById('searchBar').classList.add('hidden');
+        }
+
+        function showTopBars() {
+            document.getElementById('header').classList.remove('hidden');
+            document.getElementById('appNameBar').classList.remove('hidden');
+            document.getElementById('searchBar').classList.remove('hidden');
+        }
 
         // Notification setup
         if ('Notification' in window) {
@@ -581,12 +594,11 @@ ${url}`;
             }
 
             mainContent.innerHTML = filteredNotes.map(note => `
-                <div class="note-file" onclick="openEditor('${note.id}')">
+                <div class="note-file" onclick="editNote('${note.id}')">
                     <span class="note-title">${note.title}</span>
                     <div class="note-actions">
-                        <img src="https://i.postimg.cc/L8GKvNLb/1758010335631.png" alt="Edit" class="edit-icon" onclick="editTitle(event, '${note.id}'); event.stopPropagation();">
-                        <img src="${note.notification ? 'https://i.postimg.cc/xT7dmGx6/1758009449096.png' : 'https://i.postimg.cc/XYFz838T/1758009466327.png'}" alt="Notification" class="notification-icon" onclick="toggleNotification(event, '${note.id}'); event.stopPropagation();">
-                        <button class="delete-btn" onclick="deleteNote(event, '${note.id}'); event.stopPropagation();">🗑️</button>
+                        <span class="notification-icon" onclick="toggleNotification(event, '${note.id}')">${note.notification ? '🔔' : '🔕'}</span>
+                        <button class="delete-btn" onclick="deleteNote(event, '${note.id}')">×</button>
                     </div>
                 </div>
             `).join('');
@@ -609,47 +621,65 @@ ${url}`;
             `).join('');
         }
 
-        function createNewNote() {
-            const id = Date.now().toString();
-            const newNote = { id, title: 'New Note', content: '', notification: false };
-            notes.unshift(newNote);
-            saveNotes();
-            openEditor(id);
-        }
-
-        function openEditor(id) {
-            currentEditingId = id;
+        function toggleNotification(event, id) {
+            event.stopPropagation();
             const note = notes.find(n => n.id === id);
             if (note) {
-                document.getElementById('editorTitle').value = note.title;
-                document.getElementById('editorText').value = note.content;
-                document.getElementById('editorPopup').style.display = 'flex';
-            }
-        }
-
-        function editTitle(event, id) {
-            event.stopPropagation();
-            const newTitle = prompt('Enter new title:', notes.find(n => n.id === id).title);
-            if (newTitle && newTitle.trim()) {
-                const note = notes.find(n => n.id === id);
-                note.title = newTitle.trim();
+                note.notification = !note.notification;
+                if (note.notification) {
+                    startNoteNotifications(id);
+                } else {
+                    stopNoteNotifications(id);
+                }
                 saveNotes();
                 renderNotes(document.getElementById('searchInput').value);
             }
         }
 
-        function toggleNotification(event, id) {
-            event.stopPropagation();
+        function editNote(id) {
             const note = notes.find(n => n.id === id);
-            note.notification = !note.notification;
-            if (note.notification) {
-                showNotification('Notification Enabled', 'Successful notification on for ' + note.title);
-                startNoteNotifications(id);
+            if (note) {
+                document.getElementById('editorTitle').value = note.title;
+                document.getElementById('editorText').value = note.content;
+                currentEditingId = id;
+                hideTopBars();
+                document.getElementById('editorPopup').style.display = 'flex';
+            }
+        }
+
+        function createNewNote() {
+            document.getElementById('editorTitle').value = '';
+            document.getElementById('editorText').value = '';
+            currentEditingId = null;
+            hideTopBars();
+            document.getElementById('editorPopup').style.display = 'flex';
+        }
+
+        function saveNote() {
+            const title = document.getElementById('editorTitle').value.trim();
+            const content = document.getElementById('editorText').value;
+            if (!title) {
+                alert('Please enter a title.');
+                return;
+            }
+            if (currentEditingId) {
+                const note = notes.find(n => n.id === currentEditingId);
+                if (note) {
+                    note.title = title;
+                    note.content = content;
+                }
             } else {
-                stopNoteNotifications(id);
+                const newNote = {
+                    id: Date.now().toString(),
+                    title,
+                    content,
+                    notification: false
+                };
+                notes.unshift(newNote);
             }
             saveNotes();
             renderNotes(document.getElementById('searchInput').value);
+            closeEditor();
         }
 
         function deleteNote(event, id) {
@@ -689,26 +719,10 @@ ${url}`;
             }
         }
 
-        function saveNote() {
-            const title = document.getElementById('editorTitle').value.trim();
-            const content = document.getElementById('editorText').value;
-            if (title && currentEditingId) {
-                const note = notes.find(n => n.id === currentEditingId);
-                if (note) {
-                    note.title = title;
-                    note.content = content;
-                    saveNotes();
-                    renderNotes(document.getElementById('searchInput').value);
-                }
-            } else {
-                alert('Please enter a title.');
-            }
-            closeEditor();
-        }
-
         function closeEditor() {
             document.getElementById('editorPopup').style.display = 'none';
             currentEditingId = null;
+            showTopBars();
         }
 
         function saveNotes() {
@@ -725,32 +739,24 @@ ${url}`;
             closeLeftSidebar();
             closeRightSidebar();
             document.getElementById('invitePopup').style.display = 'none';
-            document.getElementById('settingsMenu').style.display = 'none';
+            showTopBars();
         }
 
         function openInvite() {
+            hideTopBars();
             document.getElementById('invitePopup').style.display = 'flex';
         }
 
         function toggleLeftSidebar() {
             const sidebar = document.getElementById('leftSidebar');
             const overlay = document.getElementById('overlay');
-            const header = document.getElementById('header');
-            const appNameBar = document.getElementById('appNameBar');
-            const searchBar = document.getElementById('searchBar');
 
             if (sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('open');
-                header.classList.remove('hidden');
-                appNameBar.classList.remove('hidden');
-                searchBar.classList.remove('hidden');
+                closeLeftSidebar();
             } else {
                 sidebar.classList.add('open');
                 overlay.classList.add('open');
-                header.classList.add('hidden');
-                appNameBar.classList.add('hidden');
-                searchBar.classList.add('hidden');
+                hideTopBars();
                 renderTrash();
             }
         }
@@ -758,51 +764,32 @@ ${url}`;
         function closeLeftSidebar() {
             const sidebar = document.getElementById('leftSidebar');
             const overlay = document.getElementById('overlay');
-            const header = document.getElementById('header');
-            const appNameBar = document.getElementById('appNameBar');
-            const searchBar = document.getElementById('searchBar');
 
             sidebar.classList.remove('open');
             overlay.classList.remove('open');
-            header.classList.remove('hidden');
-            appNameBar.classList.remove('hidden');
-            searchBar.classList.remove('hidden');
+            showTopBars();
         }
 
         function toggleRightSidebar() {
             const sidebar = document.getElementById('rightSidebar');
             const overlay = document.getElementById('overlay');
-            const header = document.getElementById('header');
-            const appNameBar = document.getElementById('appNameBar');
-            const searchBar = document.getElementById('searchBar');
 
             if (sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('open');
-                header.classList.remove('hidden');
-                appNameBar.classList.remove('hidden');
-                searchBar.classList.remove('hidden');
+                closeRightSidebar();
             } else {
                 sidebar.classList.add('open');
                 overlay.classList.add('open');
-                header.classList.add('hidden');
-                appNameBar.classList.add('hidden');
-                searchBar.classList.add('hidden');
+                hideTopBars();
             }
         }
 
         function closeRightSidebar() {
             const sidebar = document.getElementById('rightSidebar');
             const overlay = document.getElementById('overlay');
-            const header = document.getElementById('header');
-            const appNameBar = document.getElementById('appNameBar');
-            const searchBar = document.getElementById('searchBar');
 
             sidebar.classList.remove('open');
             overlay.classList.remove('open');
-            header.classList.remove('hidden');
-            appNameBar.classList.remove('hidden');
-            searchBar.classList.remove('hidden');
+            showTopBars();
         }
 
         function closeSidebars() {
@@ -818,10 +805,23 @@ ${url}`;
             }
         }
 
+        function showAboutPopup() {
+            hideTopBars();
+            document.getElementById('aboutPopup').style.display = 'flex';
+        }
+
+        function closeAbout() {
+            document.getElementById('aboutPopup').style.display = 'none';
+            showTopBars();
+        }
+
+        function showClearDataPopup() {
+            hideTopBars();
+            document.getElementById('clearDataPopup').style.display = 'flex';
+        }
+
         // Event listeners
         document.getElementById('menuIcon').addEventListener('click', toggleLeftSidebar);
-        document.querySelector('.nav-icon:nth-child(2)').addEventListener('click', openInvite);
-        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', toggleRightSidebar);
         document.getElementById('copyBtn').addEventListener('click', () => {
             navigator.clipboard.writeText(url).then(() => {
                 alert('Link copied to clipboard!');
@@ -853,27 +853,13 @@ ${url}`;
                         alert('Share this link: ' + url);
                     }
                     return;
-                } else if (alt === 'Instagram') {
-                    text = longText;
-                    if (navigator.share) {
-                        navigator.share({title: 'JokeFi Notes', text: text});
-                    } else {
-                        alert('Open Instagram and share:\n' + text);
-                        window.open('https://www.instagram.com/', '_blank');
-                    }
-                    return;
                 }
                 window.open(shareUrl, '_blank');
             });
         });
 
-        document.querySelector('.cancel-btn').addEventListener('click', () => {
-            document.getElementById('clearDataPopup').style.display = 'none';
-        });
-        function showClearDataPopup() {
-            document.getElementById('clearDataPopup').style.display = 'flex';
-        }
-        document.querySelector('.confirm-btn').addEventListener('click', () => {
+        // Clear Data buttons
+        document.getElementById('confirmClear').addEventListener('click', () => {
             // Clear intervals
             Object.keys(notificationIntervals).forEach(id => clearInterval(notificationIntervals[id]));
             notificationIntervals = {};
@@ -883,23 +869,29 @@ ${url}`;
             saveDeletedNotes();
             renderNotes();
             document.getElementById('clearDataPopup').style.display = 'none';
+            showTopBars();
         });
-        function showAboutPopup() {
-            document.getElementById('aboutPopup').style.display = 'flex';
-        }
-        function closeAbout() {
-            document.getElementById('aboutPopup').style.display = 'none';
-        }
+
+        document.getElementById('cancelClear').addEventListener('click', () => {
+            document.getElementById('clearDataPopup').style.display = 'none';
+            showTopBars();
+        });
+
         // Close popups on outside click
         document.querySelectorAll('.popup').forEach(popup => {
             popup.addEventListener('click', (e) => {
-                if (e.target === popup) popup.style.display = 'none';
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                    showTopBars();
+                }
             });
         });
+
         // Search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             renderNotes(e.target.value);
         });
+
         // Initial render and restore notifications
         renderNotes();
         notes.forEach(note => {
