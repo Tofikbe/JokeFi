@@ -24,19 +24,14 @@
             border-bottom: 1px solid #eee;
             z-index: 1002;
         }
-        .menu-icon {
+        .menu-icon, .settings-icon {
             width: 45px;
             height: 45px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.2s ease;
         }
-        .menu-icon:active {
-            animation: flip 0.6s ease-in-out;
-        }
-        @keyframes flip {
-            0% { transform: perspective(400px) rotateY(0deg); }
-            50% { transform: perspective(400px) rotateY(180deg); }
-            100% { transform: perspective(400px) rotateY(360deg); }
+        .menu-icon:active, .settings-icon:active {
+            transform: scale(0.95);
         }
         .app-name-bar {
             background-color: white;
@@ -70,7 +65,7 @@
             position: relative;
             z-index: 1;
         }
-        .sidebar {
+        .left-sidebar {
             position: fixed;
             top: 0;
             left: -300px;
@@ -78,13 +73,29 @@
             height: 100vh;
             background-color: white;
             border-right: 1px solid #ddd;
-            transition: left 0.3s ease-in-out;
+            transition: left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 1001;
             padding: 20px;
             box-sizing: border-box;
         }
-        .sidebar.open {
+        .left-sidebar.open {
             left: 0;
+        }
+        .right-sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background-color: white;
+            border-left: 1px solid #ddd;
+            transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1001;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .right-sidebar.open {
+            right: 0;
         }
         .overlay {
             display: none;
@@ -108,18 +119,13 @@
             border-radius: 5px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
         .note-file:hover {
             background-color: #f9f9f9;
         }
         .note-file:active {
-            animation: bounceIn 0.5s ease-in-out;
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            transform: scale(0.98);
         }
         .note-actions {
             display: flex;
@@ -134,17 +140,10 @@
             width: 30px;
             height: 30px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s ease;
         }
         .edit-icon:active, .notification-icon:active, .delete-btn:active {
-            animation: heartBeat 0.6s ease-in-out;
-        }
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.3); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.3); }
-            70% { transform: scale(1); }
+            transform: scale(0.9);
         }
         .delete-btn {
             font-size: 20px;
@@ -166,16 +165,11 @@
             justify-content: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s ease;
             z-index: 1003;
         }
         .new-tab-btn:active {
-            animation: zoomIn 0.6s ease-in-out;
-        }
-        @keyframes zoomIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            transform: scale(0.95);
         }
         .new-tab-icon {
             width: 45px;
@@ -198,14 +192,10 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s ease;
         }
         .nav-icon:active {
-            animation: rollIn 0.6s ease-in-out;
-        }
-        @keyframes rollIn {
-            0% { transform: translateX(-100%) rotate(120deg); opacity: 0; }
-            100% { transform: translateX(0px) rotate(0deg); opacity: 1; }
+            transform: scale(0.95);
         }
         .nav-icon img {
             width: 35px;
@@ -288,16 +278,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s ease;
         }
         .btn:active {
-            animation: lightSpeedIn 0.6s ease-in-out;
-        }
-        @keyframes lightSpeedIn {
-            0% { transform: translateX(100%) skewX(-30deg); opacity: 0; }
-            60% { transform: skewX(20deg); opacity: 1; }
-            80% { transform: skewX(-5deg); }
-            100% { transform: translateX(0); }
+            transform: scale(0.95);
         }
         .confirm-btn {
             background-color: #ff4444;
@@ -318,14 +302,10 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 0 5px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s ease;
         }
         .share-icon:active {
-            animation: rotateIn 0.6s ease-in-out;
-        }
-        @keyframes rotateIn {
-            0% { transform-origin: center; transform: rotate(-200deg); opacity: 0; }
-            100% { transform-origin: center; transform: rotate(0); opacity: 1; }
+            transform: scale(0.95);
         }
         /* Onboarding guide placeholder */
         .onboarding {
@@ -356,30 +336,19 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        /* Settings submenu placeholder */
-        .settings-menu {
-            display: none;
-            position: fixed;
-            top: 50px;
-            right: 10px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-        }
         .settings-item {
             display: flex;
             align-items: center;
-            padding: 5px;
+            padding: 10px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s ease;
+        }
+        .settings-item:hover {
+            background-color: #f9f9f9;
         }
         .settings-item:active {
-            animation: slideInUp 0.5s ease-in-out;
-        }
-        @keyframes slideInUp {
-            from { transform: translate3d(0, 100%, 0); visibility: visible; }
-            to { transform: translate3d(0, 0, 0); }
+            transform: scale(0.98);
         }
         .settings-item img {
             width: 30px;
@@ -401,23 +370,36 @@
     </style>
 </head>
 <body>
-    <!-- Overlay for sidebar -->
-    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+    <!-- Overlay for sidebars -->
+    <div class="overlay" id="overlay" onclick="closeSidebars()"></div>
 
-    <!-- Sidebar Menu -->
-    <div class="sidebar" id="sidebar">
+    <!-- Left Sidebar for Menu (Deleted Notes) -->
+    <div class="left-sidebar" id="leftSidebar">
         <h3>Deleted Notes</h3>
         <div id="trashContent">
             <div class="no-deleted">No deleted notes.</div>
         </div>
         <div class="popup-buttons">
-            <button class="btn cancel-btn" onclick="closeSidebar()">Close</button>
+            <button class="btn cancel-btn" onclick="closeLeftSidebar()">Close</button>
+        </div>
+    </div>
+
+    <!-- Right Sidebar for Settings -->
+    <div class="right-sidebar" id="rightSidebar">
+        <h3>Settings</h3>
+        <div class="settings-item" onclick="handleSettingsItem('about'); closeRightSidebar();">
+            <img src="https://i.postimg.cc/W1z2b5M9/1758011685776.png" alt="About">
+            <span>About</span>
+        </div>
+        <div class="settings-item" onclick="handleSettingsItem('clear'); closeRightSidebar();">
+            <img src="https://i.postimg.cc/T1N4kJpw/1758011671773.png" alt="Clear All Data">
+            <span>Clear All Data</span>
         </div>
     </div>
 
     <!-- Header -->
     <div class="header">
-        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon" id="menuIcon" onclick="openSidebar()">
+        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" class="menu-icon" id="menuIcon" onclick="openLeftSidebar()">
         <div> </div> <!-- Spacer -->
     </div>
 
@@ -463,7 +445,7 @@
             <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends">
             <div class="nav-label">Invite</div>
         </div>
-        <div class="nav-icon" onclick="openSettings()">
+        <div class="nav-icon" onclick="openRightSidebar()">
             <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings">
             <div class="nav-label">Settings</div>
         </div>
@@ -514,18 +496,6 @@
                 <button class="btn confirm-btn">Confirm</button>
                 <button class="btn cancel-btn">Cancel</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Settings Menu -->
-    <div id="settingsMenu" class="settings-menu">
-        <div class="settings-item" onclick="showAboutPopup()">
-            <img src="https://i.postimg.cc/W1z2b5M9/1758011685776.png" alt="About">
-            <span>About</span>
-        </div>
-        <div class="settings-item" onclick="showClearDataPopup()">
-            <img src="https://i.postimg.cc/T1N4kJpw/1758011671773.png" alt="Clear All Data">
-            <span>Clear All Data</span>
         </div>
     </div>
 
@@ -737,7 +707,8 @@ ${url}`;
         function goHome() {
             renderNotes();
             closeEditor();
-            closeSidebar();
+            closeLeftSidebar();
+            closeRightSidebar();
             document.getElementById('invitePopup').style.display = 'none';
             document.getElementById('settingsMenu').style.display = 'none';
         }
@@ -746,24 +717,44 @@ ${url}`;
             document.getElementById('invitePopup').style.display = 'flex';
         }
 
-        function openSettings() {
-            document.getElementById('settingsMenu').style.display = 'block';
-        }
-
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
+        function openLeftSidebar() {
+            document.getElementById('leftSidebar').classList.add('open');
             document.getElementById('overlay').classList.add('open');
             renderTrash();
         }
 
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
+        function closeLeftSidebar() {
+            document.getElementById('leftSidebar').classList.remove('open');
             document.getElementById('overlay').classList.remove('open');
         }
 
+        function openRightSidebar() {
+            document.getElementById('rightSidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('open');
+        }
+
+        function closeRightSidebar() {
+            document.getElementById('rightSidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('open');
+        }
+
+        function closeSidebars() {
+            closeLeftSidebar();
+            closeRightSidebar();
+        }
+
+        function handleSettingsItem(type) {
+            if (type === 'about') {
+                showAboutPopup();
+            } else if (type === 'clear') {
+                showClearDataPopup();
+            }
+        }
+
         // Event listeners
+        document.getElementById('menuIcon').addEventListener('click', openLeftSidebar);
         document.querySelector('.nav-icon:nth-child(2)').addEventListener('click', openInvite);
-        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', openSettings);
+        document.querySelector('.nav-icon:nth-child(3)').addEventListener('click', openRightSidebar);
         document.getElementById('copyBtn').addEventListener('click', () => {
             navigator.clipboard.writeText(url).then(() => {
                 alert('Link copied to clipboard!');
@@ -814,7 +805,6 @@ ${url}`;
         });
         function showClearDataPopup() {
             document.getElementById('clearDataPopup').style.display = 'flex';
-            document.getElementById('settingsMenu').style.display = 'none';
         }
         document.querySelector('.confirm-btn').addEventListener('click', () => {
             // Clear intervals
@@ -829,7 +819,6 @@ ${url}`;
         });
         function showAboutPopup() {
             document.getElementById('aboutPopup').style.display = 'flex';
-            document.getElementById('settingsMenu').style.display = 'none';
         }
         function closeAbout() {
             document.getElementById('aboutPopup').style.display = 'none';
