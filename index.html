@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Save Notes</title>
     <style>
         body {
@@ -15,22 +16,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         header img {
             width: 30px;
             cursor: pointer;
         }
+        #walletIcon {
+            width: 40px;
+        }
         .app-title {
-            text-align: center;
             font-size: 24px;
             font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
         }
         .search-bar {
-            margin: 20px;
             text-align: center;
+            margin: 20px;
         }
         .search-bar input {
             width: 80%;
@@ -49,12 +54,18 @@
             height: 150px;
             margin: 10px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             position: relative;
+            cursor: pointer;
+        }
+        .note-tab img {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
         }
         .new-tab-icon {
             position: fixed;
@@ -81,18 +92,12 @@
             box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
             padding: 10px 0;
         }
-        .invite-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            max-width: 300px;
-            z-index: 1000;
-            border-radius: 8px;
+        footer img {
+            width: 30px;
+            cursor: pointer;
+        }
+        #footerWalletIcon {
+            width: 40px;
         }
         .overlay {
             display: none;
@@ -102,7 +107,7 @@
             background: rgba(0,0,0,0.5);
             z-index: 500;
         }
-        .alert-popup {
+        .popup {
             display: none;
             position: fixed;
             top: 50%;
@@ -110,72 +115,80 @@
             transform: translate(-50%, -50%);
             background: white;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             max-width: 300px;
-            z-index: 1000;
             border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
         }
         .popup-buttons {
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
         }
+        .share-icons img {
+            width: 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-radius: 50%;
+        }
     </style>
 </head>
+
 <body>
 
     <header>
-        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu Icon">
+        <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Menu" onclick="alert('Menu clicked')" />
         <div class="app-title">Save Notes</div>
-        <img src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet Icon">
+        <img id="walletIcon" src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet" onclick="alert('Wallet clicked')" />
     </header>
 
     <div class="search-bar">
-        <input type="text" placeholder="Search your notes...">
+        <input type="text" placeholder="Search your notes..." />
     </div>
 
-    <div class="notes-container">
-        <!-- Example Notes Tabs -->
-        <div class="note-tab">
+    <div class="notes-container" id="notesContainer">
+        <div class="note-tab" onclick="alert('Open Note 1')">
             Note 1
-            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Icon" style="position:absolute; top:5px; right:5px; width:20px;">
+            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Off">
         </div>
-        <div class="note-tab">
+        <div class="note-tab" onclick="alert('Open Note 2')">
             Note 2
-            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Icon" style="position:absolute; top:5px; right:5px; width:20px;">
+            <img src="https://i.postimg.cc/XYFz838T/1758009466327.png" alt="Notification Off">
         </div>
     </div>
 
-    <div class="new-tab-icon">
+    <div class="new-tab-icon" onclick="createNewNoteTab()">
         <img src="https://i.postimg.cc/wxRxpRTJ/1758009430835.png" alt="New Tab">
     </div>
 
     <footer>
-        <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home Icon" title="Home">
-        <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends Icon" title="Invite Friends" onclick="showInvitePopup()">
-        <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings Icon" title="Settings" onclick="showAlertPopup()">
+        <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home" onclick="alert('Home clicked')" />
+        <img src="https://i.postimg.cc/nzmy6pVb/1758009504498.png" alt="Invite Friends" onclick="showInvitePopup()" />
+        <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings" onclick="showAlertPopup()" />
+        <img id="footerWalletIcon" src="https://i.postimg.cc/Ss9dyKzd/20250916-133158.png" alt="Wallet" onclick="alert('Wallet clicked')" />
     </footer>
 
     <div class="overlay" id="overlay"></div>
 
-    <div class="invite-popup" id="invitePopup">
+    <div class="popup" id="invitePopup">
         <p>You can invite your friends using link and in the future you will get your personal referral code in the Invite section.</p>
         <p>Once available you will be able to share your code and earn ₹ rewards directly into your wallet for every successful referral.</p>
         <p>Start inviting now and get ready to earn soon.</p>
-        <input type="text" readonly value="https://jokefitabs.vercel.app/" style="width:100%; margin-bottom: 10px;">
+        <input type="text" value="https://jokefitabs.vercel.app/" readonly style="width:100%; margin-bottom:10px;" />
         <button onclick="copyReferralLink()">Copy Link</button>
-        <div style="margin-top: 10px;">
-            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Facebook" style="width:30px; cursor:pointer;">
-            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="WhatsApp" style="width:30px; cursor:pointer;">
-            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="X Icon" style="width:30px; cursor:pointer;">
-            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Instagram" style="width:30px; cursor:pointer;">
-            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Telegram" style="width:30px; cursor:pointer;">
+        <div class="share-icons">
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Facebook" onclick="shareOnSocial('facebook')" />
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="WhatsApp" onclick="shareOnSocial('whatsapp')" />
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="X" onclick="shareOnSocial('x')" />
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Instagram" onclick="shareOnSocial('instagram')" />
+            <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Telegram" onclick="shareOnSocial('telegram')" />
         </div>
         <button onclick="closeInvitePopup()">Close</button>
     </div>
 
-    <div class="alert-popup" id="alertPopup">
-        <img src="https://i.postimg.cc/xC8fqtDj/1758012015965.png" alt="Alert Icon" style="width:40px;">
+    <div class="popup" id="alertPopup">
+        <img src="https://i.postimg.cc/xC8fqtDj/1758012015965.png" alt="Alert" style="width:40px;" />
         <p>If you confirm now all your saved notes files will be permanently deleted from the system.</p>
         <p>This action cannot be undone and you will lose all your data forever.</p>
         <p>Please make sure you have backed up any important information before proceeding.</p>
@@ -197,10 +210,14 @@
         }
 
         function copyReferralLink() {
-            const linkInput = document.querySelector('.invite-popup input');
+            const linkInput = document.querySelector('.popup input');
             linkInput.select();
             document.execCommand('copy');
-            alert('Link copied to clipboard');
+            alert('Referral link copied!');
+        }
+
+        function shareOnSocial(platform) {
+            alert(`Sharing on ${platform}`);
         }
 
         function showAlertPopup() {
@@ -214,10 +231,23 @@
         }
 
         function confirmClearData() {
-            alert('All data cleared and app reset');
-            location.reload();
+            document.getElementById('notesContainer').innerHTML = '';
+            alert('All notes have been deleted and the app reset.');
+            closeAlertPopup();
+        }
+
+        function createNewNoteTab() {
+            const newTab = document.createElement('div');
+            newTab.className = 'note-tab';
+            newTab.textContent = `Note ${document.querySelectorAll('.note-tab').length + 1}`;
+            newTab.onclick = () => alert('New Note opened');
+            const notifIcon = document.createElement('img');
+            notifIcon.src = 'https://i.postimg.cc/XYFz838T/1758009466327.png';
+            newTab.appendChild(notifIcon);
+            document.getElementById('notesContainer').appendChild(newTab);
         }
     </script>
 
 </body>
+
 </html>
