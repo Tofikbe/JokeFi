@@ -143,6 +143,13 @@
         .note-file:active {
             transform: scale(0.98);
         }
+        .note-file.pinned {
+            border-left: 4px solid #007bff;
+        }
+        .note-file.locked {
+            opacity: 0.7;
+            border-left: 4px solid #ffc107;
+        }
         .note-actions {
             display: flex;
             align-items: center;
@@ -160,13 +167,13 @@
             word-break: break-word;
             line-height: 1.3;
         }
-        .edit-icon, .notification-icon, .delete-btn {
+        .edit-icon, .notification-icon, .delete-btn, .pin-icon, .reminder-icon, .lock-icon, .mic-btn {
             width: 30px;
             height: 30px;
             cursor: pointer;
             transition: transform 0.1s ease;
         }
-        .edit-icon:active, .notification-icon:active, .delete-btn:active {
+        .edit-icon:active, .notification-icon:active, .delete-btn:active, .pin-icon:active, .reminder-icon:active, .lock-icon:active, .mic-btn:active {
             transform: scale(0.9);
         }
         .delete-btn {
@@ -273,6 +280,16 @@
             border-radius: 5px;
             box-sizing: border-box;
             resize: vertical;
+        }
+        .editor-reminder {
+            margin: 10px 0;
+        }
+        .editor-reminder input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
         .deleted-note {
             display: flex;
@@ -456,6 +473,11 @@
         <div class="popup-content editor-content">
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
             <textarea id="editorText" class="editor-text" placeholder="Write your note here..."></textarea>
+            <div class="editor-reminder">
+                <label for="reminderTime">Set Reminder:</label>
+                <input type="datetime-local" id="reminderTime">
+            </div>
+            <button class="mic-btn" onclick="startVoiceToText()" style="background: none; border: none; font-size: 20px;">🎤</button>
             <div class="popup-buttons">
                 <button class="btn" onclick="saveNote()">Save</button>
                 <button class="btn cancel-btn" onclick="closeEditor()">Cancel</button>
@@ -548,6 +570,7 @@
         let deletedNotes = JSON.parse(localStorage.getItem('deletedNotes')) || [];
         let currentEditingId = null;
         let notificationIntervals = {}; // To store intervals for each note
+        let reminderTimeouts = {}; // To store timeouts for reminders
         const url = 'https://jokefitabs.vercel.app/';
         const longText = `I use JokeFi Notes to securely save my personal data, important files, and private stories. 
 
@@ -604,6 +627,24 @@ ${url}`;
             }
         }
 
+        function setReminder(id, time) {
+            const timeout = setTimeout(() => {
+                const note = notes.find(n => n.id === id);
+                if (note) {
+                    showNotification('Reminder', `Reminder for: ${note.title}`);
+                }
+                delete reminderTimeouts[id];
+            }, new Date(time) - Date.now());
+            reminderTimeouts[id] = timeout;
+        }
+
+        function clearReminder(id) {
+            if (reminderTimeouts[id]) {
+                clearTimeout(reminderTimeouts[id]);
+                delete reminderTimeouts[id];
+            }
+        }
+
         function renderNotes(filter = '') {
             const mainContent = document.getElementById('mainContent');
             const searchTerm = filter.toLowerCase();
@@ -612,19 +653,25 @@ ${url}`;
                 (note.content && note.content.toLowerCase().includes(searchTerm))
             );
 
+            // Sort pinned notes to top
+            filteredNotes.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
             if (filteredNotes.length === 0) {
                 mainContent.innerHTML = '<div class="no-notes">No notes yet. Create a new one!</div>';
                 return;
             }
 
             mainContent.innerHTML = filteredNotes.map(note => `
-                <div class="note-file" onclick="editNote('${note.id}')">
+                <div class="note-file ${note.pinned ? 'pinned' : ''} ${note.password ? 'locked' : ''}" onclick="editNote('${note.id}')">
                     <div style="flex: 1;">
-                        <span class="note-title">${note.title}</span>
+                        <span class="note-title">${note.title} ${note.pinned ? '📌' : ''} ${note.password ? '🔒' : ''}</span>
                         <p class="note-preview">${note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : ''}</p>
                     </div>
                     <div class="note-actions">
+                        <span class="pin-icon" onclick="togglePin(event, '${note.id}')">${note.pinned ? '📌' : '📍'}</span>
                         <img src="${note.notification ? notificationOnIcon : notificationOffIcon}" class="notification-icon" onclick="toggleNotification(event, '${note.id}')" alt="${note.notification ? 'On' : 'Off'}">
+                        <span class="reminder-icon" onclick="setNoteReminder(event, '${note.id}')">⏰</span>
+                        <span class="lock-icon" onclick="toggleLock(event, '${note.id}')">${note.password ? '🔓' : '🔒'}</span>
                         <button class="delete-btn" onclick="deleteNote(event, '${note.id}')">×</button>
                     </div>
                 </div>
@@ -666,11 +713,84 @@ ${url}`;
             }
         }
 
+        function togglePin(event, id) {
+            event.stopPropagation();
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                note.pinned = !note.pinned;
+                saveNotes();
+                renderNotes(document.getElementById('searchInput').value);
+            }
+        }
+
+        function setNoteReminder(event, id) {
+            event.stopPropagation();
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                const time = prompt('Set reminder time (YYYY-MM-DDTHH:MM):');
+                if (time) {
+                    note.reminderTime = time;
+                    clearReminder(id);
+                    setReminder(id, time);
+                    saveNotes();
+                    renderNotes(document.getElementById('searchInput').value);
+                }
+            }
+        }
+
+        function toggleLock(event, id) {
+            event.stopPropagation();
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                if (note.password) {
+                    const pass = prompt('Enter password to unlock:');
+                    if (pass === note.password) {
+                        note.password = null;
+                    } else {
+                        alert('Incorrect password');
+                    }
+                } else {
+                    const pass = prompt('Set password to lock:');
+                    if (pass) {
+                        note.password = pass;
+                    }
+                }
+                saveNotes();
+                renderNotes(document.getElementById('searchInput').value);
+            }
+        }
+
+        function startVoiceToText() {
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                recognition.onresult = function(event) {
+                    document.getElementById('editorText').value += event.results[0][0].transcript;
+                };
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error', event.error);
+                };
+                recognition.start();
+            } else {
+                alert('Speech recognition not supported');
+            }
+        }
+
         function editNote(id) {
             const note = notes.find(n => n.id === id);
             if (note) {
+                if (note.password) {
+                    const pass = prompt('Enter password to edit:');
+                    if (pass !== note.password) {
+                        alert('Incorrect password');
+                        return;
+                    }
+                }
                 document.getElementById('editorTitle').value = note.title;
                 document.getElementById('editorText').value = note.content;
+                document.getElementById('reminderTime').value = note.reminderTime || '';
                 currentEditingId = id;
                 hideTopBars();
                 document.getElementById('overlay').classList.add('open');
@@ -681,6 +801,7 @@ ${url}`;
         function createNewNote() {
             document.getElementById('editorTitle').value = '';
             document.getElementById('editorText').value = '';
+            document.getElementById('reminderTime').value = '';
             currentEditingId = null;
             hideTopBars();
             document.getElementById('overlay').classList.add('open');
@@ -690,6 +811,7 @@ ${url}`;
         function saveNote() {
             const title = document.getElementById('editorTitle').value.trim();
             const content = document.getElementById('editorText').value;
+            const reminderTime = document.getElementById('reminderTime').value;
             if (!title) {
                 alert('Please enter a title.');
                 return;
@@ -699,14 +821,28 @@ ${url}`;
                 if (note) {
                     note.title = title;
                     note.content = content;
+                    if (reminderTime) {
+                        note.reminderTime = reminderTime;
+                        clearReminder(currentEditingId);
+                        setReminder(currentEditingId, reminderTime);
+                    } else {
+                        note.reminderTime = null;
+                        clearReminder(currentEditingId);
+                    }
                 }
             } else {
                 const newNote = {
                     id: Date.now().toString(),
                     title,
                     content,
-                    notification: false
+                    notification: false,
+                    pinned: false,
+                    reminderTime: reminderTime || null,
+                    password: null
                 };
+                if (reminderTime) {
+                    setReminder(newNote.id, reminderTime);
+                }
                 notes.unshift(newNote);
             }
             saveNotes();
@@ -720,6 +856,7 @@ ${url}`;
             if (noteIndex !== -1) {
                 const note = notes[noteIndex];
                 stopNoteNotifications(id);
+                clearReminder(id);
                 deletedNotes.unshift(notes.splice(noteIndex, 1)[0]);
                 saveNotes();
                 saveDeletedNotes();
@@ -735,6 +872,9 @@ ${url}`;
                 if (note.notification) {
                     startNoteNotifications(id);
                 }
+                if (note.reminderTime) {
+                    setReminder(id, note.reminderTime);
+                }
                 saveNotes();
                 saveDeletedNotes();
                 renderTrash();
@@ -745,6 +885,7 @@ ${url}`;
             const delIndex = deletedNotes.findIndex(n => n.id === id);
             if (delIndex !== -1) {
                 stopNoteNotifications(id);
+                clearReminder(id);
                 deletedNotes.splice(delIndex, 1);
                 saveDeletedNotes();
                 renderTrash();
@@ -900,6 +1041,8 @@ ${url}`;
             // Clear intervals
             Object.keys(notificationIntervals).forEach(id => clearInterval(notificationIntervals[id]));
             notificationIntervals = {};
+            Object.keys(reminderTimeouts).forEach(id => clearTimeout(reminderTimeouts[id]));
+            reminderTimeouts = {};
             notes = [];
             deletedNotes = [];
             saveNotes();
@@ -937,6 +1080,9 @@ ${url}`;
         notes.forEach(note => {
             if (note.notification) {
                 startNoteNotifications(note.id);
+            }
+            if (note.reminderTime) {
+                setReminder(note.id, note.reminderTime);
             }
         });
     </script>
