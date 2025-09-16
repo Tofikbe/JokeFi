@@ -589,7 +589,7 @@ ${url}`;
             const interval = setInterval(() => {
                 const note = notes.find(n => n.id === id);
                 if (note && note.notification) {
-                    showNotification('Note Reminder', `Don't forget: ${note.title}`);
+                    showNotification('Note Reminder', 'Your data is safe, there is nothing to worry about. We keep your data more safe and secure than our own.');
                 } else {
                     clearInterval(interval);
                 }
