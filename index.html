@@ -176,13 +176,13 @@
             gap: 5px;
             margin-top: auto;
         }
-        .edit-icon, .notification-icon, .delete-btn, .pin-icon, .reminder-icon, .lock-icon, .mic-btn {
+        .edit-icon, .notification-icon, .delete-btn, .pin-icon, .lock-icon, .mic-btn {
             width: 25px;
             height: 25px;
             cursor: pointer;
             transition: transform 0.1s ease;
         }
-        .edit-icon:active, .notification-icon:active, .delete-btn:active, .pin-icon:active, .reminder-icon:active, .lock-icon:active, .mic-btn:active {
+        .edit-icon:active, .notification-icon:active, .delete-btn:active, .pin-icon:active, .lock-icon:active, .mic-btn:active {
             transform: scale(0.9);
         }
         .delete-btn {
@@ -267,15 +267,15 @@
             overflow-y: auto;
             text-align: center;
         }
-        #editorPopup {
+        #editorPopup, #invitePopup {
             justify-content: flex-start;
             align-items: stretch;
         }
-        #editorPopup .popup-content {
+        #editorPopup .popup-content, #invitePopup .popup-content {
             border-radius: 0;
             max-width: 100%;
             max-height: none;
-            height: calc(100vh - 70px);
+            height: 100vh;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -303,18 +303,6 @@
             border-radius: 5px;
             box-sizing: border-box;
             overflow-y: auto;
-        }
-        .editor-reminder {
-            margin: 10px 0;
-            flex-shrink: 0;
-        }
-        .editor-reminder input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
         }
         .deleted-note {
             display: flex;
@@ -375,28 +363,6 @@
         }
         .share-icon:active {
             transform: scale(0.95);
-        }
-        /* Reminder Popup Styles */
-        #reminderPopup .popup-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        #reminderPopup .popup-content h3 {
-            margin-bottom: 20px;
-        }
-        #reminderPopup .popup-content label {
-            display: block;
-            margin: 15px 0;
-            text-align: left;
-        }
-        #reminderPopup .popup-content input {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            box-sizing: border-box;
         }
         /* Password Popup Styles */
         #passwordPopup .popup-content {
@@ -549,26 +515,9 @@
         <div class="popup-content editor-content">
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
             <div id="editorText" contenteditable="true" class="editor-text" placeholder="Write your note here..."></div>
-            <div class="editor-reminder">
-                <label>Date: <input type="date" id="reminderDate"></label>
-                <label>Time: <input type="time" id="reminderTime"></label>
-            </div>
             <div class="popup-buttons">
                 <button class="btn" onclick="saveNote()">Save</button>
                 <button class="btn cancel-btn" onclick="closeEditor()">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reminder Popup -->
-    <div id="reminderPopup" class="popup">
-        <div class="popup-content">
-            <h3>Set Reminder for <span id="reminderNoteTitle"></span></h3>
-            <label>Date: <input type="date" id="popupReminderDate"></label>
-            <label>Time: <input type="time" id="popupReminderTime"></label>
-            <div class="popup-buttons">
-                <button class="btn" onclick="saveReminder()">Save</button>
-                <button class="btn cancel-btn" onclick="closeReminderPopup()">Cancel</button>
             </div>
         </div>
     </div>
@@ -672,8 +621,6 @@
         let deletedNotes = JSON.parse(localStorage.getItem('deletedNotes')) || [];
         let currentEditingId = null;
         let notificationIntervals = {}; // To store intervals for each note
-        let reminderTimeouts = {}; // To store timeouts for reminders
-        let currentReminderNoteId = null;
         let currentPasswordNoteId = null;
         let draggedNoteId = null;
         let dragAndDropEnabled = false;
@@ -691,7 +638,6 @@ ${url}`;
         const notificationOnIcon = 'https://i.postimg.cc/xT7dmGx6/1758009449096.png';
         const notificationOffIcon = 'https://i.postimg.cc/XYFz838T/1758009466327.png';
         const pinIcon = 'https://i.postimg.cc/kXLXxpyd/1758047844505.png';
-        const reminderIcon = 'https://i.postimg.cc/GpL0YF6C/1758047829493.png';
         const lockIcon = 'https://i.postimg.cc/nL0y1stQ/images-12.png';
 
         // Offline mode - register service worker if possible
@@ -742,25 +688,6 @@ ${url}`;
             }
         }
 
-        function setReminder(id, datetime) {
-            clearReminder(id);
-            const timeout = setTimeout(() => {
-                const note = notes.find(n => n.id === id);
-                if (note) {
-                    showNotification('Reminder', `Reminder for: ${note.title}`);
-                }
-                delete reminderTimeouts[id];
-            }, new Date(datetime) - Date.now());
-            reminderTimeouts[id] = timeout;
-        }
-
-        function clearReminder(id) {
-            if (reminderTimeouts[id]) {
-                clearTimeout(reminderTimeouts[id]);
-                delete reminderTimeouts[id];
-            }
-        }
-
         function renderNotes(filter = '') {
             const mainContent = document.getElementById('mainContent');
             const searchTerm = filter.toLowerCase();
@@ -786,7 +713,6 @@ ${url}`;
                     <div class="note-actions">
                         <img src="${pinIcon}" class="pin-icon" onclick="togglePin(event, '${note.id}')" alt="Pin">
                         <img src="${note.notification ? notificationOnIcon : notificationOffIcon}" class="notification-icon" onclick="toggleNotification(event, '${note.id}')" alt="${note.notification ? 'On' : 'Off'}">
-                        <img src="${reminderIcon}" class="reminder-icon" onclick="setNoteReminder(event, '${note.id}')" alt="Reminder">
                         <img src="${lockIcon}" class="lock-icon" onclick="toggleLock(event, '${note.id}')" alt="Lock">
                         <button class="delete-btn" onclick="deleteNote(event, '${note.id}')">×</button>
                     </div>
@@ -837,45 +763,6 @@ ${url}`;
                 saveNotes();
                 renderNotes(document.getElementById('searchInput').value);
             }
-        }
-
-        function setNoteReminder(event, id) {
-            event.stopPropagation();
-            const note = notes.find(n => n.id === id);
-            if (note) {
-                currentReminderNoteId = id;
-                document.getElementById('reminderNoteTitle').textContent = note.title;
-                const [date, time] = note.reminderTime ? note.reminderTime.split('T') : ['', ''];
-                document.getElementById('popupReminderDate').value = date;
-                document.getElementById('popupReminderTime').value = time;
-                hideTopBars();
-                document.getElementById('overlay').classList.add('open');
-                document.getElementById('reminderPopup').style.display = 'flex';
-            }
-        }
-
-        function saveReminder() {
-            const date = document.getElementById('popupReminderDate').value;
-            const time = document.getElementById('popupReminderTime').value;
-            if (date && time && currentReminderNoteId) {
-                const datetime = date + 'T' + time;
-                const note = notes.find(n => n.id === currentReminderNoteId);
-                if (note) {
-                    note.reminderTime = datetime;
-                    clearReminder(currentReminderNoteId);
-                    setReminder(currentReminderNoteId, datetime);
-                    saveNotes();
-                    renderNotes(document.getElementById('searchInput').value);
-                }
-            }
-            closeReminderPopup();
-        }
-
-        function closeReminderPopup() {
-            document.getElementById('reminderPopup').style.display = 'none';
-            document.getElementById('overlay').classList.remove('open');
-            showTopBars();
-            currentReminderNoteId = null;
         }
 
         function toggleLock(event, id) {
@@ -963,9 +850,6 @@ ${url}`;
                 }
                 document.getElementById('editorTitle').value = note.title;
                 document.getElementById('editorText').innerHTML = note.content;
-                const [date, time] = note.reminderTime ? note.reminderTime.split('T') : ['', ''];
-                document.getElementById('reminderDate').value = date;
-                document.getElementById('reminderTime').value = time;
                 currentEditingId = id;
                 hideTopBars();
                 document.getElementById('overlay').classList.add('open');
@@ -976,8 +860,6 @@ ${url}`;
         function createNewNote() {
             document.getElementById('editorTitle').value = '';
             document.getElementById('editorText').innerHTML = '';
-            document.getElementById('reminderDate').value = '';
-            document.getElementById('reminderTime').value = '';
             currentEditingId = null;
             hideTopBars();
             document.getElementById('overlay').classList.add('open');
@@ -987,8 +869,6 @@ ${url}`;
         function saveNote() {
             const title = document.getElementById('editorTitle').value.trim();
             const content = document.getElementById('editorText').innerHTML;
-            const reminderDate = document.getElementById('reminderDate').value;
-            const reminderTime = document.getElementById('reminderTime').value;
             if (!title) {
                 alert('Please enter a title.');
                 return;
@@ -998,14 +878,6 @@ ${url}`;
                 if (note) {
                     note.title = title;
                     note.content = content;
-                    if (reminderDate && reminderTime) {
-                        note.reminderTime = reminderDate + 'T' + reminderTime;
-                        clearReminder(currentEditingId);
-                        setReminder(currentEditingId, note.reminderTime);
-                    } else {
-                        note.reminderTime = null;
-                        clearReminder(currentEditingId);
-                    }
                 }
             } else {
                 const newNote = {
@@ -1014,12 +886,8 @@ ${url}`;
                     content,
                     notification: false,
                     pinned: false,
-                    reminderTime: (reminderDate && reminderTime) ? reminderDate + 'T' + reminderTime : null,
                     password: null
                 };
-                if (newNote.reminderTime) {
-                    setReminder(newNote.id, newNote.reminderTime);
-                }
                 notes.unshift(newNote);
             }
             saveNotes();
@@ -1033,7 +901,6 @@ ${url}`;
             if (noteIndex !== -1) {
                 const note = notes[noteIndex];
                 stopNoteNotifications(id);
-                clearReminder(id);
                 deletedNotes.unshift(notes.splice(noteIndex, 1)[0]);
                 saveNotes();
                 saveDeletedNotes();
@@ -1049,9 +916,6 @@ ${url}`;
                 if (note.notification) {
                     startNoteNotifications(id);
                 }
-                if (note.reminderTime) {
-                    setReminder(id, note.reminderTime);
-                }
                 saveNotes();
                 saveDeletedNotes();
                 renderTrash();
@@ -1062,7 +926,6 @@ ${url}`;
             const delIndex = deletedNotes.findIndex(n => n.id === id);
             if (delIndex !== -1) {
                 stopNoteNotifications(id);
-                clearReminder(id);
                 deletedNotes.splice(delIndex, 1);
                 saveDeletedNotes();
                 renderTrash();
@@ -1266,8 +1129,6 @@ ${url}`;
             // Clear intervals
             Object.keys(notificationIntervals).forEach(id => clearInterval(notificationIntervals[id]));
             notificationIntervals = {};
-            Object.keys(reminderTimeouts).forEach(id => clearTimeout(reminderTimeouts[id]));
-            reminderTimeouts = {};
             notes = [];
             deletedNotes = [];
             saveNotes();
@@ -1305,9 +1166,6 @@ ${url}`;
         notes.forEach(note => {
             if (note.notification) {
                 startNoteNotifications(note.id);
-            }
-            if (note.reminderTime) {
-                setReminder(note.id, note.reminderTime);
             }
         });
     </script>
