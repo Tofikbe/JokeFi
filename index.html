@@ -80,8 +80,12 @@
             position: relative;
             z-index: 1;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 10px;
+            transition: margin-left 0.3s ease;
+        }
+        .main-content.shifted {
+            margin-left: 300px;
         }
         .left-sidebar {
             position: fixed;
@@ -221,7 +225,7 @@
             position: fixed;
             bottom: 0;
             width: 100%;
-            z-index: 1002;
+            z-index: 1005;
         }
         .nav-icon {
             display: flex;
@@ -250,24 +254,28 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-start;
+            align-items: stretch;
             z-index: 1003;
         }
         .popup-content {
             background-color: white;
             padding: 20px;
-            border-radius: 10px;
-            max-width: 90%;
-            max-height: 80vh;
+            border-radius: 0;
+            max-width: 100%;
+            max-height: 100vh;
+            height: 100vh;
             overflow-y: auto;
             text-align: center;
+            display: flex;
+            flex-direction: column;
         }
         .trash-content {
             text-align: left;
         }
         .editor-content {
             text-align: left;
+            flex: 1;
         }
         .editor-title {
             width: 100%;
@@ -279,7 +287,7 @@
         }
         .editor-text {
             width: 100%;
-            height: 300px;
+            height: calc(100vh - 200px);
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -296,26 +304,6 @@
             border-radius: 5px;
             box-sizing: border-box;
             margin-bottom: 10px;
-        }
-        .formatting-toolbar {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-        .formatting-btn {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .checklist-btn {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 3px;
-            cursor: pointer;
         }
         .deleted-note {
             display: flex;
@@ -521,14 +509,6 @@
             <img src="https://i.postimg.cc/GpL0YF6C/1758047829493.png" alt="Offline Mode">
             <span>Offline Mode</span>
         </div>
-        <div class="settings-item" onclick="toggleChecklist(); closeRightSidebar();">
-            <img src="https://i.postimg.cc/nL0y1stQ/images-12.png" alt="Checklist">
-            <span>Checklist</span>
-        </div>
-        <div class="settings-item" onclick="toggleTextFormatting(); closeRightSidebar();">
-            <img src="https://i.postimg.cc/W1z2b5M9/1758011685776.png" alt="Text Formatting">
-            <span>Text Formatting</span>
-        </div>
     </div>
 
     <!-- Header -->
@@ -556,19 +536,6 @@
     <div id="editorPopup" class="popup">
         <div class="popup-content editor-content">
             <input type="text" id="editorTitle" class="editor-title" placeholder="Note Title">
-            <div class="formatting-toolbar" id="formattingToolbar" style="display: none;">
-                <button class="formatting-btn" onclick="formatText('bold')">B</button>
-                <button class="formatting-btn" onclick="formatText('italic')">I</button>
-                <button class="formatting-btn" onclick="formatText('underline')">U</button>
-                <button class="formatting-btn" onclick="formatText('strikeThrough')">S</button>
-                <button class="formatting-btn" onclick="formatText('insertUnorderedList')">UL</button>
-                <button class="formatting-btn" onclick="formatText('insertOrderedList')">OL</button>
-                <button class="formatting-btn" onclick="formatText('formatBlock', 'h1')">H1</button>
-                <button class="formatting-btn" onclick="formatText('formatBlock', 'h2')">H2</button>
-                <button class="formatting-btn" onclick="formatText('formatBlock', 'h3')">H3</button>
-                <button class="formatting-btn" onclick="formatText('insertHTML', '<code>_<span contenteditable=true></span>_</code>')">Code</button>
-                <button class="checklist-btn" onclick="insertChecklist()" id="checklistBtn" style="display: none;">Checklist</button>
-            </div>
             <div id="editorText" contenteditable="true" class="editor-text" placeholder="Write your note here..."></div>
             <div class="editor-reminder">
                 <label>Date: <input type="date" id="reminderDate"></label>
@@ -615,6 +582,10 @@
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
+        <div class="nav-icon" onclick="saveNoteIfEditing()">
+            <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Save">
+            <div class="nav-label">Save</div>
+        </div>
         <div class="nav-icon" onclick="goHome()">
             <img src="https://i.postimg.cc/ZKQLy3FH/1758009490013.png" alt="Home">
             <div class="nav-label">Home</div>
@@ -626,6 +597,10 @@
         <div class="nav-icon" onclick="toggleRightSidebar()">
             <img src="https://i.postimg.cc/YjBqJdB8/1758009478805.png" alt="Settings">
             <div class="nav-label">Settings</div>
+        </div>
+        <div class="nav-icon" onclick="closeEditor()">
+            <img src="https://i.postimg.cc/MTXktVNT/1758009527072.png" alt="Close">
+            <div class="nav-label">Close</div>
         </div>
     </div>
 
@@ -699,8 +674,6 @@
         let draggedNoteId = null;
         let dragAndDropEnabled = false;
         let offlineModeEnabled = false;
-        let checklistEnabled = false;
-        let textFormattingEnabled = false;
         const url = 'https://jokefitabs.vercel.app/';
         const longText = `I use JokeFi Notes to securely save my personal data, important files, and private stories. 
 
@@ -801,7 +774,7 @@ ${url}`;
             }
 
             mainContent.innerHTML = filteredNotes.map(note => `
-                <div class="note-file ${note.pinned ? 'pinned' : ''} ${note.password ? 'locked' : ''}" data-id="${note.id}" ${dragAndDropEnabled ? 'draggable="true"' : ''}>
+                <div class="note-file ${note.pinned ? 'pinned' : ''} ${note.password ? 'locked' : ''}" data-id="${note.id}" onclick="editNote('${note.id}')" ${dragAndDropEnabled ? 'draggable="true"' : ''}>
                     <div style="flex: 1;">
                         <span class="note-title">${note.title} ${note.pinned ? '📌' : ''} ${note.password ? '🔒' : ''}</span>
                         <div class="note-preview">${note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : ''}</div>
@@ -960,16 +933,6 @@ ${url}`;
             }
         }
 
-        function formatText(command, value = null) {
-            document.execCommand(command, false, value);
-            document.getElementById('editorText').focus();
-        }
-
-        function insertChecklist() {
-            document.execCommand('insertHTML', false, '<input type="checkbox"> <span contenteditable="true"></span><br>');
-            document.getElementById('editorText').focus();
-        }
-
         function toggleDragAndDrop() {
             dragAndDropEnabled = !dragAndDropEnabled;
             renderNotes(document.getElementById('searchInput').value);
@@ -982,18 +945,6 @@ ${url}`;
                 navigator.serviceWorker.register('data:text/javascript;base64,' + btoa('self.addEventListener("fetch", e => e.respondWith(fetch(e.request)));'));
             }
             alert(offlineModeEnabled ? 'Offline Mode enabled' : 'Offline Mode disabled');
-        }
-
-        function toggleChecklist() {
-            checklistEnabled = !checklistEnabled;
-            document.getElementById('checklistBtn').style.display = checklistEnabled ? 'inline-block' : 'none';
-            alert(checklistEnabled ? 'Checklist enabled' : 'Checklist disabled');
-        }
-
-        function toggleTextFormatting() {
-            textFormattingEnabled = !textFormattingEnabled;
-            document.getElementById('formattingToolbar').style.display = textFormattingEnabled ? 'flex' : 'none';
-            alert(textFormattingEnabled ? 'Text Formatting enabled' : 'Text Formatting disabled');
         }
 
         function editNote(id) {
@@ -1072,6 +1023,12 @@ ${url}`;
             closeEditor();
         }
 
+        function saveNoteIfEditing() {
+            if (currentEditingId !== null || document.getElementById('editorPopup').style.display !== 'none') {
+                saveNote();
+            }
+        }
+
         function deleteNote(event, id) {
             event.stopPropagation();
             const noteIndex = notes.findIndex(n => n.id === id);
@@ -1147,13 +1104,14 @@ ${url}`;
         function toggleLeftSidebar() {
             const sidebar = document.getElementById('leftSidebar');
             const overlay = document.getElementById('overlay');
+            const mainContent = document.getElementById('mainContent');
 
             if (sidebar.classList.contains('open')) {
                 closeLeftSidebar();
             } else {
                 sidebar.classList.add('open');
                 overlay.classList.add('open');
-                hideTopBars();
+                mainContent.classList.add('shifted');
                 renderTrash();
             }
         }
@@ -1161,10 +1119,11 @@ ${url}`;
         function closeLeftSidebar() {
             const sidebar = document.getElementById('leftSidebar');
             const overlay = document.getElementById('overlay');
+            const mainContent = document.getElementById('mainContent');
 
             sidebar.classList.remove('open');
             overlay.classList.remove('open');
-            showTopBars();
+            mainContent.classList.remove('shifted');
         }
 
         function toggleRightSidebar() {
